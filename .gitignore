@@ -13,6 +13,11 @@ web-build
 apps/*/android
 apps/*/ios
 
+# Electron
+apps/*/dist
+apps/*/out
+apps/*/electron-cache
+
 # macOS
 .DS_Store
 
