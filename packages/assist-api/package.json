@@ -1,0 +1,54 @@
+{
+  "name": "@mono/assist-api",
+  "version": "1.0.0",
+  "private": true,
+  "main": "./build/index.js",
+  "types": "./src/index.ts",
+  "react-native": "./src/index.ts",
+  "files": [
+    "build",
+    "src"
+  ],
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./build/index.js"
+    }
+  },
+  "scripts": {
+    "dev": "tsup --watch --silent",
+    "lint": "eslint --ext js,ts",
+    "test": "jest",
+    "build": "tsup --clean"
+  },
+  "dependencies": {
+    "zod": "3.24.2",
+    "zustand": "5.0.3"
+  },
+  "eslintConfig": {
+    "extends": "@mono/eslint-config",
+    "ignorePatterns": [
+      "node_modules",
+      "build"
+    ]
+  },
+  "devDependencies": {
+    "@mono/eslint-config": "workspace:*",
+    "@tsconfig/recommended": "^1.0.8",
+    "@types/node": "^22.13.13",
+    "react-native-udp": "4.1.7",
+    "tsup": "^8.3.5",
+    "typescript": "5.8.2"
+  },
+  "tsup": {
+    "entry": [
+      "src/index.ts"
+    ],
+    "outDir": "build",
+    "sourcemap": true,
+    "dts": true,
+    "external": [
+      "react-native-udp"
+    ]
+  }
+}

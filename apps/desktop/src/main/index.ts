@@ -2,6 +2,8 @@ import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
+import { UdpSocketClient } from '@mono/assist-api'
+import { NodeSocketAdapter } from './src/udp-client.adapter'
 
 function createWindow(): void {
   // Create the browser window.
@@ -50,7 +52,14 @@ app.whenReady().then(() => {
   })
 
   // IPC test
-  ipcMain.on('ping', () => console.log('pong'))
+  ipcMain.handle('init-socket', async () => {
+    const client = new UdpSocketClient({
+      adapter: new NodeSocketAdapter(),
+      address: '193.168.0.3',
+      port: UdpSocketClient.DISCOVERY_PORT
+    })
+    await client.init()
+  })
 
   createWindow()
 

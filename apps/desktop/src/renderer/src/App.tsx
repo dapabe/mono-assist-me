@@ -2,7 +2,8 @@ import Versions from './components/Versions'
 import electronLogo from './assets/electron.svg'
 
 function App(): JSX.Element {
-  const ipcHandle = (): void => window.electron.ipcRenderer.send('ping')
+  const ipcHandle = async (): Promise<void> =>
+    await window.electron.ipcRenderer.invoke('init-socket')
 
   return (
     <>
