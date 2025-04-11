@@ -1,9 +1,8 @@
-import { app, shell, BrowserWindow, ipcMain } from 'electron'
+import { app, shell, BrowserWindow } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
-import { UdpSocketClient } from '@mono/assist-api'
-import { NodeSocketAdapter } from './src/udp-client.adapter'
+import { attachTRPCHandlers } from './src/trpc'
 
 function createWindow(): void {
   // Create the browser window.
@@ -18,6 +17,8 @@ function createWindow(): void {
       sandbox: false
     }
   })
+
+  attachTRPCHandlers(mainWindow)
 
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
@@ -49,16 +50,6 @@ app.whenReady().then(() => {
   // see https://github.com/alex8088/electron-toolkit/tree/master/packages/utils
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)
-  })
-
-  // IPC test
-  ipcMain.handle('init-socket', async () => {
-    const client = new UdpSocketClient({
-      adapter: new NodeSocketAdapter(),
-      address: '193.168.0.3',
-      port: UdpSocketClient.DISCOVERY_PORT
-    })
-    await client.init()
   })
 
   createWindow()

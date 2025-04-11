@@ -1,12 +1,13 @@
-import { createStore } from 'zustand/vanilla';
+import { createStore, StateCreator } from 'zustand/vanilla';
 
 import { IAssistanceRoomClientSlice, IRoomEmitterSlice, IRoomReceiverSlice } from './Room.state';
-import { RoomEventLiteral, RoomServiceStatus } from '../schemas/RoomEvent.schema';
+import { ConnMethod, RoomEventLiteral, RoomServiceStatus } from '../schemas/RoomEvent.schema';
 import { UUID } from '../types/common';
-import { IRoomData, IRoomListener } from '../types/room.context';
+import { IRoomData, IRoomListener, IWSRoom, IWSRoomListener } from '../types/room.context';
 import { UdpSocketClient } from '../udp-client/UDPClient';
+import { create } from 'zustand';
 
-type State = IAssistanceRoomClientSlice & IRoomEmitterSlice & IRoomReceiverSlice;
+export type IRoomState = IAssistanceRoomClientSlice & IRoomEmitterSlice & IRoomReceiverSlice;
 
 /**
  * 	This reducer takes care of most of the app's state and side effects
@@ -16,25 +17,28 @@ type State = IAssistanceRoomClientSlice & IRoomEmitterSlice & IRoomReceiverSlice
  * 	@edit This was a reducer from react and got stripped to be used
  * 	outside react itself.
  */
-export const useRoomStore = createStore<State>((set, get) => ({
-  connMethod: null,
+
+export const defaultRoomStore: StateCreator<IRoomState, [], [], IRoomState> = (set, get) => ({
+  connMethod: ConnMethod.None,
+  connAdapter: null,
   status: RoomServiceStatus.Down,
   currentAppId: null,
   currentName: null,
   currentDevice: null,
-  HEARTBEAT_INTERVAL: 0,
   scheduledToCheck: new Map(),
 
   //  Room receiver values
-  roomsListeningTo: new Map(),
-  roomsToDiscover: new Map(),
+  roomsListeningTo: new Map<UUID, IWSRoomListener>(),
+  roomsToDiscover: new Map<UUID, IWSRoom>(),
 
   //  Room emitter values
   currentListeners: new Map<UUID, IRoomListener>(),
   incomingResponder: null,
   HELP_INTERVAL: null,
 
-  updateConnectionMethod: (connMethod) => set({ connMethod }),
+  updateConnectionMethod: (connMethod, connAdapter) => {
+    set({ connMethod, connAdapter });
+  },
   updateConnectionStatus: (status) => set({ status }),
   updateAppId: (currentAppId) => set({ currentAppId }),
   updateCurrentName: (currentName) => set({ currentName }),
@@ -230,7 +234,11 @@ export const useRoomStore = createStore<State>((set, get) => ({
   },
 
   sendDiscovery: () => {
-    get().connMethod?.sendDiscovery();
+    if (!get().connAdapter) {
+      console.log('[RoomStore] No adapter');
+      return;
+    }
+    get().connAdapter!.sendDiscovery();
   },
 
   //  Room receiver methods
@@ -238,7 +246,7 @@ export const useRoomStore = createStore<State>((set, get) => ({
   addToListeningTo: (appId) => {
     const discoveryRoom = get().onStartListening(appId);
     if (!discoveryRoom) return console.log('no emitter in discovery room');
-    get().connMethod?.sendTo(discoveryRoom.port, discoveryRoom.address, {
+    get().connAdapter?.sendTo(discoveryRoom.port, discoveryRoom.address, {
       event: RoomEventLiteral.Listening,
       appId: get().getAppId(),
       responderName: get().getCurrentName(),
@@ -251,7 +259,7 @@ export const useRoomStore = createStore<State>((set, get) => ({
       console.log('No emitter');
       // Alert.alert("Error", "Socket 404 or disconnected");
     } else {
-      get().connMethod?.sendTo(emitter.port, emitter.address, {
+      get().connAdapter?.sendTo(emitter.port, emitter.address, {
         event: RoomEventLiteral.RespondToHelp,
         responderName: get().getCurrentName(),
       });
@@ -261,7 +269,7 @@ export const useRoomStore = createStore<State>((set, get) => ({
     const listeningTo = get().roomsListeningTo.get(appId);
     if (listeningTo) {
       get().onRemoteNotListening({ appId });
-      get().connMethod?.sendTo(listeningTo.port, listeningTo.address, {
+      get().connAdapter?.sendTo(listeningTo.port, listeningTo.address, {
         event: RoomEventLiteral.NotListening,
         appId: get().getAppId(),
       });
@@ -270,7 +278,10 @@ export const useRoomStore = createStore<State>((set, get) => ({
 
   //  Room emitter methods
   requestHelp: () => {
-    if (!(get().connMethod instanceof UdpSocketClient)) return;
-    get().connMethod?.requestHelp();
+    if (!(get().connAdapter instanceof UdpSocketClient)) return;
+    get().connAdapter?.requestHelp();
   },
-}));
+});
+
+export const vanillaRoomStore = createStore<IRoomState>(defaultRoomStore);
+// export const useRoomStore = create<IRoomState>(defaultState);

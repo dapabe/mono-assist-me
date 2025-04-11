@@ -1,4 +1,5 @@
 export * from './constants';
+export * from './schemas/LocalData.schema';
 export * from './schemas/RegisterLocal.schema';
 export * from './schemas/RoomEvent.schema';
 export * from './schemas/SafePortIPv4.schema';

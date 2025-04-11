@@ -2,17 +2,18 @@
   "name": "@mono/assist-api",
   "version": "1.0.0",
   "private": true,
-  "main": "./build/index.js",
-  "types": "./src/index.ts",
-  "react-native": "./src/index.ts",
+  "type": "module",
   "files": [
     "build",
     "src"
   ],
+  "main": "./build/index.cjs",
+  "types": "./src/index.ts",
   "exports": {
     ".": {
       "types": "./src/index.ts",
-      "import": "./build/index.js"
+      "import": "./build/index.js",
+      "require": "./build/index.cjs"
     }
   },
   "scripts": {
@@ -21,16 +22,15 @@
     "test": "jest",
     "build": "tsup --clean"
   },
-  "dependencies": {
-    "zod": "3.24.2",
-    "zustand": "5.0.3"
-  },
   "eslintConfig": {
     "extends": "@mono/eslint-config",
     "ignorePatterns": [
       "node_modules",
       "build"
     ]
+  },
+  "dependencies": {
+    "zod": "3.24.2"
   },
   "devDependencies": {
     "@mono/eslint-config": "workspace:*",
@@ -40,10 +40,20 @@
     "tsup": "^8.3.5",
     "typescript": "5.8.2"
   },
+  "peerDependencies": {
+    "zustand": "5.0.3"
+  },
   "tsup": {
     "entry": [
       "src/index.ts"
     ],
+    "format": [
+      "cjs",
+      "esm"
+    ],
+    "target": "ES2020",
+    "moduleResolution": "Bundler",
+    "module": "ESNext",
     "outDir": "build",
     "sourcemap": true,
     "dts": true,

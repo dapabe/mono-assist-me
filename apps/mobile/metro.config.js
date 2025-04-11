@@ -9,13 +9,12 @@ const path = require('path');
 const config = getDefaultConfig(__dirname);
 
 // You can configure it manually as well, the most important parts are:
-// const projectRoot = __dirname;
 // const workspaceRoot = path.join(__dirname, '..', '..');
 // #1 - Watch all files within the monorepo
 // config.watchFolders = [workspaceRoot];
 // #2 - Try resolving with project modules first, then hoisted workspace modules
 // config.resolver.nodeModulesPaths = [
-//   path.resolve(projectRoot, 'node_modules'),
+//   path.resolve(__dirname, 'node_modules'),
 //   path.resolve(workspaceRoot, 'node_modules'),
 // ];
 

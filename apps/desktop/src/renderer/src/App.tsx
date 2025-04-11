@@ -1,9 +1,16 @@
 import Versions from './components/Versions'
 import electronLogo from './assets/electron.svg'
+import { trpcReact } from './services/trpc'
+import { useState } from 'react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ipcLink } from 'electron-trpc/renderer'
 
 function App(): JSX.Element {
-  const ipcHandle = async (): Promise<void> =>
-    await window.electron.ipcRenderer.invoke('init-socket')
+  const IPCInitialize = trpcReact.protected.initialize.useMutation()
+
+  // const IPCRequestHelp = trpcReact.requestHelp.useQuery()
+
+  // const IPCSendDiscovery = trpcReact.sendDiscovery.useQuery()
 
   return (
     <>
@@ -23,9 +30,9 @@ function App(): JSX.Element {
           </a>
         </div>
         <div className="action">
-          <a target="_blank" rel="noreferrer" onClick={ipcHandle}>
-            Send IPC
-          </a>
+          <button onClick={() => IPCInitialize.mutateAsync()}>Init</button>
+          {/* <button onClick={IPCRequestHelp}>Help</button>
+          <button onClick={IPCSendDiscovery.}>Discovery</button> */}
         </div>
       </div>
       <Versions></Versions>
@@ -33,4 +40,18 @@ function App(): JSX.Element {
   )
 }
 
-export default App
+export function Root(): React.ReactNode {
+  const [qc] = useState(() => new QueryClient())
+  const [trpcClient] = useState(() =>
+    trpcReact.createClient({
+      links: [ipcLink()]
+    })
+  )
+  return (
+    <trpcReact.Provider client={trpcClient} queryClient={qc}>
+      <QueryClientProvider client={qc}>
+        <App />
+      </QueryClientProvider>
+    </trpcReact.Provider>
+  )
+}

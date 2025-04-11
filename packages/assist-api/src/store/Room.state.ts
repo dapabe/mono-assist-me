@@ -1,4 +1,9 @@
-import { IConnMethod, IRoomServiceStatus, RoomEventLiteral } from '../schemas/RoomEvent.schema';
+import {
+  IConnAdapter,
+  IConnMethod,
+  IRoomServiceStatus,
+  RoomEventLiteral,
+} from '../schemas/RoomEvent.schema';
 import { UUID } from '../types/common';
 import {
   FromSocketUnion,
@@ -11,6 +16,7 @@ import {
 
 export type IAssistanceRoomClientSlice = {
   connMethod: IConnMethod;
+  connAdapter: IConnAdapter;
   status: IRoomServiceStatus;
   currentAppId: UUID | null;
   currentName: string | null;
@@ -31,7 +37,7 @@ export type IAssistanceRoomClientSlice = {
 
   /**	Iterates over all existing devices */
   getMergedRooms: () => IRoomData[];
-  updateConnectionMethod: (c: IConnMethod) => void;
+  updateConnectionMethod: (c: IConnMethod, a: IConnAdapter) => void;
   updateConnectionStatus: (s: IRoomServiceStatus) => void;
   getAppId: () => UUID;
   updateAppId: (appId: IAssistanceRoomClientSlice['currentAppId']) => void;

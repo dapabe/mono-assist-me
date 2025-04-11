@@ -3,9 +3,12 @@ import dgram from 'react-native-udp';
 import UdpSocket from 'react-native-udp/lib/types/UdpSocket';
 
 export class ReactNativeSocketAdapter extends SocketAdapter<UdpSocket> {
-  init = (port: number, address: string, parser: ISocketIncomingMessage): void => {
-    this.sk = dgram.createSocket({ type: 'udp4', debug: false });
-    this.sk.addListener('message', parser);
-    this.sk.bind(port, address, this.afterListeningRef);
+  init = async (port: number, address: string, parser: ISocketIncomingMessage): Promise<void> => {
+    const sk = dgram.createSocket({ type: 'udp4', debug: false });
+    sk.addListener('message', parser);
+    sk.bind(port, address, () => {
+      this.sk = sk;
+      this.afterListeningRef();
+    });
   };
 }

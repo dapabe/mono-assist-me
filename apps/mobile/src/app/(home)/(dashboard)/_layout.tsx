@@ -1,11 +1,13 @@
-import { RoomServiceStatus, useRoomStore } from '@mono/assist-api';
+import { RoomServiceStatus } from '@mono/assist-api';
 import { Icon } from '@rneui/themed';
 import { Tabs } from 'expo-router';
 import { ReactNode } from 'react';
 import { Pressable, PressableProps } from 'react-native';
 
+import { useRoomStore } from '#src/hooks/useRoomStore';
+
 export default function DashboardLayout() {
-  const ctx = useRoomStore.getState();
+  const ctx = useRoomStore();
   return (
     <Tabs screenOptions={{ headerShown: false }} initialRouteName="emitter">
       <Tabs.Screen
@@ -19,7 +21,7 @@ export default function DashboardLayout() {
       <Tabs.Screen
         name="receiver"
         options={{
-          title: `${ctx.roomsListeningTo.size}-${ctx.roomsToDiscover.size}`,
+          title: `${ctx.roomsListeningTo?.size}-${ctx.roomsToDiscover?.size}`,
           tabBarIcon: (p) => <Icon {...p} type="feather" name="list" />,
           tabBarButton: (p) => <ReceiverTabButton {...p} />,
         }}

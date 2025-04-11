@@ -1,18 +1,19 @@
 import { UITheme } from '#src/common/ui-theme';
 import { useImplicitToggle } from '#src/hooks/useImplicitToggle.hook';
-import { RoomServiceStatus, useRoomStore } from '@mono/assist-api';
+import { useRoomStore } from '#src/hooks/useRoomStore';
+import { RoomServiceStatus } from '@mono/assist-api';
 import { Icon, Switch, Text } from '@rneui/themed';
 import { useMemo } from 'react';
 import { Dimensions, StyleSheet, TouchableHighlight, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function EmitterScreen() {
-  const ctx = useRoomStore.getState();
+  const ctx = useRoomStore();
   const [tooltipVisible, toggleTooltip] = useImplicitToggle();
 
   const isHelpDisabled = useMemo(() => {
-    return ctx.status !== RoomServiceStatus.Up || !ctx.currentListeners.size || !!ctx.HELP_INTERVAL;
-  }, [ctx.status, ctx.currentListeners, ctx.HELP_INTERVAL]);
+    return ctx.status !== RoomServiceStatus.Up || !ctx.currentListeners?.size;
+  }, [ctx.status, ctx.currentListeners]);
 
   const btnColor = useMemo(() => {
     if (isHelpDisabled) return 'gray';
@@ -38,6 +39,9 @@ export default function EmitterScreen() {
         </TouchableHighlight>
       </View>
       <View style={styles.bottomContainer}>
+        <View>
+          <Text>{ctx.status}</Text>
+        </View>
         <View style={styles.rowGroup}>
           <Icon type="feather" name="users" />
           <Text style={{ color: UITheme.lightColors?.primary }}>{ctx.currentListeners.size}</Text>

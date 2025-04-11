@@ -5,17 +5,16 @@ import { IRoomEvent } from '../schemas/RoomEvent.schema';
 
 export type ISocketIncomingMessage = (data: Buffer | unknown, rinfo: RemoteUDPInfo) => void;
 export type FnSocketMessage = (data: IRoomEvent | ZodError) => void;
-export type FnSocketMessageParser = (cb: FnSocketMessage) => ISocketIncomingMessage;
 
 export type ISocketAdapter = {
-  init(port: number, address: string, parser: ISocketIncomingMessage): void;
+  init(port: number, address: string, parser: ISocketIncomingMessage): Promise<void>;
   addAfterListening(cb: () => void): void;
   close(): void;
   sendTo(port: number, address: string, data: Buffer<ArrayBuffer>): void;
 };
 
-export type ISocketClient<T> = {
-  init(cbMessage: FnSocketMessage): Promise<T>;
+export type ISocketClient = {
+  init(cbMessage: FnSocketMessage): void;
   close(): void;
   sendTo(port: number, address: string, data: IRoomEvent): void;
   // parseMessage(cb: FnSocketMessage): ISocketIncomingMessage;

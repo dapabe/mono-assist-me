@@ -1,4 +1,4 @@
-import { UdpSocketClient, useRoomStore } from '@mono/assist-api';
+import { ConnMethod, UdpSocketClient } from '@mono/assist-api';
 import { PropsWithChildren, useEffect, useRef } from 'react';
 import { AppState } from 'react-native';
 
@@ -7,6 +7,7 @@ import { ReactNativeSocketAdapter } from '../common/udp-client.adapter';
 
 import { useAppIdQuery } from '#src/hooks/useAppId.query';
 import { useLocalNameQuery } from '#src/hooks/useLocalName.query';
+import { useRoomStore } from '#src/hooks/useRoomStore';
 
 export function AssistanceRoomProvider({ children }: PropsWithChildren) {
   const appState = useRef(AppState.currentState);
@@ -15,7 +16,7 @@ export function AssistanceRoomProvider({ children }: PropsWithChildren) {
   const { currentName } = useLocalNameQuery();
   const { currentAppId } = useAppIdQuery();
 
-  const room = useRoomStore.getState();
+  const room = useRoomStore();
 
   //	Room state handled here
   // const [state, roomMethods] = useRoomReducer();
@@ -57,19 +58,21 @@ export function AssistanceRoomProvider({ children }: PropsWithChildren) {
   // }, []);
 
   useEffect(() => {
-    if (room.connMethod === null) {
+    if (room.connMethod === ConnMethod.None) {
       (async () => {
-        const conn = await new UdpSocketClient({
+        await new UdpSocketClient({
           adapter: new ReactNativeSocketAdapter(),
+          store: room,
           address: Internal_IPv4,
           port: UdpSocketClient.DISCOVERY_PORT,
         }).init();
-        room.updateConnectionMethod(conn);
       })();
     }
 
     return () => {
-      if (room.connMethod) room.connMethod.close();
+      if (room.connAdapter) {
+        room.connAdapter.close();
+      }
     };
   }, [room.connMethod]);
 

@@ -26,6 +26,21 @@ importers:
       '@mono/assist-api':
         specifier: workspace:*
         version: link:../../packages/assist-api
+      '@tanstack/react-query':
+        specifier: 4.29.14
+        version: 4.29.14(react-dom@18.3.1(react@18.3.1))(react-native@0.76.7(@babel/core@7.26.10)(@babel/preset-env@7.26.9(@babel/core@7.26.10))(@types/react@18.3.19)(encoding@0.1.13)(react@18.3.1))(react@18.3.1)
+      '@trpc/client':
+        specifier: 10.33.1
+        version: 10.33.1(@trpc/server@10.33.1)
+      '@trpc/react-query':
+        specifier: 10.33.1
+        version: 10.33.1(@tanstack/react-query@4.29.14(react-dom@18.3.1(react@18.3.1))(react-native@0.76.7(@babel/core@7.26.10)(@babel/preset-env@7.26.9(@babel/core@7.26.10))(@types/react@18.3.19)(encoding@0.1.13)(react@18.3.1))(react@18.3.1))(@trpc/client@10.33.1(@trpc/server@10.33.1))(@trpc/server@10.33.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@trpc/server':
+        specifier: 10.33.1
+        version: 10.33.1
+      electron-trpc:
+        specifier: 0.7.1
+        version: 0.7.1(@trpc/client@10.33.1(@trpc/server@10.33.1))(@trpc/server@10.33.1)(electron@35.1.2)
       electron-updater:
         specifier: ^6.3.9
         version: 6.6.2
@@ -216,6 +231,9 @@ importers:
       zod:
         specifier: 3.24.2
         version: 3.24.2
+      zustand:
+        specifier: 5.0.3
+        version: 5.0.3(@types/react@18.3.19)(react@18.3.1)(use-sync-external-store@1.4.0(react@18.3.1))
     devDependencies:
       '@babel/core':
         specifier: ^7.25.2
@@ -223,6 +241,9 @@ importers:
       '@mono/eslint-config':
         specifier: workspace:*
         version: link:../../packages/eslint-config
+      '@rnx-kit/metro-resolver-symlinks':
+        specifier: 0.2.1
+        version: 0.2.1
       '@types/jest':
         specifier: ^29.5.12
         version: 29.5.14
@@ -1823,6 +1844,22 @@ packages:
     peerDependencies:
       '@rneui/base': 4.0.0-rc.7
 
+  '@rnx-kit/console@2.0.0':
+    resolution: {integrity: sha512-8kyM0TUWpawWlaypHKWLgJjPoF5HcsjIxx9LSnYM8VgwBW1gOl2cCDhPYaeS8IG9m0fi4rMtQD8OJqmwpJ2jEg==}
+    engines: {node: '>=16.17'}
+
+  '@rnx-kit/metro-resolver-symlinks@0.2.1':
+    resolution: {integrity: sha512-EHO4odFMyQ3vh03J9lqDnF7RbG1WfH1s8A02S01ZhqtHEeFHEuk/sP90PN1uMuaoJQrcoRr2fJovdd/CoxXpsg==}
+    engines: {node: '>=16.17'}
+
+  '@rnx-kit/tools-node@3.0.2':
+    resolution: {integrity: sha512-nz0kq7FxJ89Vh5NLHZjmexl3sdGeoPaPZMSWQhW6g9JzryGVdU+CyLQtQbajtwaDMQB2qH/IqpmOzAxNFr5pgg==}
+    engines: {node: '>=16.17'}
+
+  '@rnx-kit/tools-react-native@2.1.0':
+    resolution: {integrity: sha512-F18Pn28Ligw3RyNKzXtSRZudWQ5R3JFywyWwqcUY+UFmjBjhekdIceHM/SXNZOJgkj21RRgXaIJy1gpaJtT0Jw==}
+    engines: {node: '>=16.17'}
+
   '@rollup/rollup-android-arm-eabi@4.36.0':
     resolution: {integrity: sha512-jgrXjjcEwN6XpZXL0HUeOVGfjXhPyxAbbhD0BlXUB+abTOpbPiN5Wb3kOT7yb+uEtATNYF5x5gIfwutmuBA26w==}
     cpu: [arm]
@@ -1964,8 +2001,23 @@ packages:
     resolution: {integrity: sha512-4BAffykYOgO+5nzBWYwE3W90sBgLJoUPRWWcL8wlyiM8IB8ipJz3UMJ9KXQd1RKQXpKp8Tutn80HZtWsu2u76w==}
     engines: {node: '>=10'}
 
+  '@tanstack/query-core@4.29.14':
+    resolution: {integrity: sha512-ElEAahtLWA7Y7c2Haw10KdEf2tx+XZl/Z8dmyWxZehxWK3TPL5qtXtb7kUEhvt/8u2cSP62fLxgh2qqzMMGnDQ==}
+
   '@tanstack/query-core@5.71.5':
     resolution: {integrity: sha512-XOQ5SyjCdwhxyLksGKWSL5poqyEXYPDnsrZAzJm2LgrMm4Yh6VOrfC+IFosXreDw9HNqC11YAMY3HlfHjNzuaA==}
+
+  '@tanstack/react-query@4.29.14':
+    resolution: {integrity: sha512-wh4bd/QIy85YgTDBtj/7/9ZkpRX41QdZuUL8xKoSzuMCukXvAE1/oJ4p0F15lqQq9W3g2pgcbr2Aa+CNvqABhg==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+      react-native: '*'
+    peerDependenciesMeta:
+      react-dom:
+        optional: true
+      react-native:
+        optional: true
 
   '@tanstack/react-query@5.71.5':
     resolution: {integrity: sha512-WpxZWy4fDASjY+iAaXB+aY+LC95PQ34W6EWVkjJ0hdzWWbczFnr9nHvHkVDpwdR18I1NO8igNGQJFrLrgyzI8Q==}
@@ -1986,6 +2038,23 @@ packages:
   '@tootallnate/once@2.0.0':
     resolution: {integrity: sha512-XCuKFP5PS55gnMVu3dty8KPatLqUoy/ZYzDzAGCQ8JNFCkLXzmI7vNHCR+XpbZaMWQK/vQubr7PkYq8g470J/A==}
     engines: {node: '>= 10'}
+
+  '@trpc/client@10.33.1':
+    resolution: {integrity: sha512-j1YKBl/VtjCK3nUQFacsouGpsk/DFVNiekp4sZf8Lryb6f1OIChlLJZNEipl+DUuHxsPVuaCQis4PGkrIb2ieg==}
+    peerDependencies:
+      '@trpc/server': 10.33.1
+
+  '@trpc/react-query@10.33.1':
+    resolution: {integrity: sha512-Jpdg9xOyVJ4k+0wg28CxEEU1KcUVP+nMzpPbhISWOKaP1WZTGaQxphsCwx8KEFVaRiutKGBxhC24D+WhX7tMpA==}
+    peerDependencies:
+      '@tanstack/react-query': ^4.18.0
+      '@trpc/client': 10.33.1
+      '@trpc/server': 10.33.1
+      react: '>=16.8.0'
+      react-dom: '>=16.8.0'
+
+  '@trpc/server@10.33.1':
+    resolution: {integrity: sha512-ObMzyEALXhQ7QTVQdSJ+IL1wYB7UdLLoIhqHraYzqKb9sTTsL3+U64kK084KPsRd4b8R3yH/bzBOnCn8Hbrxkw==}
 
   '@tsconfig/recommended@1.0.8':
     resolution: {integrity: sha512-TotjFaaXveVUdsrXCdalyF6E5RyG6+7hHHQVZonQtdlk1rJZ1myDIvPUUKPhoYv+JAzThb2lQJh9+9ZfF46hsA==}
@@ -3246,6 +3315,13 @@ packages:
 
   electron-to-chromium@1.5.120:
     resolution: {integrity: sha512-oTUp3gfX1gZI+xfD2djr2rzQdHCwHzPQrrK0CD7WpTdF0nPdQ/INcRVjWgLdCT4a9W3jFObR9DAfsuyFQnI8CQ==}
+
+  electron-trpc@0.7.1:
+    resolution: {integrity: sha512-aWjZ5pLeVhrX9A9d8O8YgR8N+q4IXXzc76CJT1PwtDijIw+y5I+c75IAAtZ4JayYLeR3ll95PNGl5RTBu2qePw==}
+    peerDependencies:
+      '@trpc/client': '>10.0.0'
+      '@trpc/server': '>10.0.0'
+      electron: '>19.0.0'
 
   electron-updater@6.6.2:
     resolution: {integrity: sha512-Cr4GDOkbAUqRHP5/oeOmH/L2Bn6+FQPxVLZtPbcmKZC63a1F3uu5EefYOssgZXG3u/zBlubbJ5PJdITdMVggbw==}
@@ -8937,6 +9013,21 @@ snapshots:
     dependencies:
       '@rneui/base': 4.0.0-rc.7(react-native-safe-area-context@4.12.0(react-native@0.76.7(@babel/core@7.26.10)(@babel/preset-env@7.26.9(@babel/core@7.26.10))(@types/react@18.3.19)(encoding@0.1.13)(react@18.3.1))(react@18.3.1))(react-native-vector-icons@10.2.0)(react-native@0.76.7(@babel/core@7.26.10)(@babel/preset-env@7.26.9(@babel/core@7.26.10))(@types/react@18.3.19)(encoding@0.1.13)(react@18.3.1))(react@18.3.1)
 
+  '@rnx-kit/console@2.0.0': {}
+
+  '@rnx-kit/metro-resolver-symlinks@0.2.1':
+    dependencies:
+      '@rnx-kit/console': 2.0.0
+      '@rnx-kit/tools-node': 3.0.2
+      '@rnx-kit/tools-react-native': 2.1.0
+      enhanced-resolve: 5.18.1
+
+  '@rnx-kit/tools-node@3.0.2': {}
+
+  '@rnx-kit/tools-react-native@2.1.0':
+    dependencies:
+      '@rnx-kit/tools-node': 3.0.2
+
   '@rollup/rollup-android-arm-eabi@4.36.0':
     optional: true
 
@@ -9036,7 +9127,18 @@ snapshots:
     dependencies:
       defer-to-connect: 2.0.1
 
+  '@tanstack/query-core@4.29.14': {}
+
   '@tanstack/query-core@5.71.5': {}
+
+  '@tanstack/react-query@4.29.14(react-dom@18.3.1(react@18.3.1))(react-native@0.76.7(@babel/core@7.26.10)(@babel/preset-env@7.26.9(@babel/core@7.26.10))(@types/react@18.3.19)(encoding@0.1.13)(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      '@tanstack/query-core': 4.29.14
+      react: 18.3.1
+      use-sync-external-store: 1.4.0(react@18.3.1)
+    optionalDependencies:
+      react-dom: 18.3.1(react@18.3.1)
+      react-native: 0.76.7(@babel/core@7.26.10)(@babel/preset-env@7.26.9(@babel/core@7.26.10))(@types/react@18.3.19)(encoding@0.1.13)(react@18.3.1)
 
   '@tanstack/react-query@5.71.5(react@18.3.1)':
     dependencies:
@@ -9066,6 +9168,20 @@ snapshots:
       jest: 29.7.0(@types/node@22.14.0)
 
   '@tootallnate/once@2.0.0': {}
+
+  '@trpc/client@10.33.1(@trpc/server@10.33.1)':
+    dependencies:
+      '@trpc/server': 10.33.1
+
+  '@trpc/react-query@10.33.1(@tanstack/react-query@4.29.14(react-dom@18.3.1(react@18.3.1))(react-native@0.76.7(@babel/core@7.26.10)(@babel/preset-env@7.26.9(@babel/core@7.26.10))(@types/react@18.3.19)(encoding@0.1.13)(react@18.3.1))(react@18.3.1))(@trpc/client@10.33.1(@trpc/server@10.33.1))(@trpc/server@10.33.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      '@tanstack/react-query': 4.29.14(react-dom@18.3.1(react@18.3.1))(react-native@0.76.7(@babel/core@7.26.10)(@babel/preset-env@7.26.9(@babel/core@7.26.10))(@types/react@18.3.19)(encoding@0.1.13)(react@18.3.1))(react@18.3.1)
+      '@trpc/client': 10.33.1(@trpc/server@10.33.1)
+      '@trpc/server': 10.33.1
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+
+  '@trpc/server@10.33.1': {}
 
   '@tsconfig/recommended@1.0.8': {}
 
@@ -10667,6 +10783,15 @@ snapshots:
       - supports-color
 
   electron-to-chromium@1.5.120: {}
+
+  electron-trpc@0.7.1(@trpc/client@10.33.1(@trpc/server@10.33.1))(@trpc/server@10.33.1)(electron@35.1.2):
+    dependencies:
+      '@trpc/client': 10.33.1(@trpc/server@10.33.1)
+      '@trpc/server': 10.33.1
+      debug: 4.4.0
+      electron: 35.1.2
+    transitivePeerDependencies:
+      - supports-color
 
   electron-updater@6.6.2:
     dependencies:
