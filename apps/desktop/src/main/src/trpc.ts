@@ -1,4 +1,8 @@
-import { RegisterLocalSchema, UdpSocketClient, vanillaRoomStore } from '@mono/assist-api'
+import {
+  RegisterLocalSchema,
+  UdpSocketClient,
+  vanillaRoomStore
+} from '@mono/assist-api'
 import { initTRPC } from '@trpc/server'
 import { createIPCHandler } from 'electron-trpc/main'
 import { NodeSocketAdapter } from './udp-client.adapter'
@@ -10,6 +14,7 @@ const t = initTRPC.create({ isServer: true })
 
 const trpcRouter = t.router({
   public: t.router({
+    isAuthenticated: t.procedure.query<boolean>(() => true),
     register: t.procedure.input(RegisterLocalSchema).mutation(() => {})
   }),
   protected: t.router({
@@ -24,20 +29,28 @@ const trpcRouter = t.router({
       await client.init()
     }),
     sendDiscovery: t.procedure.mutation(room.sendDiscovery),
-    addToListeningTo: t.procedure.input(z.object({ appId: z.string().uuid() })).mutation((req) => {
-      room.addToListeningTo(req.input.appId)
-    }),
-    deleteListeningTo: t.procedure.input(z.object({ appId: z.string().uuid() })).mutation((req) => {
-      room.deleteListeningTo(req.input.appId)
-    }),
+    addToListeningTo: t.procedure
+      .input(z.object({ appId: z.string().uuid() }))
+      .mutation((req) => {
+        room.addToListeningTo(req.input.appId)
+      }),
+    deleteListeningTo: t.procedure
+      .input(z.object({ appId: z.string().uuid() }))
+      .mutation((req) => {
+        room.deleteListeningTo(req.input.appId)
+      }),
     requestHelp: t.procedure.mutation(room.requestHelp),
-    respondToHelp: t.procedure.input(z.object({ appId: z.string().uuid() })).mutation((req) => {
-      room.respondToHelp(req.input.appId)
-    }),
+    respondToHelp: t.procedure
+      .input(z.object({ appId: z.string().uuid() }))
+      .mutation((req) => {
+        room.respondToHelp(req.input.appId)
+      }),
     // App actions
-    updateLocalName: t.procedure.input(RegisterLocalSchema).mutation(async (req) => {
-      await LocalConfigStore.getState().updateCurrentName(req.input.name)
-    })
+    updateLocalName: t.procedure
+      .input(RegisterLocalSchema)
+      .mutation(async (req) => {
+        await LocalConfigStore.getState().updateCurrentName(req.input.name)
+      })
   })
 })
 
@@ -45,4 +58,5 @@ export type IMainWindowRouter = typeof trpcRouter
 
 export const attachTRPCHandlers = (
   win: Electron.BrowserWindow
-): ReturnType<typeof createIPCHandler> => createIPCHandler({ router: trpcRouter, windows: [win] })
+): ReturnType<typeof createIPCHandler> =>
+  createIPCHandler({ router: trpcRouter, windows: [win] })

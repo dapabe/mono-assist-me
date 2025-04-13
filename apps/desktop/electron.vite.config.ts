@@ -25,8 +25,13 @@ export default defineConfig(() => {
           autoCodeSplitting: true,
           quoteStyle: 'single',
           routeFileIgnorePrefix: '-',
-          routesDirectory: './src/renderer/src/routes',
-          generatedRouteTree: './src/renderer/src/routeTree.gen.ts'
+          routesDirectory: path.resolve('src', 'renderer', 'src', 'routes'),
+          generatedRouteTree: path.resolve(
+            'src',
+            'renderer',
+            'src',
+            'routeTree.gen.ts'
+          )
         }),
         react()
       ]

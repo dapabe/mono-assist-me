@@ -39,8 +39,10 @@ const options = {
   mac: {
     entitlementsInherit: 'build/entitlements.mac.plist',
     extendInfo: {
-      NSCameraUsageDescription: "Application requests access to the device's camera.",
-      NSMicrophoneUsageDescription: "Application requests access to the device's microphone.",
+      NSCameraUsageDescription:
+        "Application requests access to the device's camera.",
+      NSMicrophoneUsageDescription:
+        "Application requests access to the device's microphone.",
       NSDocumentsFolderUsageDescription:
         "Application requests access to the user's Documents folder.",
       NSDownloadsFolderUsageDescription:

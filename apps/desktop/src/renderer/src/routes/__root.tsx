@@ -1,18 +1,8 @@
-import { createRootRoute, Outlet } from '@tanstack/react-router'
-import { ReactNode } from 'react'
+import { ILocalAuthContext } from '@renderer/providers/LocalAuth.provider'
+import { createRootRouteWithContext, Outlet } from '@tanstack/react-router'
 
-export const Route = createRootRoute({
-  component: Component
+export const Route = createRootRouteWithContext<{
+  localAuth: ILocalAuthContext
+}>()({
+  component: Outlet
 })
-
-function Component(): ReactNode {
-  // const IPCRequestHelp = trpcReact.requestHelp.useQuery()
-
-  // const IPCSendDiscovery = trpcReact.sendDiscovery.useQuery()
-
-  return (
-    <>
-      <Outlet />
-    </>
-  )
-}
