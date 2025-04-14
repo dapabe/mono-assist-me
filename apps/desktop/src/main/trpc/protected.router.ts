@@ -1,0 +1,52 @@
+import {
+  ILocalData,
+  RegisterLocalSchema,
+  UdpSocketClient,
+  vanillaRoomStore
+} from '@mono/assist-api'
+import { z } from 'zod'
+import { LocalConfigStore } from '../src/services/LocalConfig.store'
+import { NodeSocketAdapter } from '../src/udp-client.adapter'
+import { tInstance } from './trpc'
+
+const room = vanillaRoomStore.getState()
+
+export const ProtectedTrpcRouter = tInstance.router({
+  // App actions
+  getLocalData: tInstance.procedure.query<ILocalData>(async () => {
+    return await LocalConfigStore.getState().getLocalData()
+  }),
+  updateLocalName: tInstance.procedure
+    .input(RegisterLocalSchema)
+    .mutation(async (req) => {
+      await LocalConfigStore.getState().updateCurrentName(req.input.name)
+    }),
+
+  // Room actions
+  initialize: tInstance.procedure.mutation(async () => {
+    const client = new UdpSocketClient({
+      adapter: new NodeSocketAdapter(),
+      store: room,
+      address: '0.0.0.0',
+      port: UdpSocketClient.DISCOVERY_PORT
+    })
+    await client.init()
+  }),
+  sendDiscovery: tInstance.procedure.mutation(room.sendDiscovery),
+  addToListeningTo: tInstance.procedure
+    .input(z.object({ appId: z.string().uuid() }))
+    .mutation((req) => {
+      room.addToListeningTo(req.input.appId)
+    }),
+  deleteListeningTo: tInstance.procedure
+    .input(z.object({ appId: z.string().uuid() }))
+    .mutation((req) => {
+      room.deleteListeningTo(req.input.appId)
+    }),
+  requestHelp: tInstance.procedure.mutation(room.requestHelp),
+  respondToHelp: tInstance.procedure
+    .input(z.object({ appId: z.string().uuid() }))
+    .mutation((req) => {
+      room.respondToHelp(req.input.appId)
+    })
+})

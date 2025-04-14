@@ -6,49 +6,48 @@ import {
   UUID,
   vanillaRoomStore
 } from '@mono/assist-api'
-import { createStore } from 'zustand/vanilla'
+import { app } from 'electron'
 import fs, { constants } from 'node:fs/promises'
 import path from 'node:path'
-import { app } from 'electron'
-import { ZodError } from 'zod'
+import { isZodErrorLike } from 'zod-validation-error'
+import { createStore } from 'zustand/vanilla'
 
 const room = vanillaRoomStore.getState()
-const localPath = path.join(app.getAppPath(), 'local-user.json')
+const localPath = path.join(app.getPath('userData'), 'local-user.json')
 
 type ILocalConfigStore = {
+  isAuthenticated: () => Promise<boolean>
   getLocalData: () => Promise<ILocalData>
+  registerLocalData: (data: ILocalData) => Promise<void>
   updateCurrentName: (name: string) => Promise<void>
   updateCurrentAppId: (appId: UUID) => Promise<void>
 }
 
-export const LocalConfigStore = createStore<ILocalConfigStore>((set, get) => ({
+export const LocalConfigStore = createStore<ILocalConfigStore>((_, get) => ({
+  isAuthenticated: async (): Promise<boolean> => {
+    return await fs
+      .access(localPath, constants.R_OK)
+      .then(() => true)
+      .catch(() => false)
+  },
   getLocalData: async (): Promise<ILocalData> => {
-    const rewriteLocalData = (): Promise<void> =>
-      fs.writeFile(
-        localPath,
-        JSON.stringify(LocalDataSchema.parse({})),
-        'utf-8'
-      )
     try {
       await fs.access(localPath, constants.R_OK)
       const file = await fs.readFile(localPath, 'utf-8')
-      const json = stringToJSONSchema.safeParse(file)
-      if (json.error) throw json.error
-      const parsed = LocalDataSchema.safeParse(json.data)
-      if (parsed.error) throw parsed.error
-      return parsed.data
+      const json = stringToJSONSchema.parse(file)
+      return LocalDataSchema.parse(json)
     } catch (error: any) {
-      if (error instanceof ZodError) {
-        await rewriteLocalData()
-        return await get().getLocalData()
-      } else if (error.code === 'ENOENT') {
-        await rewriteLocalData()
+      if (isZodErrorLike(error) || error.code === 'ENOENT') {
+        // await rewriteLocalData()
         return await get().getLocalData()
       } else {
         console.log(`Unexpected error: ${error}`)
+        process.exit(1)
       }
     }
-    throw new Error()
+  },
+  registerLocalData: async (data): Promise<void> => {
+    await fs.writeFile(localPath, JSON.stringify(data), 'utf-8')
   },
   updateCurrentName: async (name): Promise<void> => {
     const data = await get().getLocalData()

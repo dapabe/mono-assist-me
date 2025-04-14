@@ -21,8 +21,8 @@ export function useLocalAuth(): ILocalAuthContext {
 }
 
 export function LocalAuthProvider(props: PropsWithChildren): ReactNode {
-  const ApiRegister = trpcReact.public.register.useMutation()
-  const ApiAuthenticated = trpcReact.public.isAuthenticated.useQuery()
+  const ApiRegister = trpcReact.PUBLIC.register.useMutation()
+  const ApiAuthenticated = trpcReact.PUBLIC.isAuthenticated.useQuery()
 
   const register = async (name: string): Promise<void> => {
     await ApiRegister.mutateAsync({ name })

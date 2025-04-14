@@ -6,13 +6,15 @@ import { ReactNode } from 'react'
 import { useForm } from 'react-hook-form'
 import { Button, Form, Input, Label, Spinner, XStack } from 'tamagui'
 
-export function UpdateNameForm(
-  props: IFormProps<IRegisterLocalSchema>
-): ReactNode {
-  const ApiUpdateName = trpcReact.protected.updateLocalName.useMutation()
+export function UpdateNameForm({
+  values,
+  isLoading,
+  laodErrors
+}: IFormProps<IRegisterLocalSchema>): ReactNode {
+  const ApiUpdateName = trpcReact.PROTECTED.updateLocalName.useMutation()
 
   const form = useForm<IRegisterLocalSchema>({
-    defaultValues: { name: props.values.name },
+    defaultValues: { name: values.name },
     resolver: zodResolver(RegisterLocalSchema)
   })
 
@@ -21,19 +23,25 @@ export function UpdateNameForm(
     // await ApiUpdateName.mutateAsync({ name: '' })
   }
 
+  if (isLoading && !laodErrors?.name) return <Spinner />
+
   return (
     <Form onSubmit={handleSubmit}>
       <XStack items={'center'}>
         <Label htmlFor="name">Nombre actual</Label>
         <Input
           {...form.register('name')}
-          disabled={ApiUpdateName.isLoading}
+          disabled={ApiUpdateName.isLoading || laodErrors?.name}
           flex={1}
           id="name"
+          placeholder={laodErrors?.name ? 'name error on load' : undefined}
         />
       </XStack>
 
-      <Form.Trigger asChild disabled={ApiUpdateName.isLoading}>
+      <Form.Trigger
+        asChild
+        disabled={ApiUpdateName.isLoading || laodErrors?.name}
+      >
         <Button icon={ApiUpdateName.isLoading ? <Spinner /> : undefined}>
           Actualizar
         </Button>
