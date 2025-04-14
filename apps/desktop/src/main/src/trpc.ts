@@ -1,13 +1,14 @@
 import {
+  ILocalData,
   RegisterLocalSchema,
   UdpSocketClient,
   vanillaRoomStore
 } from '@mono/assist-api'
 import { initTRPC } from '@trpc/server'
 import { createIPCHandler } from 'electron-trpc/main'
-import { NodeSocketAdapter } from './udp-client.adapter'
 import { z } from 'zod'
 import { LocalConfigStore } from './services/LocalConfig.store'
+import { NodeSocketAdapter } from './udp-client.adapter'
 
 const room = vanillaRoomStore.getState()
 const t = initTRPC.create({ isServer: true })
@@ -18,6 +19,16 @@ const trpcRouter = t.router({
     register: t.procedure.input(RegisterLocalSchema).mutation(() => {})
   }),
   protected: t.router({
+    // App actions
+    getLocalData: t.procedure.query<ILocalData>(async () => {
+      return await LocalConfigStore.getState().getLocalData()
+    }),
+    updateLocalName: t.procedure
+      .input(RegisterLocalSchema)
+      .mutation(async (req) => {
+        await LocalConfigStore.getState().updateCurrentName(req.input.name)
+      }),
+
     // Room actions
     initialize: t.procedure.mutation(async () => {
       const client = new UdpSocketClient({
@@ -44,12 +55,6 @@ const trpcRouter = t.router({
       .input(z.object({ appId: z.string().uuid() }))
       .mutation((req) => {
         room.respondToHelp(req.input.appId)
-      }),
-    // App actions
-    updateLocalName: t.procedure
-      .input(RegisterLocalSchema)
-      .mutation(async (req) => {
-        await LocalConfigStore.getState().updateCurrentName(req.input.name)
       })
   })
 })

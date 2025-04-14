@@ -1,6 +1,7 @@
-import * as path from 'node:path'
-import { defineConfig, externalizeDepsPlugin } from 'electron-vite'
+import { tamaguiPlugin } from '@tamagui/vite-plugin'
 import react from '@vitejs/plugin-react'
+import { defineConfig, externalizeDepsPlugin } from 'electron-vite'
+import * as path from 'node:path'
 //@ts-ignore The source is on the root node_modules
 import { TanStackRouterVite } from '@tanstack/router-plugin/vite'
 
@@ -33,7 +34,12 @@ export default defineConfig(() => {
             'routeTree.gen.ts'
           )
         }),
-        react()
+        react(),
+        tamaguiPlugin({
+          config: path.resolve('src', 'renderer', 'src', 'tamagui.config.ts'),
+          components: ['tamagui'],
+          optimize: true
+        })
       ]
     }
   }

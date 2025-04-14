@@ -21,21 +21,21 @@ export function useLocalAuth(): ILocalAuthContext {
 }
 
 export function LocalAuthProvider(props: PropsWithChildren): ReactNode {
-  const trpcRegister = trpcReact.public.register.useMutation()
-  const trpcAuthenticated = trpcReact.public.isAuthenticated.useQuery()
+  const ApiRegister = trpcReact.public.register.useMutation()
+  const ApiAuthenticated = trpcReact.public.isAuthenticated.useQuery()
 
   const register = async (name: string): Promise<void> => {
-    await trpcRegister.mutateAsync({ name })
+    await ApiRegister.mutateAsync({ name })
   }
 
   const values = useMemo<ILocalAuthContext>(
     () => ({
-      isAuthenticated: !!trpcAuthenticated.data,
+      isAuthenticated: !!ApiAuthenticated.data,
       register
     }),
-    [register, trpcAuthenticated.isLoading]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [ApiAuthenticated.data]
   )
-  console.log({ values })
   return (
     <LocalAuthContext.Provider value={values}>
       {props.children}

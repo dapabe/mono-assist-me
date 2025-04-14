@@ -23,7 +23,10 @@
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.1",
     "@electron-toolkit/utils": "^4.0.0",
+    "@hookform/resolvers": "5.0.1",
     "@mono/assist-api": "workspace:*",
+    "@tamagui/config": "1.125.34",
+    "@tamagui/vite-plugin": "1.125.34",
     "@tanstack/react-query": "4.29.14",
     "@tanstack/react-router": "1.115.3",
     "@trpc/client": "10.33.1",
@@ -31,6 +34,8 @@
     "@trpc/server": "10.33.1",
     "electron-trpc": "0.7.1",
     "electron-updater": "^6.3.9",
+    "react-hook-form": "7.55.0",
+    "tamagui": "1.125.34",
     "zustand": "5.0.3"
   },
   "devDependencies": {
