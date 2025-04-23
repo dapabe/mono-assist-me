@@ -34,7 +34,7 @@ declare module '@tanstack/react-router' {
 function ContextRouter(): ReactNode {
   const localAuth = useLocalAuth()
   return (
-    <TamaguiProvider config={TamaguiConfig} defaultTheme="dark">
+    <TamaguiProvider config={TamaguiConfig} defaultTheme="light">
       <RouterProvider router={router} context={{ localAuth }} />
     </TamaguiProvider>
   )
