@@ -1,12 +1,12 @@
-import { z } from "zod";
+import { z18n } from './zod-i18n';
 
-export const NonEmptyStringSchema = z.string().trim().min(1);
+export const NonEmptyStringSchema = z18n.string().trim().min(1);
 
-export const stringToJSONSchema = z.string().transform((str, ctx) => {
-	try {
-		return JSON.parse(str);
-	} catch (e) {
-		ctx.addIssue({ code: "custom", message: "Invalid JSON" });
-		return z.NEVER;
-	}
+export const stringToJSONSchema = z18n.string().transform((str, ctx) => {
+  try {
+    return JSON.parse(str);
+  } catch (e) {
+    ctx.addIssue({ code: 'custom', message: 'Invalid JSON' });
+    return z18n.NEVER;
+  }
 });

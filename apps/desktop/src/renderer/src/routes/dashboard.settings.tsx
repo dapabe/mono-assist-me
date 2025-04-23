@@ -10,12 +10,11 @@ export const Route = createFileRoute('/dashboard/settings')({
 
 function RouteComponent(): ReactNode {
   const ApiLocalData = trpcReact.PROTECTED.getLocalData.useQuery()
-
   return (
-    <YStack fullscreen>
+    <YStack fullscreen p={'$4'}>
       <UpdateNameForm
         isLoading={ApiLocalData.isLoading}
-        laodErrors={{ name: !!ApiLocalData.error }}
+        loadErrors={{ name: !!ApiLocalData.error }}
         values={{
           name: ApiLocalData.data?.currentName ?? ''
         }}

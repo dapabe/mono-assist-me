@@ -25,10 +25,16 @@ type ILocalConfigStore = {
 
 export const LocalConfigStore = createStore<ILocalConfigStore>((_, get) => ({
   isAuthenticated: async (): Promise<boolean> => {
-    return await fs
-      .access(localPath, constants.R_OK)
-      .then(() => true)
-      .catch(() => false)
+    try {
+      await fs.access(localPath, constants.R_OK)
+      const f = await fs.readFile(localPath, 'utf-8')
+      const json = stringToJSONSchema.parse(f)
+      LocalDataSchema.parse(json)
+      return true
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (_) {
+      return false
+    }
   },
   getLocalData: async (): Promise<ILocalData> => {
     try {

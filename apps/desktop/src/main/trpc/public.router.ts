@@ -3,9 +3,9 @@ import { LocalConfigStore } from '../src/services/LocalConfig.store'
 import { tInstance } from './trpc'
 
 export const PublicTrpcRouter = tInstance.router({
-  isAuthenticated: tInstance.procedure.query<boolean>(
-    LocalConfigStore.getState().isAuthenticated
-  ),
+  isAuthenticated: tInstance.procedure.query<boolean>(async () => {
+    return await LocalConfigStore.getState().isAuthenticated()
+  }),
   register: tInstance.procedure
     .input(RegisterLocalSchema)
     .mutation(async (opts) => {

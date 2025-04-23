@@ -1,7 +1,9 @@
 import { z } from 'zod';
 import { UdpSocketClient } from '../udp-client/UDPClient';
+
 import { RegisterLocalSchema } from './RegisterLocal.schema';
 import { NonEmptyStringSchema } from './utils.schema';
+import { z18n } from './zod-i18n';
 
 /**
  * @description
@@ -40,51 +42,51 @@ export type IRoomEventLiteral = (typeof RoomEventLiteral)[keyof typeof RoomEvent
 /**
  * 	This union is parsed at runtime to be used on device communication
  */
-export const RoomEventSchema = z.union([
-  z.object({
-    event: z.literal(RoomEventLiteral.LookingForDevices),
+export const RoomEventSchema = z18n.union([
+  z18n.object({
+    event: z18n.literal(RoomEventLiteral.LookingForDevices),
   }),
-  z.object({
-    event: z.literal(RoomEventLiteral.RespondToAdvertise),
+  z18n.object({
+    event: z18n.literal(RoomEventLiteral.RespondToAdvertise),
     appId: NonEmptyStringSchema,
     callerName: RegisterLocalSchema.shape.name,
     device: NonEmptyStringSchema,
   }),
-  z.object({
-    event: z.literal(RoomEventLiteral.BroadcastStop),
+  z18n.object({
+    event: z18n.literal(RoomEventLiteral.BroadcastStop),
     appId: NonEmptyStringSchema,
   }),
-  z.object({
-    event: z.literal(RoomEventLiteral.Listening),
+  z18n.object({
+    event: z18n.literal(RoomEventLiteral.Listening),
     appId: NonEmptyStringSchema,
     responderName: RegisterLocalSchema.shape.name,
   }),
-  z.object({
-    event: z.literal(RoomEventLiteral.NotListening),
+  z18n.object({
+    event: z18n.literal(RoomEventLiteral.NotListening),
     appId: NonEmptyStringSchema,
   }),
-  z.object({
-    event: z.literal(RoomEventLiteral.RequestHelp),
+  z18n.object({
+    event: z18n.literal(RoomEventLiteral.RequestHelp),
     appId: NonEmptyStringSchema,
     callerName: RegisterLocalSchema.shape.name,
   }),
-  z.object({
-    event: z.literal(RoomEventLiteral.RequestStop),
+  z18n.object({
+    event: z18n.literal(RoomEventLiteral.RequestStop),
     appId: NonEmptyStringSchema,
   }),
-  z.object({
-    event: z.literal(RoomEventLiteral.RespondToHelp),
-    responderName: z.nullable(RegisterLocalSchema.shape.name), // "null" needed to reset incoming responder,
+  z18n.object({
+    event: z18n.literal(RoomEventLiteral.RespondToHelp),
+    responderName: z18n.nullable(RegisterLocalSchema.shape.name), // "null" needed to reset incoming responder,
   }),
-  z.object({
-    event: z.literal(RoomEventLiteral.Invalid),
+  z18n.object({
+    event: z18n.literal(RoomEventLiteral.Invalid),
     message: NonEmptyStringSchema,
   }),
-  z.object({
-    event: z.literal(RoomEventLiteral.AnnieAreYouOkay),
+  z18n.object({
+    event: z18n.literal(RoomEventLiteral.AnnieAreYouOkay),
   }),
-  z.object({
-    event: z.literal(RoomEventLiteral.ImOkay),
+  z18n.object({
+    event: z18n.literal(RoomEventLiteral.ImOkay),
     appId: NonEmptyStringSchema,
   }),
 ]);

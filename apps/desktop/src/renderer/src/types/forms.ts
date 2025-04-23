@@ -6,5 +6,5 @@ export type IFormProps<FormSchema> = {
   /** Wheter outside values are being loaded */
   isLoading?: boolean | Record<keyof FormSchema, boolean>
   /** Wether has loaded with errors */
-  laodErrors?: Record<keyof FormSchema, boolean>
+  loadErrors?: Record<keyof FormSchema, boolean>
 }

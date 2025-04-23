@@ -3,8 +3,8 @@ import { IRegisterLocalSchema, RegisterLocalSchema } from '@mono/assist-api'
 import { trpcReact } from '@renderer/services/trpc'
 import { createFileRoute, redirect } from '@tanstack/react-router'
 import { ReactNode } from 'react'
-import { useForm } from 'react-hook-form'
-import { Button, Form, Input, Label, XStack, YStack } from 'tamagui'
+import { Button, Label, Spinner, XStack, YStack } from 'tamagui'
+import { createForm } from './-components/form'
 
 export const Route = createFileRoute('/')({
   beforeLoad: (opts) => {
@@ -15,32 +15,34 @@ export const Route = createFileRoute('/')({
   component: Component
 })
 
+const Form = createForm<IRegisterLocalSchema>()
+
 function Component(): ReactNode {
   const ApiRegister = trpcReact.PUBLIC.register.useMutation()
+  const nav = Route.useNavigate()
 
-  const form = useForm<IRegisterLocalSchema>({
-    defaultValues: { name: '' },
-    resolver: zodResolver(RegisterLocalSchema)
-  })
-
-  const handleSubmit = async (): Promise<void> => {
-    await ApiRegister.mutateAsync(form.getValues())
+  const handleSubmit = async (values: IRegisterLocalSchema): Promise<void> => {
+    ApiRegister.mutateAsync(values)
+    await nav({ to: '/dashboard' })
+    // await ApiRegister.mutateAsync(form.getValues())
   }
 
   return (
     <YStack>
-      <Form onSubmit={handleSubmit}>
+      <Form
+        defaultValues={{ name: '' }}
+        resolver={zodResolver(RegisterLocalSchema)}
+        onSubmit={handleSubmit}
+      >
         <XStack items={'center'}>
           <Label htmlFor="name">Nombre con el que otros te veran</Label>
-          <Input
-            {...form.register('name')}
-            disabled={form.formState.isLoading}
-            flex={1}
-            id="name"
-          />
+          <Form.Input id="name" name="name" flex={1} />
         </XStack>
+        <Form.Error name="name" />
         <Form.Trigger asChild>
-          <Button>Guardar</Button>
+          <Button icon={ApiRegister.isLoading ? <Spinner /> : undefined}>
+            Guardar
+          </Button>
         </Form.Trigger>
       </Form>
     </YStack>

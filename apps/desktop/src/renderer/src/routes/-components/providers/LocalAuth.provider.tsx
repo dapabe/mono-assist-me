@@ -34,8 +34,13 @@ export function LocalAuthProvider(props: PropsWithChildren): ReactNode {
       register
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [ApiAuthenticated.data]
+    [ApiAuthenticated]
   )
+
+  if (ApiAuthenticated.isError || ApiAuthenticated.isLoading) {
+    return null
+  }
+
   return (
     <LocalAuthContext.Provider value={values}>
       {props.children}
