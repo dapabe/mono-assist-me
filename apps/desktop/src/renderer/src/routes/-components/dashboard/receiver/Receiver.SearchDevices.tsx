@@ -1,14 +1,13 @@
+import { trpcReact } from '@renderer/services/trpc'
 import { Radio, UserPlus } from '@tamagui/lucide-icons'
 import { ReactNode } from 'react'
 import { Button, ListItem, SizableText, YGroup, YStack } from 'tamagui'
 
 export function ReceiverSearchDevices(): ReactNode {
-  const handleSearchDevices = (): void => {
-    // toggleRefresh();
-    // ctx.sendDiscovery();
-    // toggleRefresh();
-  }
-
+  const sendDiscovery = trpcReact.PROTECTED.sendDiscovery.useMutation()
+  const addToListeningTo = trpcReact.PROTECTED.addToListeningTo.useMutation()
+  const roomsToDiscover = trpcReact.PROTECTED.getRoomsToDiscover.useQuery()
+  console.log(roomsToDiscover.data)
   return (
     <YStack items="center">
       <Button
@@ -19,12 +18,12 @@ export function ReceiverSearchDevices(): ReactNode {
         // iconPosition="top"
 
         icon={Radio}
-        onPress={handleSearchDevices}
+        onPress={() => sendDiscovery.mutate()}
       >
         <SizableText>Detectar otros dispositivos</SizableText>
       </Button>
       <YGroup overflow="scroll" flex={1} width={'100%'}>
-        {Array.from({ length: 5 }).map((_, index) => (
+        {[].map((_, index) => (
           <YGroup.Item
             key={index}
             // padding="$4"
@@ -33,6 +32,7 @@ export function ReceiverSearchDevices(): ReactNode {
               hoverTheme
               pressTheme
               icon={UserPlus}
+              onPress={() => addToListeningTo.mutate({ appId: '' })}
               title="Nombre del dispositivo"
               subTitle="Marca"
             />

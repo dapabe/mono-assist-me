@@ -1,10 +1,13 @@
 import {
   ILocalData,
+  IWSRoom,
+  IWSRoomListener,
   RegisterLocalSchema,
   UdpSocketClient,
-  vanillaRoomStore
+  UUID,
+  vanillaRoomStore,
+  z18n
 } from '@mono/assist-api'
-import { z } from 'zod'
 import { LocalConfigStore } from '../src/services/LocalConfig.store'
 import { NodeSocketAdapter } from '../src/udp-client.adapter'
 import { tInstance } from './trpc'
@@ -33,19 +36,25 @@ export const ProtectedTrpcRouter = tInstance.router({
     await client.init()
   }),
   sendDiscovery: tInstance.procedure.mutation(room.sendDiscovery),
+  getRoomsToDiscover: tInstance.procedure.query<Map<UUID, IWSRoom>>(
+    () => room.roomsToDiscover
+  ),
+  getRoomsListeningTo: tInstance.procedure.query<Map<UUID, IWSRoomListener>>(
+    () => room.roomsListeningTo
+  ),
   addToListeningTo: tInstance.procedure
-    .input(z.object({ appId: z.string().uuid() }))
+    .input(z18n.object({ appId: z18n.string().uuid() }))
     .mutation((req) => {
       room.addToListeningTo(req.input.appId)
     }),
   deleteListeningTo: tInstance.procedure
-    .input(z.object({ appId: z.string().uuid() }))
+    .input(z18n.object({ appId: z18n.string().uuid() }))
     .mutation((req) => {
       room.deleteListeningTo(req.input.appId)
     }),
   requestHelp: tInstance.procedure.mutation(room.requestHelp),
   respondToHelp: tInstance.procedure
-    .input(z.object({ appId: z.string().uuid() }))
+    .input(z18n.object({ appId: z18n.string().uuid() }))
     .mutation((req) => {
       room.respondToHelp(req.input.appId)
     })

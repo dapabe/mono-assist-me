@@ -8,13 +8,17 @@ export function DashboardLayout(props: PropsWithChildren): ReactNode {
     <YStack>
       <XGroup justify={'center'}>
         <XGroup.Item>
-          <Button width={'33%'} onPress={() => nav({ to: '/dashboard' })}>
+          <Button
+            width={'34%'}
+            rounded={0}
+            onPress={() => nav({ to: '/dashboard' })}
+          >
             Llamar
           </Button>
         </XGroup.Item>
         <XGroup.Item>
           <Button
-            width={'33%'}
+            width={'32%'}
             onPress={() => nav({ to: '/dashboard/receiver' })}
           >
             Listas
@@ -24,7 +28,9 @@ export function DashboardLayout(props: PropsWithChildren): ReactNode {
         </XGroup.Item>
         <XGroup.Item>
           <Button
-            width={'33%'}
+            width={'34%'}
+            radiused={true}
+            rounded={0}
             onPress={() => nav({ to: '/dashboard/settings' })}
           >
             Configuración
