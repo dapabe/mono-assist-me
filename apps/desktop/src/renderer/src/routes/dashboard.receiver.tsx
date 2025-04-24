@@ -2,6 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { ReactNode } from 'react'
 import { SizableText, Tabs } from 'tamagui'
 import { ReceiverSearchDevices } from './-components/dashboard/receiver/Receiver.SearchDevices'
+import { ReceiverSelectedDevices } from './-components/dashboard/receiver/Receiver.SelectedDevices'
 
 export const Route = createFileRoute('/dashboard/receiver')({
   component: Component
@@ -46,7 +47,7 @@ function Component(): ReactNode {
       </Tabs.List>
 
       <Tabs.Content value="1" flex={1}>
-        asdasdasd
+        <ReceiverSelectedDevices />
       </Tabs.Content>
       <Tabs.Content value="2" flex={1}>
         <ReceiverSearchDevices />

@@ -1,10 +1,22 @@
+import { UserMinus } from '@tamagui/lucide-icons'
 import { ReactNode } from 'react'
-import { Text, View } from 'react-native'
+import { Button, ListItem, Separator, YGroup } from 'tamagui'
 
 export function ReceiverSelectedDevices(): ReactNode {
   return (
-    <View>
-      <Text>Receiver.SelectedDevices</Text>
-    </View>
+    <YGroup>
+      <Separator />
+      {Array.from({ length: 10 }, (_, i) => (
+        <YGroup.Item key={i}>
+          <ListItem
+            iconAfter={(x) => (
+              <Button icon={UserMinus} scaleIcon={3} {...x}></Button>
+            )}
+            title="Emisor"
+            subTitle="Emisor de prueba"
+          />
+        </YGroup.Item>
+      ))}
+    </YGroup>
   )
 }

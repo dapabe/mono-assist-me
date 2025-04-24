@@ -1,27 +1,37 @@
-import { Link } from '@tanstack/react-router'
+import { useNavigate } from '@tanstack/react-router'
 import { PropsWithChildren, ReactNode } from 'react'
-import { Group, YStack } from 'tamagui'
+import { Button, XGroup, YStack } from 'tamagui'
 
 export function DashboardLayout(props: PropsWithChildren): ReactNode {
+  const nav = useNavigate()
   return (
-    <>
-      <Group
-        orientation="horizontal"
-        //  justify={'space-around'}
-        //   gap={'$2'}
-        //    paddingBlock={'$4'}
-      >
-        <Group.Item>
-          <Link to="/dashboard">Llamar</Link>
-        </Group.Item>
-        <Group.Item>
-          <Link to="/dashboard/receiver">Listas</Link>
-        </Group.Item>
-        <Group.Item>
-          <Link to="/dashboard/settings">Configuración</Link>
-        </Group.Item>
-      </Group>
-      <YStack>{props.children}</YStack>
-    </>
+    <YStack>
+      <XGroup justify={'center'}>
+        <XGroup.Item>
+          <Button width={'33%'} onPress={() => nav({ to: '/dashboard' })}>
+            Llamar
+          </Button>
+        </XGroup.Item>
+        <XGroup.Item>
+          <Button
+            width={'33%'}
+            onPress={() => nav({ to: '/dashboard/receiver' })}
+          >
+            Listas
+          </Button>
+
+          {/* <Link to="/dashboard/receiver">Listas</Link> */}
+        </XGroup.Item>
+        <XGroup.Item>
+          <Button
+            width={'33%'}
+            onPress={() => nav({ to: '/dashboard/settings' })}
+          >
+            Configuración
+          </Button>
+        </XGroup.Item>
+      </XGroup>
+      <YStack flex={1}>{props.children}</YStack>
+    </YStack>
   )
 }

@@ -1,6 +1,6 @@
-import Versions from '@renderer/routes/-components/Versions'
 import { createFileRoute } from '@tanstack/react-router'
 import { ReactNode } from 'react'
+import { Button, SizableText, XStack, YStack } from 'tamagui'
 
 export const Route = createFileRoute('/dashboard/')({
   component: Component
@@ -8,28 +8,13 @@ export const Route = createFileRoute('/dashboard/')({
 
 function Component(): ReactNode {
   return (
-    <>
-      {/* <img alt="logo" className="logo" src={electronLogo} /> */}
-      <div className="creator">Powered by electron-vite</div>
-      <div className="text">
-        Build an Electron app with <span className="react">React</span>
-        &nbsp;and <span className="ts">TypeScript</span>
-      </div>
-      <p className="tip">
-        Please try pressing <code>F12</code> to open the devTool
-      </p>
-      <div className="actions">
-        <div className="action">
-          <a href="https://electron-vite.org/" target="_blank" rel="noreferrer">
-            Documentation
-          </a>
-        </div>
-        <div className="action">
-          {/* <button onClick={IPCRequestHelp}>Help</button>
-          <button onClick={IPCSendDiscovery.}>Discovery</button> */}
-        </div>
-      </div>
-      <Versions></Versions>
-    </>
+    <YStack justify="space-between">
+      <Button self={'center'} size="$12" rounded={100}>
+        Pedir ayuda
+      </Button>
+      <XStack self={'flex-end'}>
+        <SizableText>2</SizableText>
+      </XStack>
+    </YStack>
   )
 }
