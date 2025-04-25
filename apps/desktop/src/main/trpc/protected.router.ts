@@ -27,7 +27,7 @@ export const ProtectedTrpcRouter = tInstance.router({
         await LocalConfigStore.getState().updateCurrentName(req.input.name)
       } catch (error) {
         ErrorNotificationService.getInstance().showError(
-          'error.updateLocalName',
+          'socket.updateLocalName',
           ErrorNotificationService.getErrorMessage(error)
         )
       }
@@ -45,12 +45,21 @@ export const ProtectedTrpcRouter = tInstance.router({
       await client.init()
     } catch (error) {
       ErrorNotificationService.getInstance().showError(
-        'error.initialize',
+        'socket.initialize',
         ErrorNotificationService.getErrorMessage(error)
       )
     }
   }),
-  sendDiscovery: tInstance.procedure.mutation(room.sendDiscovery),
+  sendDiscovery: tInstance.procedure.mutation(() => {
+    try {
+      room.sendDiscovery()
+    } catch (error) {
+      ErrorNotificationService.getInstance().showError(
+        'socket.sendDiscovery',
+        ErrorNotificationService.getErrorMessage(error)
+      )
+    }
+  }),
   getRoomsToDiscover: tInstance.procedure.query<Map<UUID, IWSRoom>>(
     () => room.roomsToDiscover
   ),
@@ -60,17 +69,47 @@ export const ProtectedTrpcRouter = tInstance.router({
   addToListeningTo: tInstance.procedure
     .input(z18n.object({ appId: z18n.string().uuid() }))
     .mutation((req) => {
-      room.addToListeningTo(req.input.appId)
+      try {
+        room.addToListeningTo(req.input.appId)
+      } catch (error) {
+        ErrorNotificationService.getInstance().showError(
+          'socket.addToListeningTo',
+          ErrorNotificationService.getErrorMessage(error)
+        )
+      }
     }),
   deleteListeningTo: tInstance.procedure
     .input(z18n.object({ appId: z18n.string().uuid() }))
     .mutation((req) => {
-      room.deleteListeningTo(req.input.appId)
+      try {
+        room.deleteListeningTo(req.input.appId)
+      } catch (error) {
+        ErrorNotificationService.getInstance().showError(
+          'socket.deleteListeningTo',
+          ErrorNotificationService.getErrorMessage(error)
+        )
+      }
     }),
-  requestHelp: tInstance.procedure.mutation(room.requestHelp),
+  requestHelp: tInstance.procedure.mutation(() => {
+    try {
+      room.requestHelp()
+    } catch (error) {
+      ErrorNotificationService.getInstance().showError(
+        'socket.requestHelp',
+        ErrorNotificationService.getErrorMessage(error)
+      )
+    }
+  }),
   respondToHelp: tInstance.procedure
     .input(z18n.object({ appId: z18n.string().uuid() }))
     .mutation((req) => {
-      room.respondToHelp(req.input.appId)
+      try {
+        room.respondToHelp(req.input.appId)
+      } catch (error) {
+        ErrorNotificationService.getInstance().showError(
+          'socket.respondToHelp',
+          ErrorNotificationService.getErrorMessage(error)
+        )
+      }
     })
 })
