@@ -1,4 +1,6 @@
 export * from './constants';
+export * from './database/DatabaseAdapter';
+export * from './database/tables';
 export * from './schemas/LocalData.schema';
 export * from './schemas/RegisterLocal.schema';
 export * from './schemas/RoomEvent.schema';
