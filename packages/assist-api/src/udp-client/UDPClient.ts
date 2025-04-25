@@ -59,7 +59,8 @@ export class UdpSocketClient implements ISocketClient {
   }
 
   sendTo(port: number, address: string, data: IRoomEvent): void {
-    this.config.adapter.sendTo(port, address, Buffer.from(JSON.stringify(data)));
+    const buf = Buffer.from(JSON.stringify(data));
+    this.config.adapter.sendTo(port, address, buf);
   }
 
   private parseMessage(data: unknown, rinfo: RemoteUDPInfo): void {

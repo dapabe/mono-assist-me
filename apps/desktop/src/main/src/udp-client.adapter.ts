@@ -1,5 +1,4 @@
-import { ISocketIncomingMessage } from '@mono/assist-api'
-import { SocketAdapter } from '@mono/assist-api'
+import { ISocketIncomingMessage, SocketAdapter } from '@mono/assist-api'
 import dgram from 'node:dgram'
 
 export class NodeSocketAdapter extends SocketAdapter<dgram.Socket> {
@@ -11,7 +10,7 @@ export class NodeSocketAdapter extends SocketAdapter<dgram.Socket> {
     const sk = dgram.createSocket({ type: 'udp4' })
     sk.on('error', (err) => {
       console.log(`NodeSocket, ${err}`)
-      super.close()
+      this.close()
     })
     sk.addListener('message', parser)
     sk.bind(port, address, () => {
@@ -21,7 +20,10 @@ export class NodeSocketAdapter extends SocketAdapter<dgram.Socket> {
   }
 
   close(): void {
-    this.sk.disconnect()
-    super.close()
+    if (this.sk) {
+      this.sk.removeAllListeners()
+      this.sk.close()
+      this.sk = undefined!
+    }
   }
 }

@@ -8,6 +8,7 @@ import {
   vanillaRoomStore,
   z18n
 } from '@mono/assist-api'
+import { ErrorNotificationService } from '../src/services/ErrorNotif.service'
 import { LocalConfigStore } from '../src/services/LocalConfig.store'
 import { NodeSocketAdapter } from '../src/udp-client.adapter'
 import { tInstance } from './trpc'
@@ -22,18 +23,32 @@ export const ProtectedTrpcRouter = tInstance.router({
   updateLocalName: tInstance.procedure
     .input(RegisterLocalSchema)
     .mutation(async (req) => {
-      await LocalConfigStore.getState().updateCurrentName(req.input.name)
+      try {
+        await LocalConfigStore.getState().updateCurrentName(req.input.name)
+      } catch (error) {
+        ErrorNotificationService.getInstance().showError(
+          'error.updateLocalName',
+          ErrorNotificationService.getErrorMessage(error)
+        )
+      }
     }),
 
   // Room actions
   initialize: tInstance.procedure.mutation(async () => {
-    const client = new UdpSocketClient({
-      adapter: new NodeSocketAdapter(),
-      store: room,
-      address: '0.0.0.0',
-      port: UdpSocketClient.DISCOVERY_PORT
-    })
-    await client.init()
+    try {
+      const client = new UdpSocketClient({
+        adapter: new NodeSocketAdapter(),
+        store: room,
+        address: '0.0.0.0',
+        port: UdpSocketClient.DISCOVERY_PORT
+      })
+      await client.init()
+    } catch (error) {
+      ErrorNotificationService.getInstance().showError(
+        'error.initialize',
+        ErrorNotificationService.getErrorMessage(error)
+      )
+    }
   }),
   sendDiscovery: tInstance.procedure.mutation(room.sendDiscovery),
   getRoomsToDiscover: tInstance.procedure.query<Map<UUID, IWSRoom>>(

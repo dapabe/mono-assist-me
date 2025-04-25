@@ -1,9 +1,9 @@
 import { ElectronAPI } from '@electron-toolkit/preload'
-// import { exposeElectronTRPC } from 'electron-trpc/main'
+import type { BridgeApi } from './index'
 
 declare global {
   interface Window {
     electron: ElectronAPI
-    // api: ReturnType<typeof exposeElectronTRPC>
+    api: BridgeApi
   }
 }

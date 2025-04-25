@@ -5,6 +5,11 @@ import type { ISocketAdapter, ISocketIncomingMessage } from '../types/socket-ada
 
 export abstract class SocketAdapter<T = UdpSocket | Socket> implements ISocketAdapter {
   protected sk!: T;
+  /**
+   *  Max UDP safe packet size
+   * @link https://nodejs.org/api/dgram.html#note-about-udp-datagram-size
+   */
+  private readonly MAX_PACKET_SIZE = 576;
 
   protected afterListeningRef!: () => void;
 
@@ -17,16 +22,18 @@ export abstract class SocketAdapter<T = UdpSocket | Socket> implements ISocketAd
   }
   abstract init: (port: number, address: string, parser: ISocketIncomingMessage) => Promise<void>;
 
+  sendTo(port: number, address: string, data: Buffer<ArrayBuffer>): void {
+    if (!this.isRunning()) throw new Error('adapter.notInitialized');
+    if (data.length > this.MAX_PACKET_SIZE) throw new Error('udp.tooLarge');
+    //@ts-ignore
+    this.sk.send(data, 0, data.length, port, address);
+  }
+
   close(): void {
-    if (!this.isRunning()) throw new Error('not_running');
+    if (!this.isRunning()) throw new Error('adapter.notInitialized');
     //@ts-ignore
     this.sk.close(() => {
       this.sk = undefined!;
     });
-  }
-  sendTo(port: number, address: string, data: Buffer<ArrayBuffer>): void {
-    if (!this.isRunning()) throw new Error('not_running');
-    //@ts-ignore
-    this.sk.send(data, 0, data.length, port, address);
   }
 }
