@@ -2,28 +2,28 @@ import { createId } from '@paralleldrive/cuid2';
 import { relations } from 'drizzle-orm';
 import { int, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 
-export const previousAppIds = sqliteTable('previousAppIds', {
+export const Table_PreviousAppIds = sqliteTable('previousAppIds', {
   id: text('id')
     .$defaultFn(() => createId())
     .primaryKey(),
   createdAt: int('createdAt', { mode: 'timestamp' }).$defaultFn(() => new Date()),
 });
 
-export const localData = sqliteTable('localData', {
+export const Table_LocalData = sqliteTable('localData', {
   currentName: text('currentName').notNull(),
   currentAppId: text('currentAppId')
-    .references(() => previousAppIds.id)
+    .references(() => Table_PreviousAppIds.id)
     .notNull(),
 });
 
-export const localDataRelations = relations(localData, ({ one }) => ({
-  currentApp: one(previousAppIds, {
-    fields: [localData.currentAppId],
-    references: [previousAppIds.id],
+export const TableRelation_LocalData = relations(Table_LocalData, ({ one }) => ({
+  currentApp: one(Table_PreviousAppIds, {
+    fields: [Table_LocalData.currentAppId],
+    references: [Table_PreviousAppIds.id],
   }),
 }));
 
-export const listeningTo = sqliteTable('listeningTo', {
+export const Table_ListeningTo = sqliteTable('listeningTo', {
   id: int('id').primaryKey({ autoIncrement: true }),
   appId: text('appId').notNull(),
   name: text('name').notNull(),

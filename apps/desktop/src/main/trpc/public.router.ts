@@ -1,18 +1,21 @@
 import { RegisterLocalSchema } from '@mono/assist-api'
-import { LocalConfigStore } from '../src/services/LocalConfig.store'
 import { tInstance } from './trpc'
+import { DatabaseService } from '../src/services/Database.service'
 
+const db = DatabaseService.getInstance()
 export const PublicTrpcRouter = tInstance.router({
   isAuthenticated: tInstance.procedure.query<boolean>(async () => {
-    return await LocalConfigStore.getState().isAuthenticated()
+    try {
+      await db.Repo.LocalData.get()
+      return true
+    } catch {
+      return false
+    }
+    // return await LocalConfigStore.getState().isAuthenticated()
   }),
   register: tInstance.procedure
     .input(RegisterLocalSchema)
     .mutation(async (opts) => {
-      await LocalConfigStore.getState().registerLocalData({
-        currentName: opts.input.name,
-        currentAppId: crypto.randomUUID(),
-        previousAppIds: []
-      })
+      await db.Repo.LocalData.create({ name: opts.input.name })
     })
 })

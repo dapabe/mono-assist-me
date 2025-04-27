@@ -1,6 +1,9 @@
 export * from './constants';
 export * from './database/DatabaseAdapter';
+export * from './database/DatabaseRepository';
+export * from './database/repositories/LocalData.repo';
 export * from './database/tables';
+export * from './errors/ExpectedError';
 export * from './schemas/LocalData.schema';
 export * from './schemas/RegisterLocal.schema';
 export * from './schemas/RoomEvent.schema';
@@ -12,5 +15,5 @@ export * from './store/useRoomStore';
 export * from './types/common';
 export * from './types/room.context';
 export * from './types/socket-adapter';
-export * from './udp-client/abstract-adapter';
 export * from './udp-client/UDPClient';
+export * from './udp-client/abstract-adapter';

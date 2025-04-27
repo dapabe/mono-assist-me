@@ -5,6 +5,7 @@ packages/*/build
 
 # Generated
 .tamagui
+.temp
 
 # Turborepo
 .turbo

@@ -1,8 +1,10 @@
 import { electronApp, is, optimizer } from '@electron-toolkit/utils'
-import { app, BrowserWindow, shell } from 'electron'
-import { join } from 'path'
+import { app, BrowserWindow, dialog, shell } from 'electron'
+import path from 'node:path'
 import icon from '../../resources/icon.png?asset'
 import { attachTRPCHandlers } from './trpc/router'
+import { initializeDatabase } from './src/initializeDatabase'
+import { ExpectedError } from '@mono/assist-api'
 
 function createWindow(): void {
   // Create the browser window.
@@ -14,7 +16,7 @@ function createWindow(): void {
     autoHideMenuBar: true,
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
-      preload: join(__dirname, '../preload/index.js'),
+      preload: path.join(__dirname, '../preload/index.js'),
       sandbox: false
     }
   })
@@ -35,14 +37,14 @@ function createWindow(): void {
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
     mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
   } else {
-    mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
+    mainWindow.loadFile(path.join(__dirname, '../renderer/index.html'))
   }
 }
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
   app.setName('HelpMeButton')
   // Set app user model id for windows
   electronApp.setAppUserModelId(app.name)
@@ -54,13 +56,23 @@ app.whenReady().then(() => {
     optimizer.watchWindowShortcuts(window)
   })
 
-  createWindow()
-
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
+
+  try {
+    await initializeDatabase()
+    createWindow()
+  } catch (error) {
+    if (error instanceof ExpectedError) {
+      dialog.showErrorBox('ExpectedError', error.key)
+      app.exit(1)
+    }
+    console.error(`Unexpected Error: ${error}`)
+    app.exit(1)
+  }
 })
 
 // Quit when all windows are closed, except on macOS. There, it's common

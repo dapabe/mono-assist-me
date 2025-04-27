@@ -5,7 +5,8 @@
   "type": "module",
   "files": [
     "build",
-    "src"
+    "src",
+    "migrations"
   ],
   "main": "./build/index.cjs",
   "types": "./src/index.ts",
@@ -20,7 +21,10 @@
     "dev": "tsup --watch --silent",
     "lint": "eslint --ext js,ts",
     "test": "jest",
-    "build": "tsup --clean"
+    "build": "tsup --clean",
+    "db:generate": "drizzle-kit generate --config=drizzle.config.ts",
+    "db:push": "drizzle-kit push --config=drizzle.config.ts",
+    "db:studio": "drizzle-kit studio"
   },
   "eslintConfig": {
     "extends": "@mono/eslint-config",
@@ -40,12 +44,14 @@
     "@mono/eslint-config": "workspace:*",
     "@tsconfig/recommended": "^1.0.8",
     "@types/node": "^22.13.13",
+    "drizzle-kit": "0.31.0",
     "react-native-udp": "4.1.7",
     "tsup": "^8.3.5",
     "typescript": "5.8.2"
   },
   "peerDependencies": {
-    "zustand": "5.0.3"
+    "zustand": "5.0.3",
+    "drizzle-orm": "0.43.1"
   },
   "tsup": {
     "entry": [
