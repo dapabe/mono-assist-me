@@ -4,3 +4,28 @@ packages:
 onlyBuiltDependencies:
   - electron
   - esbuild
+  - '@swc/core'
+  - 'better-sqlite3'
+
+catalogs:
+  node:
+    '@types/node': '^22.13.13'
+
+  react:
+    'react': '18.3.1'
+    'react-dom': '18.3.1'
+    '@types/react': '~18.3.12'
+
+  drizzle:
+    'drizzle-orm': '0.43.1'
+    'drizzle-kit': '0.31.0'
+
+  sqlite:
+    'better-sqlite3': '11.9.1'
+    '@types/better-sqlite3': '7.6.13'
+
+  utils:
+    'zod': '3.24.2'
+    'i18next': '25.0.1'
+    'zod-i18n-map': '2.27.0'
+    'zustand': '5.0.3'

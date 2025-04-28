@@ -7,7 +7,7 @@ export type ISocketIncomingMessage = (data: Buffer | unknown, rinfo: RemoteUDPIn
 export type FnSocketMessage = (data: IRoomEvent | ZodError) => void;
 
 export type ISocketAdapter = {
-  init(port: number, address: string, parser: ISocketIncomingMessage): Promise<void>;
+  init(port: number, address: string, parser: ISocketIncomingMessage): void;
   addAfterListening(cb: () => void): void;
   close(): void;
   sendTo(port: number, address: string, data: Buffer<ArrayBuffer>): void;

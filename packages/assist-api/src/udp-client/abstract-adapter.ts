@@ -20,7 +20,7 @@ export abstract class SocketAdapter<T = UdpSocket | Socket> implements ISocketAd
   addAfterListening(cb: () => void): void {
     this.afterListeningRef = cb;
   }
-  abstract init: (port: number, address: string, parser: ISocketIncomingMessage) => Promise<void>;
+  abstract init: (port: number, address: string, parser: ISocketIncomingMessage) => void;
 
   sendTo(port: number, address: string, data: Buffer<ArrayBuffer>): void {
     if (!this.isRunning()) throw new Error('adapter.notInitialized');

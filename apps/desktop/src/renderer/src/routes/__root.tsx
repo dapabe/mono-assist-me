@@ -1,8 +1,25 @@
 import { ILocalAuthContext } from '@renderer/routes/-components/providers/LocalAuth.provider'
-import { createRootRouteWithContext, Outlet } from '@tanstack/react-router'
+import {
+  createRootRouteWithContext,
+  ErrorComponentProps,
+  Outlet
+} from '@tanstack/react-router'
+import { ReactNode } from 'react'
+import { YStack } from 'tamagui'
 
 export const Route = createRootRouteWithContext<{
   localAuth: ILocalAuthContext
 }>()({
-  component: Outlet
+  component: Outlet,
+  errorComponent: ErrorComponent
 })
+
+function ErrorComponent(props: ErrorComponentProps): ReactNode {
+  return (
+    <YStack>
+      Ha ocurrido un error
+      {JSON.stringify(props.info)},{JSON.stringify(props.error)}
+      Route {window.location.pathname}
+    </YStack>
+  )
+}

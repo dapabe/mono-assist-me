@@ -35,23 +35,24 @@
   },
   "dependencies": {
     "@paralleldrive/cuid2": "2.2.2",
-    "drizzle-orm": "0.43.1",
-    "i18next": "25.0.1",
-    "zod": "3.24.2",
-    "zod-i18n-map": "2.27.0"
+    "drizzle-orm": "catalog:drizzle",
+    "i18next": "catalog:utils",
+    "zod": "catalog:utils",
+    "zod-i18n-map": "catalog:utils"
   },
   "devDependencies": {
     "@mono/eslint-config": "workspace:*",
     "@tsconfig/recommended": "^1.0.8",
-    "@types/node": "^22.13.13",
+    "@types/node": "catalog:node",
     "drizzle-kit": "0.31.0",
     "react-native-udp": "4.1.7",
     "tsup": "^8.3.5",
     "typescript": "5.8.2"
   },
   "peerDependencies": {
-    "zustand": "5.0.3",
-    "drizzle-orm": "0.43.1"
+    "zod": "catalog:utils",
+    "zustand": "catalog:utils",
+    "drizzle-orm": "catalog:drizzle"
   },
   "tsup": {
     "entry": [

@@ -1,11 +1,12 @@
 import cuid2 from '@paralleldrive/cuid2';
+import { eq } from 'drizzle-orm';
+
 import { ExpectedError } from '../../errors/ExpectedError';
 import { ILocalData } from '../../schemas/LocalData.schema';
 import { IRegisterLocalSchema } from '../../schemas/RegisterLocal.schema';
-import { DatabaseRepository } from '../DatabaseRepository';
-import { eq } from 'drizzle-orm';
+import { DatabaseAdapter, DatabaseRepository } from '../DatabaseRepository';
 
-export class RepositoryLocalData extends DatabaseRepository {
+export class RepositoryLocalData extends DatabaseRepository<DatabaseAdapter> {
   async get(): Promise<ILocalData> {
     const result = await this.db.query.Table_LocalData.findFirst({
       with: { currentApp: true },
@@ -26,12 +27,20 @@ export class RepositoryLocalData extends DatabaseRepository {
   }
 
   async create(data: IRegisterLocalSchema): Promise<void> {
-    await this.db
-      .insert(this.schema.Table_LocalData)
-      .values({ currentName: data.name, currentAppId: cuid2.createId() });
+    const result = await this.db.select().from(this.schema.Table_LocalData).limit(1);
+    if (result.length === 1) throw new ExpectedError('db.onlyOneLocalData');
+
+    const appId = cuid2.createId();
+
+    await this.db.transaction(async (tx) => {
+      await tx.insert(this.schema.Table_PreviousAppIds).values({ id: appId });
+      await tx
+        .insert(this.schema.Table_LocalData)
+        .values({ currentName: data.name, currentAppId: appId });
+    });
   }
 
-  async patch(data: Partial<ILocalData>): Promise<void> {
+  async patch(data: Partial<Omit<ILocalData, 'previousAppIds'>>): Promise<void> {
     const result = await this.db.select().from(this.schema.Table_LocalData).limit(1);
     if (result.length === 0) {
       throw new ExpectedError('db.missingLocalData');
@@ -52,5 +61,10 @@ export class RepositoryLocalData extends DatabaseRepository {
         ...(data.currentAppId && { currentAppId: data.currentAppId }),
       })
       .where(eq(this.schema.Table_LocalData.currentAppId, result[0].currentAppId));
+  }
+
+  async entryExists(): Promise<boolean> {
+    const amount = await this.db.$count(this.schema.Table_LocalData);
+    return amount === 1;
   }
 }

@@ -15,6 +15,17 @@ export default defineConfig(() => {
       plugins: [externalizeDepsPlugin()]
     },
     renderer: {
+      // build: {
+      //   rollupOptions: {
+      //     external: [
+      //       'drizzle-orm',
+      //       'drizzle-orm/*',
+      //       'better-sqlite3',
+      //       '@mono/assist-api/database/*',
+      //       /drizzle-orm\/.*/
+      //     ]
+      //   }
+      // },
       resolve: {
         alias: {
           '@renderer': path.resolve('src', 'renderer', 'src')

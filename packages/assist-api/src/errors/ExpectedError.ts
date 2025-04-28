@@ -1,4 +1,4 @@
-type Key = 'db.missingLocalData' | 'db.drizzleNoInit';
+type Key = 'db.missingLocalData' | 'db.drizzleNoInit' | 'db.onlyOneLocalData';
 export class ExpectedError extends Error {
   constructor(public key: Key) {
     super();

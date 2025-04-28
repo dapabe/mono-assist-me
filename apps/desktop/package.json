@@ -35,14 +35,16 @@
     "@trpc/react-query": "10.33.1",
     "@trpc/server": "10.33.1",
     "better-sqlite3": "11.9.1",
-    "drizzle-orm": "0.43.1",
+    "drizzle-orm": "catalog:drizzle",
     "electron-trpc": "0.7.1",
     "electron-updater": "^6.3.9",
     "react-hook-form": "7.55.0",
     "tamagui": "1.125.34",
     "tamagui-react-hook-form": "0.4.0",
     "zod-validation-error": "3.4.0",
-    "zustand": "5.0.3"
+    "zustand": "catalog:utils",
+    "react": "catalog:react",
+    "react-dom": "catalog:react"
   },
   "devDependencies": {
     "@electron-toolkit/eslint-config-prettier": "^3.0.0",
@@ -50,8 +52,8 @@
     "@electron-toolkit/tsconfig": "^1.0.1",
     "@tanstack/router-plugin": "1.115.3",
     "@types/better-sqlite3": "7.6.13",
-    "@types/node": "^22.13.13",
-    "@types/react": "^18.3.18",
+    "@types/node": "catalog:node",
+    "@types/react": "catalog:react",
     "@types/react-dom": "^18.3.5",
     "@vitejs/plugin-react": "^4.3.4",
     "electron": "35.1.2",
@@ -62,9 +64,7 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.19",
     "prettier": "^3.5.3",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "typescript": "^5.8.2",
+    "typescript": "5.8.2",
     "vite": "^6.2.3",
     "xvfb-maybe": "0.2.1"
   }

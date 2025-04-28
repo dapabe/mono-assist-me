@@ -22,15 +22,16 @@ function Component(): ReactNode {
   const nav = Route.useNavigate()
 
   const handleSubmit = async (values: IRegisterLocalSchema): Promise<void> => {
-    ApiRegister.mutateAsync(values)
-    await nav({ to: '/dashboard' })
-    // await ApiRegister.mutateAsync(form.getValues())
+    await ApiRegister.mutateAsync(values)
+    if (ApiRegister.isSuccess) return await nav({ to: '/dashboard' })
+    console.log(ApiRegister.error)
   }
 
   return (
     <YStack>
       <Form
         defaultValues={{ name: '' }}
+        //@ts-ignore recursive type depth
         resolver={zodResolver(RegisterLocalSchema)}
         onSubmit={handleSubmit}
       >

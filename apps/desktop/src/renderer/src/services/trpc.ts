@@ -1,4 +1,5 @@
 import { createTRPCReact } from '@trpc/react-query'
-import { IMainWindowRouter } from 'src/main/trpc/router'
+//@ts-ignore Not included in renderer
+import type { IMainWindowRouter } from '../../../main/trpc/router'
 
 export const trpcReact = createTRPCReact<IMainWindowRouter>()

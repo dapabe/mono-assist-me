@@ -1,6 +1,7 @@
 import { Buffer } from 'buffer';
 import { ZodError } from 'zod';
 
+import { SocketAdapter } from './abstract-adapter';
 import {
   ConnMethod,
   IRoomEvent,
@@ -11,7 +12,6 @@ import { stringToJSONSchema } from '../schemas/utils.schema';
 import { IRoomState } from '../store/useRoomStore';
 import { RemoteUDPInfo } from '../types/room.context';
 import { ISocketClient } from '../types/socket-adapter';
-import { SocketAdapter } from './abstract-adapter';
 
 type ISocketClientOptions = {
   port: number;
@@ -35,11 +35,11 @@ export class UdpSocketClient implements ISocketClient {
   constructor(config: ISocketClientOptions) {
     this.config = config;
   }
-  async init(): Promise<void> {
+  init(): void {
     try {
       if (!this.config.store) throw new Error('Store not defined');
       this.config.adapter.addAfterListening(this.runHeartbeatChecks);
-      await this.config.adapter.init(this.config.port, this.config.address, this.parseMessage);
+      this.config.adapter.init(this.config.port, this.config.address, this.parseMessage);
       this.config.store.updateConnectionMethod(ConnMethod.LANSocket, this);
       console.log('[UDP] Initialized');
     } catch (error) {

@@ -1,8 +1,13 @@
-import { drizzle } from 'drizzle-orm/better-sqlite3';
+import { drizzle as Node } from 'drizzle-orm/better-sqlite3';
+import { drizzle as Expo } from 'drizzle-orm/expo-sqlite';
 
-import * as schema from './tables';
+import { schemaBarrel } from './schema-barrel';
 
-export abstract class DatabaseRepository {
-  protected schema = schema;
-  constructor(protected db: ReturnType<typeof drizzle<typeof schema>>) {}
+export type DatabaseAdapter = ReturnType<
+  typeof Node<typeof schemaBarrel> | typeof Expo<typeof schemaBarrel>
+>;
+
+export abstract class DatabaseRepository<TDrizzleAdapter extends DatabaseAdapter> {
+  protected schema = schemaBarrel;
+  constructor(protected db: TDrizzleAdapter) {}
 }

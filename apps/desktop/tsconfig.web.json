@@ -1,14 +1,11 @@
 {
   "extends": "@electron-toolkit/tsconfig/tsconfig.web.json",
-  "include": [
-    // Just the type
-    "src/main/trpc/router.ts",
-    "src/renderer/**/*",
-    "src/preload/*.d.ts"
-  ],
+  "include": ["src/renderer/**/*", "src/preload/*.d.ts"],
+  "exclude": ["src/main/**/*"],
   "compilerOptions": {
     "composite": true,
     "jsx": "react-jsx",
+    "outDir": "out",
     "baseUrl": ".",
     "paths": {
       "@renderer/*": ["src/renderer/src/*"]
