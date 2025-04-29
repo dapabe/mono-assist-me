@@ -114,37 +114,37 @@ export class UdpSocketClient implements ISocketClient {
         break;
       }
       case RoomEventLiteral.RespondToAdvertise: {
-        let { event, ...payload } = data;
+        const { event, ...payload } = data;
         this.config.store.onRemoteRespondToAdvertise(payload, rinfo);
         break;
       }
       case RoomEventLiteral.BroadcastStop: {
-        let { event, ...payload } = data;
+        const { event, ...payload } = data;
         this.config.store.onRemoteBroadcastStop(payload);
         break;
       }
       case RoomEventLiteral.Listening: {
-        let { event, ...payload } = data;
+        const { event, ...payload } = data;
         this.config.store.onReceiverListening(payload, rinfo);
         break;
       }
       case RoomEventLiteral.NotListening: {
-        let { event, ...payload } = data;
+        const { event, ...payload } = data;
         this.config.store.onRemoteNotListening(payload);
         break;
       }
       case RoomEventLiteral.RequestHelp: {
-        let { event, ...payload } = data;
+        const { event, ...payload } = data;
         this.config.store.onEmitterRequestHelp(payload);
         break;
       }
       case RoomEventLiteral.RequestStop: {
-        let { event, ...payload } = data;
+        const { event, ...payload } = data;
         this.config.store.onEmitterStopsHelpRequest(payload);
         break;
       }
       case RoomEventLiteral.RespondToHelp: {
-        let { event, ...payload } = data;
+        const { event, ...payload } = data;
         clearInterval(this.HEARTBEAT_INTERVAL);
         this.config.store.updateIncomingResponder(payload);
         break;
@@ -157,7 +157,7 @@ export class UdpSocketClient implements ISocketClient {
         break;
       }
       case RoomEventLiteral.ImOkay: {
-        let { event, ...payload } = data;
+        const { event, ...payload } = data;
         this.config.store.onRemoteStatusResponse(payload, rinfo);
         break;
       }
