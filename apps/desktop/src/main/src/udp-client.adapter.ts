@@ -8,8 +8,8 @@ export class NodeSocketAdapter extends SocketAdapter<dgram.Socket> {
     parser: ISocketIncomingMessage
   ): void => {
     const sk = dgram.createSocket({ type: 'udp4' })
-    sk.on('error', (err) => {
-      console.log(`NodeSocket, ${err}`)
+    sk.once('error', (err) => {
+      console.log(`[NodeSocket] ${err}`)
       this.close()
     })
     sk.addListener('message', parser)

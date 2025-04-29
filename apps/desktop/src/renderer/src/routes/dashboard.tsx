@@ -15,8 +15,8 @@ function Componenet(): ReactNode {
   const ApiInit = trpcReact.PROTECTED.initialize.useMutation()
 
   useEffect(() => {
-    ApiInit.mutate()
-  }, [])
+    if (ApiInit.data !== null) ApiInit.mutate()
+  }, [ApiInit.data])
 
   if (ApiInit.isLoading) return <SizableText>Loading</SizableText>
 

@@ -33,14 +33,15 @@ export const ProtectedTrpcRouter = tInstance.router({
     }),
 
   // Room actions
-  initialize: tInstance.procedure.mutation(async () => {
-    const client = new UdpSocketClient({
+  initialize: tInstance.procedure.mutation<null>(async () => {
+    const client = UdpSocketClient.getInstance({
       adapter: new NodeSocketAdapter(),
       store: vanillaRoomStore.getState(),
       address: '0.0.0.0',
       port: UdpSocketClient.DISCOVERY_PORT
     })
     client.init()
+    return null
   }),
   sendDiscovery: tInstance.procedure.mutation(() => {
     try {

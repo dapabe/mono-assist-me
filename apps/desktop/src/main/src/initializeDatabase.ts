@@ -14,10 +14,13 @@ export async function initializeDatabase(): Promise<void> {
       fss.mkdirSync(path.dirname(dirPath), { recursive: true })
       dbPath = path.join(dirPath, 'sqlite.db')
     }
+    const client = new BetterSqlite3(dbPath)
+    client.exec('PRAGMA journal_mode = WAL;')
     const adapter = drizzle({
-      client: new BetterSqlite3(dbPath),
+      client,
       schema: schemaBarrel
     })
+
     migrate(adapter, {
       migrationsFolder: './node_modules/@mono/assist-api/migrations'
     })

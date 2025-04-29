@@ -21,29 +21,39 @@ type ISocketClientOptions = {
 };
 
 export class UdpSocketClient implements ISocketClient {
+  private static instance: UdpSocketClient;
   private config: ISocketClientOptions;
 
   private HEARTBEAT_INTERVAL!: NodeJS.Timeout;
-  private HEARTBEAT_EXPIRATION = 30_000 as const;
+  private readonly HEARTBEAT_EXPIRATION = 30_000 as const;
 
   private HELP_INTERVAL!: NodeJS.Timeout;
-  private HELP_EXPIRATION = 5000 as const;
+  private readonly HELP_EXPIRATION = 5000 as const;
 
-  static DISCOVERY_PORT = 42069 as const;
-  static BROADCAST_ADDRESS = '255.255.255.255' as const;
+  static readonly DISCOVERY_PORT = 42069 as const;
+  static readonly BROADCAST_ADDRESS = '255.255.255.255' as const;
 
   constructor(config: ISocketClientOptions) {
     this.config = config;
+    this.runHeartbeatChecks = this.runHeartbeatChecks.bind(this);
   }
+
+  public static getInstance(config: ISocketClientOptions): UdpSocketClient {
+    if (!UdpSocketClient.instance) {
+      UdpSocketClient.instance = new UdpSocketClient(config);
+    }
+    return UdpSocketClient.instance;
+  }
+
   init(): void {
     try {
-      if (!this.config.store) throw new Error('Store not defined');
+      if (this.config.adapter.isRunning()) return;
       this.config.adapter.addAfterListening(this.runHeartbeatChecks);
       this.config.adapter.init(this.config.port, this.config.address, this.parseMessage);
       this.config.store.updateConnectionMethod(ConnMethod.LANSocket, this);
       console.log('[UDP] Initialized');
     } catch (error) {
-      console.log(`[UDP]: ${error}`);
+      console.log(`[UDP] Error ${error}`);
       this.close();
     }
   }
@@ -52,10 +62,10 @@ export class UdpSocketClient implements ISocketClient {
     if (this.HEARTBEAT_INTERVAL) {
       clearInterval(this.HEARTBEAT_INTERVAL);
       this.HEARTBEAT_INTERVAL = undefined!;
+      this.config.adapter.close();
+      this.config.store.updateConnectionMethod(ConnMethod.None, null);
+      console.log('[UDP] Closed');
     }
-    this.config.adapter.close();
-    this.config.store.updateConnectionMethod(ConnMethod.None, null);
-    console.log('[UDP] Closed');
   }
 
   sendTo(port: number, address: string, data: IRoomEvent): void {
@@ -154,41 +164,40 @@ export class UdpSocketClient implements ISocketClient {
     }
   }
 
-  private runHeartbeatChecks() {
+  /**
+   *  Using `this` in this scope and attaching it as a ref to other adapters loses its reference,
+   *  its better to make this an arrow function.
+   */
+  private runHeartbeatChecks = () => {
     this.HEARTBEAT_INTERVAL = setInterval(() => {
-      try {
-        // Get ports and addresses from current rooms
-        const merged = this.config.store.getMergedRooms();
+      // Get ports and addresses from current rooms
+      const merged = this.config.store.getMergedRooms();
 
-        if (!merged.length) {
-          return;
-        }
-
-        // Wait for response from each device
-        // if it responds it's added to "scheduledToCheck"
-        merged.forEach((r) => {
-          this.sendTo(r.port, r.address, {
-            event: RoomEventLiteral.AnnieAreYouOkay,
-          });
-        });
-
-        // Check for unresponsive devices
-        const now = Date.now();
-        [...this.config.store.scheduledToCheck.entries()].forEach(([appId, v]) => {
-          // If the device hasnt responded in the last HEARTBEAT
-          if (now - v.lastPing > this.HEARTBEAT_EXPIRATION) {
-            // Disconnect it or remove it
-            this.config.store.onDeviceCleanUp(appId);
-            console.log(`[Device] No signal from '${v.address}:${v.port}' removing`);
-          }
-        });
-      } catch (error: any) {
-        console.log(`[Device] Hearbeat error: ${error.message as string}`);
-        this.close();
+      if (!merged.length) {
+        return;
       }
+
+      // Wait for response from each device
+      // if it responds it's added to "scheduledToCheck"
+      merged.forEach((r) => {
+        this.sendTo(r.port, r.address, {
+          event: RoomEventLiteral.AnnieAreYouOkay,
+        });
+      });
+
+      // Check for unresponsive devices
+      const now = Date.now();
+      [...this.config.store.scheduledToCheck.entries()].forEach(([appId, v]) => {
+        // If the device hasnt responded in the last HEARTBEAT
+        if (now - v.lastPing > this.HEARTBEAT_EXPIRATION) {
+          // Disconnect it or remove it
+          this.config.store.onDeviceCleanUp(appId);
+          console.log(`[Device] No signal from '${v.address}:${v.port}' removing`);
+        }
+      });
     }, this.HEARTBEAT_EXPIRATION);
     console.log('[Device] Heartbeat attached');
-  }
+  };
 
   sendDiscovery() {
     console.log('[UDP] Sending discovery');
