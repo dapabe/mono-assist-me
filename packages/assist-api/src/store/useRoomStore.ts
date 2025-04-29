@@ -5,7 +5,6 @@ import { ConnMethod, RoomEventLiteral, RoomServiceStatus } from '../schemas/Room
 import { UUID } from '../types/common';
 import { IRoomData, IRoomListener, IWSRoom, IWSRoomListener } from '../types/room.context';
 import { UdpSocketClient } from '../udp-client/UDPClient';
-import { create } from 'zustand';
 
 export type IRoomState = IAssistanceRoomClientSlice & IRoomEmitterSlice & IRoomReceiverSlice;
 
@@ -40,9 +39,6 @@ export const defaultRoomStore: StateCreator<IRoomState, [], [], IRoomState> = (s
     set({ connMethod, connAdapter });
   },
   updateConnectionStatus: (status) => set({ status }),
-  updateAppId: (currentAppId) => set({ currentAppId }),
-  updateCurrentName: (currentName) => set({ currentName }),
-  updateCurrentDevice: (currentDevice) => set({ currentDevice }),
   getAppId: () => {
     const appId = get().currentAppId;
     if (appId) return appId;
@@ -53,6 +49,9 @@ export const defaultRoomStore: StateCreator<IRoomState, [], [], IRoomState> = (s
     if (name) return name;
     throw new Error('NoName');
   },
+  updateMemoryState: (k, v) => set({ [k]: v }),
+  dbRepos: null,
+  syncDatabase: (dbRepos) => set({ dbRepos }),
 
   onRemoteRespondToAdvertise: (payload, rinfo) => {
     //	If it hasn't been discovered nor is listening to it, add it to the list

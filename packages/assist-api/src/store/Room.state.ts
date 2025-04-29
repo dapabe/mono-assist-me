@@ -1,3 +1,4 @@
+import { DatabaseService } from '../database/DatabaseService';
 import {
   IConnAdapter,
   IConnMethod,
@@ -14,13 +15,19 @@ import {
   RemoteUDPInfo,
 } from '../types/room.context';
 
-export type IAssistanceRoomClientSlice = {
+type InMemoryStateKey = 'status' | 'currentAppId' | 'currentName' | 'currentDevice';
+
+type InMemoryStateMap = {
+  status: IRoomServiceStatus;
+  currentAppId: null | UUID;
+  currentName: null | string;
+  currentDevice: null | string;
+};
+
+export type IAssistanceRoomClientSlice = InMemoryStateMap & {
   connMethod: IConnMethod;
   connAdapter: IConnAdapter;
-  status: IRoomServiceStatus;
-  currentAppId: UUID | null;
-  currentName: string | null;
-  currentDevice: null | string;
+  updateMemoryState: <K extends InMemoryStateKey>(k: K, v: InMemoryStateMap[K]) => void;
 
   /**
    * Check if they are ok, if not delete them or set to disconnect
@@ -34,16 +41,15 @@ export type IAssistanceRoomClientSlice = {
       address: string;
     }
   >;
+  dbRepos: DatabaseService['Repo'] | null;
+  syncDatabase: (repos: DatabaseService['Repo']) => void;
 
   /**	Iterates over all existing devices */
   getMergedRooms: () => IRoomData[];
   updateConnectionMethod: (c: IConnMethod, a: IConnAdapter) => void;
   updateConnectionStatus: (s: IRoomServiceStatus) => void;
   getAppId: () => UUID;
-  updateAppId: (appId: IAssistanceRoomClientSlice['currentAppId']) => void;
   getCurrentName: () => string;
-  updateCurrentName: (name: IAssistanceRoomClientSlice['currentName']) => void;
-  updateCurrentDevice: (value: IAssistanceRoomClientSlice['currentDevice']) => void;
 
   onRemoteRespondToAdvertise: (
     payload: FromSocketUnion<typeof RoomEventLiteral.RespondToAdvertise>,

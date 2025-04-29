@@ -24,6 +24,9 @@ export const ProtectedTrpcRouter = tInstance.router({
     .mutation(async (req) => {
       try {
         await db.Repo.LocalData.patch({ currentName: req.input.name })
+        vanillaRoomStore
+          .getState()
+          .updateMemoryState('currentName', req.input.name)
       } catch (error) {
         ErrorNotificationService.getInstance().showError(
           'db.patchLocalName',
@@ -34,13 +37,20 @@ export const ProtectedTrpcRouter = tInstance.router({
 
   // Room actions
   initialize: tInstance.procedure.mutation<null>(async () => {
+    const { currentName, currentAppId } = await db.Repo.LocalData.get()
+    const roomsListeningTo = await db.Repo.ListeningTo.get()
+    const room = vanillaRoomStore.getState()
+    room.updateMemoryState('currentName', currentName)
+    room.updateMemoryState('currentAppId', currentAppId)
+
     const client = UdpSocketClient.getInstance({
       adapter: new NodeSocketAdapter(),
-      store: vanillaRoomStore.getState(),
+      store: room,
       address: '0.0.0.0',
       port: UdpSocketClient.DISCOVERY_PORT
     })
     client.init()
+
     return null
   }),
   sendDiscovery: tInstance.procedure.mutation(() => {
@@ -83,7 +93,7 @@ export const ProtectedTrpcRouter = tInstance.router({
         )
       }
     }),
-  requestHelp: tInstance.procedure.mutation(() => {
+  requestHelp: tInstance.procedure.mutation(async () => {
     try {
       vanillaRoomStore.getState().requestHelp()
     } catch (error) {

@@ -145,8 +145,11 @@ export class UdpSocketClient implements ISocketClient {
       }
       case RoomEventLiteral.RespondToHelp: {
         const { event, ...payload } = data;
-        clearInterval(this.HEARTBEAT_INTERVAL);
         this.config.store.updateIncomingResponder(payload);
+        setTimeout(
+          () => this.config.store.updateIncomingResponder({ responderName: null }),
+          10_000
+        );
         break;
       }
       case RoomEventLiteral.AnnieAreYouOkay: {
@@ -212,6 +215,9 @@ export class UdpSocketClient implements ISocketClient {
       return;
     }
     this.HELP_INTERVAL = setInterval(() => {
+      /**
+       *  By the time someone responds the interval will clear itself
+       */
       if (!this.config.store.currentListeners.size || this.config.store.incomingResponder) {
         clearInterval(this.HELP_INTERVAL);
         this.HELP_INTERVAL = undefined!;
