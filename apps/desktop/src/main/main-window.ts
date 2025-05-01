@@ -1,7 +1,7 @@
 import { BrowserWindow, shell } from 'electron'
 import path from 'node:path'
-import { attachTRPCHandlers } from '../trpc/router'
-import icon from '../../../resources/icon.png?asset'
+import { attachTRPCHandlers } from './trpc/router'
+import icon from '../../resources/icon.png?asset'
 import { is } from '@electron-toolkit/utils'
 
 export function createMainWindow(): void {
@@ -14,7 +14,7 @@ export function createMainWindow(): void {
     autoHideMenuBar: true,
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
-      preload: path.join(__dirname, '..', '..', 'preload', 'index.js'),
+      preload: path.join(__dirname, '..', 'preload', 'index.js'),
       sandbox: false
     }
   })
@@ -35,6 +35,6 @@ export function createMainWindow(): void {
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
     mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
   } else {
-    mainWindow.loadFile(path.join(__dirname, '../renderer/index.html'))
+    mainWindow.loadFile(path.join(__dirname, '..', 'renderer', 'index.html'))
   }
 }

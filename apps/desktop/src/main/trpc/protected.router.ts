@@ -1,5 +1,7 @@
 import {
   ILocalDataDTO,
+  IRoomListener,
+  IWSRoom,
   IWSRoomListener,
   RegisterLocalSchema,
   UdpSocketClient,
@@ -62,11 +64,14 @@ export const ProtectedTrpcRouter = tInstance.router({
       )
     }
   }),
-  getRoomsToDiscover: tInstance.procedure.query(
+  getRoomsToDiscover: tInstance.procedure.query<IWSRoom[]>(
     () => MemoryState.roomsToDiscover
   ),
   getRoomsListeningTo: tInstance.procedure.query<IWSRoomListener[]>(
     () => MemoryState.roomsListeningTo
+  ),
+  getCurrentListeners: tInstance.procedure.query<IRoomListener[]>(
+    () => MemoryState.currentListeners
   ),
   getStoredListeners: tInstance.procedure.query(() => {
     return MemoryState.storedListeners

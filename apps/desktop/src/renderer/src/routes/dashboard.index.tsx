@@ -8,7 +8,10 @@ export const Route = createFileRoute('/dashboard/')({
 })
 
 function Component(): ReactNode {
+  const currentListeners = trpcReact.PROTECTED.getCurrentListeners.useQuery()
   const requestHelp = trpcReact.PROTECTED.requestHelp.useMutation()
+
+  if (currentListeners.isLoading || currentListeners.isError) return null
 
   return (
     <YStack justify="space-between">
@@ -16,12 +19,13 @@ function Component(): ReactNode {
         self={'center'}
         size="$12"
         rounded={100}
+        disabled={!currentListeners.data.length}
         onPress={() => requestHelp.mutate()}
       >
         Pedir ayuda
       </Button>
       <XStack self={'flex-end'}>
-        <SizableText>2</SizableText>
+        <SizableText>{currentListeners.data.length}</SizableText>
       </XStack>
     </YStack>
   )

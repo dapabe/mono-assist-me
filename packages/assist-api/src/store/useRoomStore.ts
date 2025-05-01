@@ -294,8 +294,10 @@ export const defaultRoomStore: StateCreator<IRoomState, [], [], IRoomState> = (s
 
   //  Room emitter methods
   requestHelp: () => {
-    if (!(get().connAdapter instanceof UdpSocketClient)) return;
-    get().connAdapter?.requestHelp();
+    if (!get().connAdapter) return;
+    if (get().connAdapter instanceof UdpSocketClient) {
+      get().connAdapter!.requestHelp();
+    }
   },
 });
 

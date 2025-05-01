@@ -3,7 +3,7 @@ import { app, BrowserWindow, dialog } from 'electron'
 
 import { initializeDatabase } from './src/initializeDatabase'
 import { ExpectedError } from '@mono/assist-api'
-import { createMainWindow } from './src/main-window'
+import { createMainWindow } from './main-window'
 
 process.on('uncaughtException', (listener) => {
   app.quit()
