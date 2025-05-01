@@ -5,7 +5,7 @@ export const NonEmptyStringSchema = z18n.string().trim().min(1);
 export const stringToJSONSchema = z18n.string().transform((str, ctx) => {
   try {
     return JSON.parse(str);
-  } catch (e) {
+  } catch {
     ctx.addIssue({ code: 'custom', message: 'Invalid JSON' });
     return z18n.NEVER;
   }

@@ -1,4 +1,5 @@
 import { DatabaseService } from '../database/DatabaseService';
+import { IListeningToDTO } from '../schemas/ListeningTo.schema';
 import {
   IConnAdapter,
   IConnMethod,
@@ -28,6 +29,9 @@ export type IAssistanceRoomClientSlice = InMemoryStateMap & {
   connMethod: IConnMethod;
   connAdapter: IConnAdapter;
   updateMemoryState: <K extends InMemoryStateKey>(k: K, v: InMemoryStateMap[K]) => void;
+  updateConnectionMethod: (c: IConnMethod, a: IConnAdapter) => void;
+  getAppId: () => UUID;
+  getCurrentName: () => string;
 
   /**
    * Check if they are ok, if not delete them or set to disconnect
@@ -42,14 +46,11 @@ export type IAssistanceRoomClientSlice = InMemoryStateMap & {
     }
   >;
   dbRepos: DatabaseService['Repo'] | null;
-  syncDatabase: (repos: DatabaseService['Repo']) => void;
+  syncDatabase: (repos: DatabaseService['Repo']) => Promise<void>;
+  getRepos: () => DatabaseService['Repo'];
 
   /**	Iterates over all existing devices */
   getMergedRooms: () => IRoomData[];
-  updateConnectionMethod: (c: IConnMethod, a: IConnAdapter) => void;
-  updateConnectionStatus: (s: IRoomServiceStatus) => void;
-  getAppId: () => UUID;
-  getCurrentName: () => string;
 
   onRemoteRespondToAdvertise: (
     payload: FromSocketUnion<typeof RoomEventLiteral.RespondToAdvertise>,
@@ -80,15 +81,16 @@ export type IAssistanceRoomClientSlice = InMemoryStateMap & {
 };
 
 export type IRoomEmitterSlice = {
-  //  Emitter mode
   incomingResponder: string | null;
-  currentListeners: Map<UUID, IRoomListener>;
+  currentListeners: IRoomListener[];
   requestHelp: () => void;
 };
 
 export type IRoomReceiverSlice = {
-  roomsToDiscover: Map<UUID, IWSRoom>;
-  roomsListeningTo: Map<UUID, IWSRoomListener>;
+  roomsToDiscover: IWSRoom[];
+  roomsListeningTo: IWSRoomListener[];
+  storedListeners: Omit<IListeningToDTO['Read'], 'appId'>[];
+  notifyEmitterThisDeviceIsListening: (room: IWSRoom) => void;
   respondToHelp: (appId: UUID) => void;
   addToListeningTo: (appId: UUID) => void;
   deleteListeningTo: (appId: UUID) => void;

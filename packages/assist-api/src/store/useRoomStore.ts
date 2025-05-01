@@ -1,6 +1,7 @@
 import { createStore, StateCreator } from 'zustand/vanilla';
 
 import { IAssistanceRoomClientSlice, IRoomEmitterSlice, IRoomReceiverSlice } from './Room.state';
+import { IListeningToDTO } from '../schemas/ListeningTo.schema';
 import { ConnMethod, RoomEventLiteral, RoomServiceStatus } from '../schemas/RoomEvent.schema';
 import { UUID } from '../types/common';
 import { IRoomData, IRoomListener, IWSRoom, IWSRoomListener } from '../types/room.context';
@@ -25,20 +26,21 @@ export const defaultRoomStore: StateCreator<IRoomState, [], [], IRoomState> = (s
   currentName: null,
   currentDevice: null,
   scheduledToCheck: new Map(),
+  dbRepos: null,
 
   //  Room receiver values
-  roomsListeningTo: new Map<UUID, IWSRoomListener>(),
-  roomsToDiscover: new Map<UUID, IWSRoom>(),
+  roomsListeningTo: [],
+  roomsToDiscover: [],
+  storedListeners: [],
 
   //  Room emitter values
-  currentListeners: new Map<UUID, IRoomListener>(),
+  currentListeners: [],
   incomingResponder: null,
   HELP_INTERVAL: null,
 
   updateConnectionMethod: (connMethod, connAdapter) => {
     set({ connMethod, connAdapter });
   },
-  updateConnectionStatus: (status) => set({ status }),
   getAppId: () => {
     const appId = get().currentAppId;
     if (appId) return appId;
@@ -50,35 +52,49 @@ export const defaultRoomStore: StateCreator<IRoomState, [], [], IRoomState> = (s
     throw new Error('NoName');
   },
   updateMemoryState: (k, v) => set({ [k]: v }),
-  dbRepos: null,
-  syncDatabase: (dbRepos) => set({ dbRepos }),
+  getRepos: () => {
+    const repos = get().dbRepos;
+    if (repos) return repos;
+    throw new Error('dbRepos not set');
+  },
+  syncDatabase: async (dbRepos) => {
+    set({ dbRepos });
+    const storedListeners = await get().getRepos().ListeningTo.get();
+    for (const listener of storedListeners) {
+      set((state) => ({
+        storedListeners: [...state.storedListeners, listener],
+      }));
+    }
+  },
+  getStoredListeners: async () => {},
 
   onRemoteRespondToAdvertise: (payload, rinfo) => {
-    //	If it hasn't been discovered nor is listening to it, add it to the list
-    const isListening = get().roomsListeningTo.has(payload.appId);
-    const hasDiscovered = get().roomsToDiscover.has(payload.appId);
-    if (isListening || hasDiscovered) return;
-    set((state) => ({
-      roomsToDiscover: state.roomsToDiscover.set(payload.appId, {
+    //	If it hasn't been discovered nor is listening to it, add it to the discover list
+    const isListening = get().roomsListeningTo.find((x) => x.appId === payload.appId);
+    const hasDiscovered = get().roomsToDiscover.findIndex((x) => x.appId === payload.appId);
+    if (isListening || hasDiscovered !== -1) return;
+    set((state) => {
+      state.roomsToDiscover.splice(hasDiscovered, 1, {
         ...payload,
         port: rinfo.port,
         address: rinfo.address,
-      }),
-    }));
+      });
+      return state;
+    });
   },
   onRemoteBroadcastStop: (payload) => {
     set((state) => {
       // All devices check if it is on the discovery list and deletes it
-      let emitter = state.roomsToDiscover.get(payload.appId);
-      if (emitter) {
-        state.roomsToDiscover.delete(emitter.appId);
+      let emitter = state.roomsToDiscover.findIndex((x) => x.appId === payload.appId);
+      if (emitter !== -1) {
+        state.roomsToDiscover.splice(emitter, 1);
         return state;
       }
       //	and set the emitter to disconnected
-      emitter = state.roomsListeningTo.get(payload.appId);
-      if (emitter) {
-        state.roomsListeningTo.set(emitter.appId, {
-          ...emitter,
+      emitter = state.roomsListeningTo.findIndex((x) => x.appId === payload.appId);
+      if (emitter !== -1) {
+        state.roomsListeningTo.splice(emitter, 1, {
+          ...state.roomsListeningTo[emitter],
           disconnected: true,
           needsAssist: false,
         });
@@ -90,59 +106,59 @@ export const defaultRoomStore: StateCreator<IRoomState, [], [], IRoomState> = (s
   onStartListening: (appId) => {
     // On the receiver end, before sending "listening" to the emitter
     // add it to roomsListeningTo and delete it from roomsToDiscover
-    const room = get().roomsToDiscover.get(appId);
-    if (room) {
+    const discoverRoom = get().roomsToDiscover.find((x) => x.appId === appId);
+    if (discoverRoom) {
       set((state) => {
-        state.roomsToDiscover.delete(room.appId);
-        return {
-          roomsListeningTo: state.roomsListeningTo.set(room.appId, {
-            ...room,
-            disconnected: false,
-            needsAssist: false,
-          }),
-        };
+        state.roomsToDiscover = state.roomsToDiscover.filter((x) => x.appId !== discoverRoom.appId);
+        state.roomsListeningTo.push({ ...discoverRoom, disconnected: false, needsAssist: false });
+        return state;
       });
     }
     // Returns wether it exists or not in roomsToDiscover
-    return room;
+    return discoverRoom;
   },
   onReceiverListening: (payload, rinfo) => {
     // The emitter keeps track of the receiver listening to him
     set((state) => ({
-      currentListeners: state.currentListeners.set(payload.appId, {
-        ...payload,
-        port: rinfo.port,
-        address: rinfo.address,
-      }),
+      ...state,
+      currentListeners: [
+        ...state.currentListeners,
+        { ...payload, port: rinfo.port, address: rinfo.address },
+      ],
     }));
   },
   onRemoteNotListening: (payload) => {
-    set((state) => {
-      state.roomsListeningTo.delete(payload.appId);
-      return state;
-    });
+    // To check if this is valid response
+    set((state) => ({
+      ...state,
+      roomsListeningTo: state.roomsListeningTo.filter((x) => x.appId !== payload.appId),
+    }));
   },
   onEmitterRequestHelp: (payload) => {
     //	From the receiver end, set the emitter to needing assist
-    const emitter = get().roomsListeningTo.get(payload.appId);
-    if (emitter) {
-      set((state) => ({
-        roomsListeningTo: state.roomsListeningTo.set(payload.appId, {
-          ...emitter,
+    const emitter = get().roomsListeningTo.findIndex((x) => x.appId === payload.appId);
+    if (emitter !== -1) {
+      set((state) => {
+        state.roomsListeningTo.splice(emitter, 1, {
+          ...state.roomsListeningTo[emitter],
           needsAssist: true,
-        }),
-      }));
+        });
+        return state;
+      });
     }
   },
   onEmitterStopsHelpRequest: (payload) => {
     //	From the receiver end, set the emitter to not needing assist anymore
-    const emitter = get().roomsListeningTo.get(payload.appId);
+    const emitter = get().roomsListeningTo.find((x) => x.appId === payload.appId);
     if (emitter) {
       set((state) => ({
-        roomsListeningTo: state.roomsListeningTo.set(payload.appId, {
-          ...emitter,
-          needsAssist: false,
-        }),
+        roomsListeningTo: [
+          ...state.roomsListeningTo,
+          {
+            ...emitter,
+            needsAssist: false,
+          },
+        ],
       }));
     }
   },
@@ -160,12 +176,12 @@ export const defaultRoomStore: StateCreator<IRoomState, [], [], IRoomState> = (s
     set((state) => {
       // 	On this device.
       //	If it is someone this device listens to, connect it again
-      const listeningTo = get().roomsListeningTo.get(payload.appId);
-      if (listeningTo) {
-        state.roomsListeningTo.set(listeningTo.appId, {
-          ...listeningTo,
+      const listeningTo = get().roomsListeningTo.findIndex((x) => x.appId === payload.appId);
+      if (listeningTo !== -1) {
+        state.roomsListeningTo[listeningTo] = {
+          ...state.roomsListeningTo[listeningTo],
           disconnected: false,
-        });
+        };
 
         //	Update that device last status so it wont be removed on next check
         const device = get().scheduledToCheck.get(payload.appId);
@@ -191,26 +207,25 @@ export const defaultRoomStore: StateCreator<IRoomState, [], [], IRoomState> = (s
   onDeviceCleanUp: (appId) => {
     set((state) => {
       // On discovered devices, delete it
-      let device = state.roomsToDiscover.get(appId);
-      if (device) {
-        state.roomsToDiscover.delete(device.appId);
-        // return state;
+      let device = state.roomsToDiscover.findIndex((x) => x.appId === appId);
+      if (device !== -1) {
+        state.roomsToDiscover.splice(device, 1);
       }
 
       // On listening devices, disconnect it
-      device = state.roomsListeningTo.get(appId);
-      if (device) {
-        return {
-          roomsListeningTo: state.roomsListeningTo.set(device.appId, {
-            ...device,
-            disconnected: true,
-            needsAssist: false,
-          }),
-        };
+      device = state.roomsListeningTo.findIndex((x) => x.appId === appId);
+      if (device !== -1) {
+        state.roomsListeningTo.splice(device, 1, {
+          ...state.roomsListeningTo[device],
+          disconnected: true,
+          needsAssist: false,
+        });
+        return state;
       }
 
       // On current listeners delete it
-      state.currentListeners.delete(appId);
+      device = state.currentListeners.findIndex((x) => x.appId === appId);
+      if (device !== -1) state.currentListeners.splice(device, 1);
 
       return state;
     });
@@ -218,13 +233,13 @@ export const defaultRoomStore: StateCreator<IRoomState, [], [], IRoomState> = (s
 
   getMergedRooms: () => {
     return [
-      ...[...get().currentListeners].map<IRoomData>(([_, { responderName, ...room }]) => room),
-      ...[...get().roomsListeningTo.values()].map<IRoomData>((x) => ({
+      ...get().currentListeners.map<IRoomData>(({ responderName, ...room }) => room),
+      ...get().roomsListeningTo.map<IRoomData>((x) => ({
         address: x.address,
         appId: x.appId,
         port: x.port,
       })),
-      ...[...get().roomsToDiscover.values()].map<IRoomData>((x) => ({
+      ...get().roomsToDiscover.map<IRoomData>((x) => ({
         address: x.address,
         appId: x.appId,
         port: x.port,
@@ -245,18 +260,20 @@ export const defaultRoomStore: StateCreator<IRoomState, [], [], IRoomState> = (s
   addToListeningTo: (appId) => {
     const discoveryRoom = get().onStartListening(appId);
     if (!discoveryRoom) return console.log('no emitter in discovery room');
-    get().connAdapter?.sendTo(discoveryRoom.port, discoveryRoom.address, {
+    get().notifyEmitterThisDeviceIsListening(discoveryRoom);
+  },
+  notifyEmitterThisDeviceIsListening: (room) => {
+    get().connAdapter?.sendTo(room.port, room.address, {
       event: RoomEventLiteral.Listening,
       appId: get().getAppId(),
       responderName: get().getCurrentName(),
     });
   },
   respondToHelp: (appId) => {
-    const emitter = get().roomsListeningTo.get(appId);
+    const emitter = get().roomsListeningTo.find((x) => x.appId === appId);
 
     if (!emitter || emitter.disconnected) {
       console.log('No emitter');
-      // Alert.alert("Error", "Socket 404 or disconnected");
     } else {
       get().connAdapter?.sendTo(emitter.port, emitter.address, {
         event: RoomEventLiteral.RespondToHelp,
@@ -265,7 +282,7 @@ export const defaultRoomStore: StateCreator<IRoomState, [], [], IRoomState> = (s
     }
   },
   deleteListeningTo: (appId) => {
-    const listeningTo = get().roomsListeningTo.get(appId);
+    const listeningTo = get().roomsListeningTo.find((x) => x.appId === appId);
     if (listeningTo) {
       get().onRemoteNotListening({ appId });
       get().connAdapter?.sendTo(listeningTo.port, listeningTo.address, {

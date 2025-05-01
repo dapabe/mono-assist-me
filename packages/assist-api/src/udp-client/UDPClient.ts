@@ -210,7 +210,7 @@ export class UdpSocketClient implements ISocketClient {
   }
 
   requestHelp() {
-    if (!this.config.store.currentListeners.size) {
+    if (!this.config.store.currentListeners.length) {
       console.log('[UDP] No current listeners');
       return;
     }
@@ -218,7 +218,7 @@ export class UdpSocketClient implements ISocketClient {
       /**
        *  By the time someone responds the interval will clear itself
        */
-      if (!this.config.store.currentListeners.size || this.config.store.incomingResponder) {
+      if (!this.config.store.currentListeners.length || this.config.store.incomingResponder) {
         clearInterval(this.HELP_INTERVAL);
         this.HELP_INTERVAL = undefined!;
         return;

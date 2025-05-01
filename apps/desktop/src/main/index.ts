@@ -1,49 +1,13 @@
-import { electronApp, is, optimizer } from '@electron-toolkit/utils'
-import { app, BrowserWindow, dialog, shell } from 'electron'
-import path from 'node:path'
-import icon from '../../resources/icon.png?asset'
-import { attachTRPCHandlers } from './trpc/router'
+import { electronApp, optimizer } from '@electron-toolkit/utils'
+import { app, BrowserWindow, dialog } from 'electron'
+
 import { initializeDatabase } from './src/initializeDatabase'
 import { ExpectedError } from '@mono/assist-api'
-
-function createWindow(): void {
-  // Create the browser window.
-  const mainWindow = new BrowserWindow({
-    width: 460,
-    height: 650,
-    resizable: false,
-    show: false,
-    autoHideMenuBar: true,
-    ...(process.platform === 'linux' ? { icon } : {}),
-    webPreferences: {
-      preload: path.join(__dirname, '../preload/index.js'),
-      sandbox: false
-    }
-  })
-
-  attachTRPCHandlers(mainWindow)
-
-  mainWindow.on('ready-to-show', () => {
-    mainWindow.show()
-  })
-
-  mainWindow.webContents.setWindowOpenHandler((details) => {
-    shell.openExternal(details.url)
-    return { action: 'deny' }
-  })
-
-  // HMR for renderer base on electron-vite cli.
-  // Load the remote URL for development or the local html file for production.
-  if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
-    mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
-  } else {
-    mainWindow.loadFile(path.join(__dirname, '../renderer/index.html'))
-  }
-}
+import { createMainWindow } from './src/main-window'
 
 process.on('uncaughtException', (listener) => {
-  dialog.showErrorBox(listener.name, listener.message)
   app.quit()
+  dialog.showErrorBox(listener.name, listener.message)
 })
 
 // This method will be called when Electron has finished
@@ -61,15 +25,8 @@ app.whenReady().then(async () => {
     optimizer.watchWindowShortcuts(window)
   })
 
-  app.on('activate', function () {
-    // On macOS it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
-    if (BrowserWindow.getAllWindows().length === 0) createWindow()
-  })
-
   try {
     await initializeDatabase()
-    createWindow()
   } catch (error) {
     if (error instanceof ExpectedError) {
       dialog.showErrorBox('ExpectedError', error.key)
@@ -78,6 +35,14 @@ app.whenReady().then(async () => {
     console.error(`Unexpected Error: ${error}`)
     app.exit(1)
   }
+
+  app.on('activate', function () {
+    // On macOS it's common to re-create a window in the app when the
+    // dock icon is clicked and there are no other windows open.
+    if (BrowserWindow.getAllWindows().length === 0) createMainWindow()
+  })
+
+  createMainWindow()
 })
 
 // Quit when all windows are closed, except on macOS. There, it's common

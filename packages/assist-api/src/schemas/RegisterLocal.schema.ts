@@ -1,4 +1,5 @@
 import { z } from 'zod';
+
 import { z18n } from './zod-i18n';
 
 export const RegisterLocalSchema = z18n.object({

@@ -2,12 +2,12 @@ import cuid2 from '@paralleldrive/cuid2';
 import { eq } from 'drizzle-orm';
 
 import { ExpectedError } from '../../errors/ExpectedError';
-import { ILocalData } from '../../schemas/LocalData.schema';
+import { ILocalDataDTO } from '../../schemas/LocalData.schema';
 import { IRegisterLocalSchema } from '../../schemas/RegisterLocal.schema';
 import { DatabaseAdapter, DatabaseRepository } from '../DatabaseRepository';
 
 export class RepositoryLocalData extends DatabaseRepository<DatabaseAdapter> {
-  async get(): Promise<ILocalData> {
+  async get(): Promise<ILocalDataDTO['Create']> {
     const result = await this.db.query.Table_LocalData.findFirst({
       with: { currentApp: true },
     });
@@ -40,7 +40,7 @@ export class RepositoryLocalData extends DatabaseRepository<DatabaseAdapter> {
     });
   }
 
-  async patch(data: Partial<Omit<ILocalData, 'previousAppIds'>>): Promise<void> {
+  async patch(data: ILocalDataDTO['Update']): Promise<void> {
     const result = await this.db.select().from(this.schema.Table_LocalData).limit(1);
     if (result.length === 0) {
       throw new ExpectedError('db.missingLocalData');

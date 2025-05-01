@@ -7,7 +7,10 @@ export function ReceiverSearchDevices(): ReactNode {
   const sendDiscovery = trpcReact.PROTECTED.sendDiscovery.useMutation()
   const addToListeningTo = trpcReact.PROTECTED.addToListeningTo.useMutation()
   const roomsToDiscover = trpcReact.PROTECTED.getRoomsToDiscover.useQuery()
-  console.log(roomsToDiscover.data)
+
+  if (roomsToDiscover.isLoading) return <SizableText>loading</SizableText>
+  if (roomsToDiscover.isError) return null
+
   return (
     <YStack items="center">
       <Button
@@ -23,18 +26,15 @@ export function ReceiverSearchDevices(): ReactNode {
         <SizableText>Detectar otros dispositivos</SizableText>
       </Button>
       <YGroup overflow="scroll" flex={1} width={'100%'}>
-        {[].map((_, index) => (
-          <YGroup.Item
-            key={index}
-            // padding="$4"
-          >
+        {roomsToDiscover.data.map((x) => (
+          <YGroup.Item key={x.appId}>
             <ListItem
               hoverTheme
               pressTheme
               icon={UserPlus}
-              onPress={() => addToListeningTo.mutate({ appId: '' })}
-              title="Nombre del dispositivo"
-              subTitle="Marca"
+              onPress={() => addToListeningTo.mutate({ appId: x.appId })}
+              title={x.callerName}
+              subTitle={x.device}
             />
           </YGroup.Item>
         ))}

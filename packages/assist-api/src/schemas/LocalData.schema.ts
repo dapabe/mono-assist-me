@@ -1,12 +1,15 @@
-import { z } from 'zod';
-
-import { NonEmptyStringSchema } from './utils.schema';
+import { RegisterLocalSchema } from './RegisterLocal.schema';
 import { z18n } from './zod-i18n';
+import { IndexedClassDTO } from '../types/IndexedClassDTO.zod';
 
-export const LocalDataSchema = z18n.object({
-  currentName: NonEmptyStringSchema.default(''),
-  currentAppId: NonEmptyStringSchema.default(''),
-  previousAppIds: NonEmptyStringSchema.default('').array(),
-});
+export class LocalDataDTO {
+  static Create = z18n.object({
+    currentName: RegisterLocalSchema.shape.name,
+    currentAppId: z18n.string().cuid2(),
+    previousAppIds: z18n.string().cuid2().array(),
+  });
 
-export type ILocalData = z.infer<typeof LocalDataSchema>;
+  static Update = LocalDataDTO.Create.omit({ previousAppIds: true }).partial();
+}
+
+export type ILocalDataDTO = IndexedClassDTO<typeof LocalDataDTO>;
