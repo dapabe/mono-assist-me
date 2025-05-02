@@ -6,8 +6,8 @@ CREATE TABLE `listeningTo` (
 );
 --> statement-breakpoint
 CREATE TABLE `localData` (
-	`currentName` text NOT NULL,
 	`currentAppId` text NOT NULL,
+	`currentName` text NOT NULL,
 	FOREIGN KEY (`currentAppId`) REFERENCES `previousAppIds`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint

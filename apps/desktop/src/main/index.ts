@@ -25,16 +25,7 @@ app.whenReady().then(async () => {
     optimizer.watchWindowShortcuts(window)
   })
 
-  try {
-    await initializeDatabase()
-  } catch (error) {
-    if (error instanceof ExpectedError) {
-      dialog.showErrorBox('ExpectedError', error.key)
-      app.exit(1)
-    }
-    console.error(`Unexpected Error: ${error}`)
-    app.exit(1)
-  }
+  await initializeDatabase()
 
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the

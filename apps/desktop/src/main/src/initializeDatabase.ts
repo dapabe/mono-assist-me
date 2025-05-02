@@ -9,13 +9,14 @@ import {
   vanillaRoomStore
 } from '@mono/assist-api'
 import { drizzle } from 'drizzle-orm/better-sqlite3'
+import { is } from '@electron-toolkit/utils'
 
 export async function initializeDatabase(): Promise<void> {
   try {
     let dbPath = path.join(app.getPath('appData'), 'assist.db')
-    if (import.meta.env.DEV) {
+    if (is.dev) {
       const dirPath = path.resolve('.temp')
-      fss.mkdirSync(path.dirname(dirPath), { recursive: true })
+      fss.mkdirSync(dirPath)
       dbPath = path.join(dirPath, 'sqlite.db')
     }
     const client = new BetterSqlite3(dbPath)

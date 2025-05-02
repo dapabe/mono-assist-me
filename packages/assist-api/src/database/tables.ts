@@ -1,6 +1,7 @@
 import { createId } from '@paralleldrive/cuid2';
-import { relations } from 'drizzle-orm';
-import { int, sqliteTable, text } from 'drizzle-orm/sqlite-core';
+import { relations, sql } from 'drizzle-orm';
+import { check, index, int, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core';
+import { RegisterLocalSchema } from '../schemas/RegisterLocal.schema';
 
 export const Table_PreviousAppIds = sqliteTable('previousAppIds', {
   id: text('id')
@@ -9,25 +10,41 @@ export const Table_PreviousAppIds = sqliteTable('previousAppIds', {
   createdAt: int('createdAt', { mode: 'timestamp' }).$defaultFn(() => new Date()),
 });
 
-export const Table_LocalData = sqliteTable('localData', {
-  currentName: text('currentName').notNull(),
-  currentAppId: text('currentAppId')
-    .references(() => Table_PreviousAppIds.id)
-    .notNull(),
-});
+export const Table_LocalData = sqliteTable(
+  'localData',
+  {
+    currentAppId: text('currentAppId')
+      .references(() => Table_PreviousAppIds.id)
+      .notNull(),
+    currentName: text('currentName').notNull(),
+  },
+  (table) => [
+    // check(table.currentName.name + '_trim', sql`trim(${table.currentName}) = ${table.currentName}`),
+    // check(table.currentName.name + '_length', sql`length(${table.currentName}) > 3`),
+  ]
+);
 
 export const TableRelation_LocalData = relations(Table_LocalData, ({ one }) => ({
-  currentApp: one(Table_PreviousAppIds, {
+  currentAppId: one(Table_PreviousAppIds, {
     fields: [Table_LocalData.currentAppId],
     references: [Table_PreviousAppIds.id],
   }),
 }));
 
-export const Table_ListeningTo = sqliteTable('listeningTo', {
-  id: int('id').primaryKey({ autoIncrement: true }),
-  appId: text('appId').notNull(),
-  name: text('name').notNull(),
-  lastSeen: int('lastSeen', { mode: 'timestamp' })
-    .$defaultFn(() => new Date())
-    .notNull(),
-});
+export const Table_ListeningTo = sqliteTable(
+  'listeningTo',
+  {
+    id: int('id').primaryKey({ autoIncrement: true }),
+    appId: text('appId').notNull(),
+    name: text('name').notNull(),
+    lastSeen: int('lastSeen', { mode: 'timestamp' })
+      .$defaultFn(() => new Date())
+      .notNull(),
+  },
+  (table) => [
+    // check(table.name.name + '_trim', sql`trim(${table.name}) = ${table.name}`),
+    // check(table.name.name + '_length', sql`length(${table.name}) > 3`),
+    // index(table.name.name + '_idx').on(table.name),
+    // uniqueIndex(table.appId.name + '_idx').on(table.appId),
+  ]
+);

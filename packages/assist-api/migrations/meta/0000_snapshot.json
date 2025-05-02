@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "7be2eb4c-2c75-4779-b270-797a79797548",
+  "id": "f179e39d-f680-419c-950d-c54de79c4fec",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "listeningTo": {
@@ -45,15 +45,15 @@
     "localData": {
       "name": "localData",
       "columns": {
-        "currentName": {
-          "name": "currentName",
+        "currentAppId": {
+          "name": "currentAppId",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "currentAppId": {
-          "name": "currentAppId",
+        "currentName": {
+          "name": "currentName",
           "type": "text",
           "primaryKey": false,
           "notNull": true,

@@ -9,7 +9,7 @@ import { DatabaseAdapter, DatabaseRepository } from '../DatabaseRepository';
 export class RepositoryLocalData extends DatabaseRepository<DatabaseAdapter> {
   async get(): Promise<ILocalDataDTO['Create']> {
     const result = await this.db.query.Table_LocalData.findFirst({
-      with: { currentApp: true },
+      with: { currentAppId: true },
     });
 
     if (!result) throw new ExpectedError('db.missingLocalData');
@@ -66,5 +66,13 @@ export class RepositoryLocalData extends DatabaseRepository<DatabaseAdapter> {
   async entryExists(): Promise<boolean> {
     const amount = await this.db.$count(this.schema.Table_LocalData);
     return amount === 1;
+  }
+
+  /**
+   *  Destructive action, only used in dev mode
+   */
+  async delete(): Promise<void> {
+    await this.db.delete(this.schema.Table_LocalData);
+    await this.db.delete(this.schema.Table_PreviousAppIds);
   }
 }
