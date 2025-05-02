@@ -5,7 +5,6 @@ import {
   Outlet
 } from '@tanstack/react-router'
 import { ReactNode } from 'react'
-import { YStack } from 'tamagui'
 
 export const Route = createRootRouteWithContext<{
   localAuth: ILocalAuthContext
@@ -16,10 +15,10 @@ export const Route = createRootRouteWithContext<{
 
 function ErrorComponent(props: ErrorComponentProps): ReactNode {
   return (
-    <YStack>
+    <div>
       Ha ocurrido un error
       {JSON.stringify(props.info)},{JSON.stringify(props.error)}
       Route {window.location.pathname}
-    </YStack>
+    </div>
   )
 }

@@ -1,6 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { ReactNode } from 'react'
-import { SizableText, Tabs } from 'tamagui'
+import { ReactNode, useState } from 'react'
 import { ReceiverSearchDevices } from './-components/dashboard/receiver/Receiver.SearchDevices'
 import { ReceiverSelectedDevices } from './-components/dashboard/receiver/Receiver.SelectedDevices'
 
@@ -9,49 +8,30 @@ export const Route = createFileRoute('/dashboard/receiver')({
 })
 
 function Component(): ReactNode {
-  return (
-    <Tabs
-      defaultValue="1"
-      orientation="horizontal"
-      flexDirection="column"
-      borderColor="$borderColor"
-      overflow="hidden"
-      // flex={1}
-    >
-      <Tabs.List
-        aria-label="Lista de emisores"
-        disablePassBorderRadius="bottom"
-      >
-        <Tabs.Tab
-          flex={1}
-          value="1"
-          focusStyle={{
-            backgroundColor: '$color3'
-          }}
-        >
-          <SizableText fontFamily="$body" text="center">
-            Conocidos
-          </SizableText>
-        </Tabs.Tab>
-        <Tabs.Tab
-          flex={1}
-          value="2"
-          focusStyle={{
-            backgroundColor: '$color3'
-          }}
-        >
-          <SizableText fontFamily="$body" text="center">
-            Descubrir
-          </SizableText>
-        </Tabs.Tab>
-      </Tabs.List>
+  const [cTab, setTab] = useState('tab2')
 
-      <Tabs.Content value="1" flex={1}>
-        <ReceiverSelectedDevices />
-      </Tabs.Content>
-      <Tabs.Content value="2" flex={1}>
-        <ReceiverSearchDevices />
-      </Tabs.Content>
-    </Tabs>
+  return (
+    <section className="grow [*]:px-4 flex flex-col">
+      <div role="tablist" className="tabs tabs-border w-full">
+        <input
+          type="radio"
+          name="tab1"
+          className="tab grow"
+          aria-label="Conocidos"
+          checked={cTab === 'tab1'}
+          onChange={() => setTab('tab1')}
+        />
+        <input
+          type="radio"
+          name="tab2"
+          className="tab grow"
+          aria-label="Descubrir"
+          checked={cTab === 'tab2'}
+          onChange={() => setTab('tab2')}
+        />
+      </div>
+      {cTab === 'tab1' && <ReceiverSelectedDevices />}
+      {cTab === 'tab2' && <ReceiverSearchDevices />}
+    </section>
   )
 }

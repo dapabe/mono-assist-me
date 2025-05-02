@@ -2,7 +2,6 @@ import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
 import { ReactNode, useEffect } from 'react'
 import { DashboardLayout } from './-components/dashboard/Dashboard.layout'
 import { trpcReact } from '@renderer/services/trpc'
-import { SizableText } from 'tamagui'
 
 export const Route = createFileRoute('/dashboard')({
   beforeLoad: (opts) => {
@@ -18,10 +17,9 @@ function Componenet(): ReactNode {
     if (ApiInit.data !== null) ApiInit.mutate()
   }, [ApiInit.data])
 
-  if (ApiInit.isLoading) return <SizableText>Loading</SizableText>
+  if (ApiInit.isLoading) return <p>Loading</p>
 
-  if (ApiInit.isError)
-    return <SizableText>Error {JSON.stringify(ApiInit.error)}</SizableText>
+  if (ApiInit.isError) return <p>Error {JSON.stringify(ApiInit.error)}</p>
 
   return (
     <DashboardLayout>

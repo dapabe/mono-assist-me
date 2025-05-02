@@ -1,44 +1,82 @@
 import { trpcReact } from '@renderer/services/trpc'
-import { Radio, UserPlus } from '@tamagui/lucide-icons'
+import { Spinner } from '@renderer/ui/Spinner'
 import { ReactNode } from 'react'
-import { Button, ListItem, SizableText, YGroup, YStack } from 'tamagui'
 
 export function ReceiverSearchDevices(): ReactNode {
-  const sendDiscovery = trpcReact.PROTECTED.sendDiscovery.useMutation()
   const addToListeningTo = trpcReact.PROTECTED.addToListeningTo.useMutation()
   const roomsToDiscover = trpcReact.PROTECTED.getRoomsToDiscover.useQuery()
 
-  if (roomsToDiscover.isLoading) return <SizableText>loading</SizableText>
+  if (roomsToDiscover.isLoading) {
+    return (
+      <div className="grow flex flex-col">
+        <div className="w-full flex">
+          <DiscoveryButton disabled />
+        </div>
+        <ul className="list overflow-y-scroll h-[calc(100vh-10rem)]">
+          {Array.from({ length: 2 }).map((_, i) => (
+            <li key={i} className="list-row flex flex-col gap-y-1.5">
+              <div className="skeleton w-2/5 h-4"></div>
+              <div className="skeleton w-full h-4"></div>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )
+  }
+
   if (roomsToDiscover.isError) return null
 
-  return (
-    <YStack items="center">
-      <Button
-        // buttonStyle={styles.searchButton}
-        // radius={UITheme.spacing?.xl}
-        // type="solid"
-        // title={'Detectar otros dispositivos'}
-        // iconPosition="top"
+  if (!roomsToDiscover.data.length) {
+    return (
+      <div className="grow flex flex-col">
+        <div className="w-full flex">
+          <DiscoveryButton />
+        </div>
+        <div className="grow flex items-center justify-center">
+          <span className="label text-2xl">
+            No hay dispositivos en la cercania
+          </span>
+        </div>
+      </div>
+    )
+  }
 
-        icon={Radio}
-        onPress={() => sendDiscovery.mutate()}
-      >
-        <SizableText>Detectar otros dispositivos</SizableText>
-      </Button>
-      <YGroup overflow="scroll" flex={1} width={'100%'}>
+  return (
+    <div className="grow flex flex-col">
+      <div className="w-full flex">
+        <DiscoveryButton />
+      </div>
+      <ul className="list overflow-y-scroll h-[calc(100vh-10rem)]">
         {roomsToDiscover.data.map((x) => (
-          <YGroup.Item key={x.appId}>
-            <ListItem
-              hoverTheme
-              pressTheme
-              icon={UserPlus}
-              onPress={() => addToListeningTo.mutate({ appId: x.appId })}
-              title={x.callerName}
-              subTitle={x.device}
-            />
-          </YGroup.Item>
+          <li key={x.appId} className="list-row">
+            <button
+              // icon={UserPlus}
+              onClick={() => addToListeningTo.mutate({ appId: x.appId })}
+            >
+              <span>{x.callerName}</span>
+              <span>{x.device}</span>
+            </button>
+          </li>
         ))}
-      </YGroup>
-    </YStack>
+      </ul>
+    </div>
+  )
+}
+
+function DiscoveryButton({ disabled }: { disabled?: boolean }): ReactNode {
+  const sendDiscovery = trpcReact.PROTECTED.sendDiscovery.useMutation()
+  return (
+    <button
+      // buttonStyle={styles.searchButton}
+      // radius={UITheme.spacing?.xl}
+      // type="solid"
+      // title={'Detectar otros dispositivos'}
+      // iconPosition="top"
+      disabled={disabled}
+      className="btn btn-accent btn-outline grow mt-2"
+      onClick={() => sendDiscovery.mutate()}
+    >
+      Detectar otros dispositivos
+    </button>
   )
 }

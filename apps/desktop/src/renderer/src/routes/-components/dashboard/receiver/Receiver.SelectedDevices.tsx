@@ -1,34 +1,51 @@
 import { trpcReact } from '@renderer/services/trpc'
-import { UserMinus } from '@tamagui/lucide-icons'
+import { Spinner } from '@renderer/ui/Spinner'
 import { ReactNode } from 'react'
-import { Button, ListItem, Separator, SizableText, YGroup } from 'tamagui'
 
 export function ReceiverSelectedDevices(): ReactNode {
   const roomsListeningTo = trpcReact.PROTECTED.getRoomsListeningTo.useQuery()
   const deleteListeningTo = trpcReact.PROTECTED.deleteListeningTo.useMutation()
   const respondToHelp = trpcReact.PROTECTED.respondToHelp.useMutation()
 
-  if (roomsListeningTo.isLoading) return <SizableText>Loading</SizableText>
-
-  if (roomsListeningTo.isError)
+  if (roomsListeningTo.isLoading) {
     return (
-      <SizableText>Error {JSON.stringify(roomsListeningTo.error)}</SizableText>
+      <ul className="list overflow-y-scroll h-[calc(100vh-6rem)]">
+        {Array.from({ length: 2 }).map((_, i) => (
+          <li key={i} className="list-row flex flex-col gap-y-1.5">
+            <div className="skeleton w-2/5 h-4"></div>
+            <div className="skeleton w-full h-4"></div>
+          </li>
+        ))}
+      </ul>
     )
+  }
+
+  if (roomsListeningTo.isError) return null
+
+  if (!roomsListeningTo.data.length) {
+    return (
+      <div className="grow flex items-center justify-center">
+        <span className="label text-2xl">Sin dispositivos guardados</span>
+      </div>
+    )
+  }
 
   return (
-    <YGroup>
+    <ul className="list overflow-y-scroll h-[calc(100vh-6rem)]">
       {roomsListeningTo.data.map((x) => (
-        <YGroup.Item key={x.appId}>
-          <ListItem
-            iconAfter={(props) => (
-              <Button icon={UserMinus} scaleIcon={3} {...props}></Button>
-            )}
-            onPress={() => respondToHelp.mutate({ appId: x.appId })}
-            title={x.callerName}
-            subTitle={x.device}
-          />
-        </YGroup.Item>
+        <li key={x.appId} className="list-row">
+          <div
+          // iconAfter={(props) => (
+          //   <Button icon={UserMinus} scaleIcon={3} {...props}></Button>
+          // )}
+          >
+            <button onClick={() => respondToHelp.mutate({ appId: x.appId })}>
+              <span>{x.callerName}</span>
+              <span>{x.device}</span>
+            </button>
+          </div>
+        </li>
       ))}
-    </YGroup>
+    </ul>
   )
 }
