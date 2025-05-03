@@ -1,10 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { IRegisterLocalSchema, RegisterLocalSchema } from '@mono/assist-api'
-import { trpcReact } from '@renderer/services/trpc'
 import { createFileRoute, redirect } from '@tanstack/react-router'
 import { ReactNode } from 'react'
 import { useForm } from 'react-hook-form'
 import { Spinner } from '@renderer/ui/Spinner'
+import { useLocalAuth } from './-components/providers/LocalAuth.provider'
 
 export const Route = createFileRoute('/')({
   beforeLoad: (opts) => {
@@ -16,16 +16,21 @@ export const Route = createFileRoute('/')({
 })
 
 function Component(): ReactNode {
-  const ApiRegister = trpcReact.PUBLIC.register.useMutation()
+  const { register } = useLocalAuth()
   const form = useForm<IRegisterLocalSchema>({
     defaultValues: { name: '' }
   })
   const nav = Route.useNavigate()
 
-  const handleSubmit = async (values: IRegisterLocalSchema): Promise<void> => {
-    await ApiRegister.mutateAsync(values)
-    if (ApiRegister.isSuccess) return await nav({ to: '/dashboard' })
-    console.log(ApiRegister.error)
+  const handleSubmit = async (): Promise<void> => {
+    await register(form.getValues().name)
+      .then(async () => {
+        await nav({ to: '/dashboard' })
+      })
+      .catch((reason) => {
+        console.log(reason)
+      })
+    // if (ApiRegister.isSuccess) return await nav({ to: '/dashboard' })
   }
 
   return (
@@ -33,15 +38,30 @@ function Component(): ReactNode {
       //@ts-ignore recursive type depth
       // resolver={zodResolver(RegisterLocalSchema)}
       onSubmit={handleSubmit}
+      className="min-h-svh flex flex-col justify-center items-center"
     >
-      <div>
-        <label htmlFor="name">Nombre con el que otros te veran</label>
-        <input {...form.register('name')} />
-      </div>
-      <button type="submit">
-        {ApiRegister.isLoading ? <Spinner /> : undefined}
-        {!ApiRegister.isLoading && 'Guardar'}
-      </button>
+      <fieldset className="fieldset bg-base-200 p-4 rounded-box">
+        <label htmlFor="name" className="label text-lg">
+          Nombre con el que otros te veran
+        </label>
+        <input
+          id="name"
+          {...form.register('name')}
+          className="input input-lg input-neutral"
+          placeholder="ej: Daniel P. Becerra"
+        />
+        <label role="definition" htmlFor="name" className="label text-sm">
+          Podras cambiarlo despues
+        </label>
+        <button
+          type="submit"
+          className="btn btn-lg btn-neutral"
+          disabled={form.formState.isLoading}
+        >
+          {form.formState.isLoading ? <Spinner /> : undefined}
+          {!form.formState.isLoading && 'Continuar'}
+        </button>
+      </fieldset>
     </form>
   )
 }

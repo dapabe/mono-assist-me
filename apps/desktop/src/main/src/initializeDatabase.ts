@@ -16,7 +16,7 @@ export async function initializeDatabase(): Promise<void> {
     let dbPath = path.join(app.getPath('appData'), 'assist.db')
     if (is.dev) {
       const dirPath = path.resolve('.temp')
-      fss.mkdirSync(dirPath)
+      fss.mkdirSync(dirPath, { recursive: true })
       dbPath = path.join(dirPath, 'sqlite.db')
     }
     const client = new BetterSqlite3(dbPath)
@@ -25,7 +25,6 @@ export async function initializeDatabase(): Promise<void> {
       client,
       schema: schemaBarrel
     })
-
     migrate(adapter, {
       migrationsFolder: './node_modules/@mono/assist-api/migrations'
     })

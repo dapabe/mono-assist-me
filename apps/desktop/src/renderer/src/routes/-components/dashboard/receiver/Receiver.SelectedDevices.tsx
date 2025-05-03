@@ -1,5 +1,4 @@
 import { trpcReact } from '@renderer/services/trpc'
-import { Spinner } from '@renderer/ui/Spinner'
 import { ReactNode } from 'react'
 
 export function ReceiverSelectedDevices(): ReactNode {
