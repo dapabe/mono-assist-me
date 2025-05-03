@@ -15,7 +15,7 @@ export default function RegisterScreen() {
     defaultValues: {
       name: '',
     },
-    resolver: zodResolver(RegisterLocalSchema),
+    // resolver: zodResolver(RegisterLocalSchema),
   });
   const { updateCurrentNameMutation } = useLocalNameQuery();
 
@@ -37,14 +37,14 @@ export default function RegisterScreen() {
         <InputControl
           name="name"
           label="Tu nombre público"
-          description="Asi se verá para otras personas"
+          description="Asi te veran para otras personas"
           placeholder="ej: John Anti-Cheat"
         />
         <Text>Podras cambiarlo luego</Text>
         <View>
           <Button
             disabled={form.formState.isSubmitting || !form.formState.isValid}
-            title="Guardar"
+            title="Continuar"
             onPress={form.handleSubmit(onSubmit)}
           />
         </View>

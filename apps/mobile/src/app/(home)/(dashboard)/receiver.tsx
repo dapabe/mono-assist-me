@@ -1,6 +1,6 @@
 import { ReceiverSearchDevices } from '#src/components/receiver-lists/Receiver.SearchDevices';
 import { ReceiverSelectedDevices } from '#src/components/receiver-lists/Receiver.SelectedDevices';
-import { useRoomStore } from '#src/hooks/useRoomStore';
+import { useRoomStore } from '@mono/assist-api';
 import { Tab, TabView } from '@rneui/themed';
 import { useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
@@ -12,7 +12,7 @@ export default function ReceiverScreen() {
   const ctx = useRoomStore();
 
   useEffect(() => {
-    if (!ctx.roomsListeningTo?.size) setTab(1);
+    if (!ctx.roomsListeningTo.length) setTab(1);
   }, [ctx.roomsListeningTo]);
 
   return (

@@ -4,8 +4,9 @@ import { IAssistanceRoomClientSlice, IRoomEmitterSlice, IRoomReceiverSlice } fro
 import { IListeningToDTO } from '../schemas/ListeningTo.schema';
 import { ConnMethod, RoomEventLiteral, RoomServiceStatus } from '../schemas/RoomEvent.schema';
 import { UUID } from '../types/common';
-import { IRoomData, IRoomListener, IWSRoom, IWSRoomListener } from '../types/room.context';
+import { IRoomData } from '../types/room.context';
 import { UdpSocketClient } from '../udp-client/UDPClient';
+import { create } from 'zustand';
 
 export type IRoomState = IAssistanceRoomClientSlice & IRoomEmitterSlice & IRoomReceiverSlice;
 
@@ -18,7 +19,11 @@ export type IRoomState = IAssistanceRoomClientSlice & IRoomEmitterSlice & IRoomR
  * 	outside react itself.
  */
 
-export const defaultRoomStore: StateCreator<IRoomState, [], [], IRoomState> = (set, get) => ({
+/**
+ *  Must be a function so it can be instantiated per enviroment
+ *  or else it will share state.
+ */
+const createRoomStore = (): StateCreator<IRoomState, [], [], IRoomState> => (set, get) => ({
   connMethod: ConnMethod.None,
   connAdapter: null,
   status: RoomServiceStatus.Down,
@@ -248,18 +253,19 @@ export const defaultRoomStore: StateCreator<IRoomState, [], [], IRoomState> = (s
   },
 
   sendDiscovery: () => {
-    if (!get().connAdapter) {
+    const adapter = get().connAdapter;
+    if (!adapter) {
       console.log('[RoomStore] No adapter');
       return;
     }
-    get().connAdapter!.sendDiscovery();
+    adapter.sendDiscovery();
   },
 
   //  Room receiver methods
 
   addToListeningTo: (appId) => {
     const discoveryRoom = get().onStartListening(appId);
-    if (!discoveryRoom) return console.log('no emitter in discovery room');
+    if (!discoveryRoom) return console.log('[RoomStore] No emitter in discovery room');
     get().notifyEmitterThisDeviceIsListening(discoveryRoom);
   },
   notifyEmitterThisDeviceIsListening: (room) => {
@@ -294,12 +300,17 @@ export const defaultRoomStore: StateCreator<IRoomState, [], [], IRoomState> = (s
 
   //  Room emitter methods
   requestHelp: () => {
-    if (!get().connAdapter) return;
-    if (get().connAdapter instanceof UdpSocketClient) {
-      get().connAdapter!.requestHelp();
+    const adapter = get().connAdapter;
+    if (!adapter) return;
+    if (adapter instanceof UdpSocketClient) {
+      adapter.requestHelp();
     }
   },
 });
 
-export const vanillaRoomStore = createStore<IRoomState>(defaultRoomStore);
-// export const useRoomStore = create<IRoomState>(defaultState);
+/** To be used in Node/Js enviroment */
+export function createVanillaRoomStore() {
+  return createStore<IRoomState>(createRoomStore());
+}
+/** To be used in React Native enviroment */
+export const useRoomStore = create<IRoomState>(createRoomStore());

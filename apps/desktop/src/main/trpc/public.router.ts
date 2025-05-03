@@ -1,12 +1,12 @@
-import { RegisterLocalSchema, vanillaRoomStore } from '@mono/assist-api'
+import { RegisterLocalSchema } from '@mono/assist-api'
 import { tInstance } from './trpc'
 import { ErrorNotificationService } from '../src/services/ErrorNotif.service'
+import { MemoryState } from '../memory-state'
 
-const MemoryState = vanillaRoomStore.getState()
 export const PublicTrpcRouter = tInstance.router({
   isAuthenticated: tInstance.procedure.query<boolean>(async () => {
     try {
-      return await MemoryState.getRepos().LocalData.entryExists()
+      return await MemoryState.getState().getRepos().LocalData.entryExists()
     } catch (error) {
       ErrorNotificationService.getInstance().showError(
         'db.localdata.entryExists',
@@ -19,7 +19,9 @@ export const PublicTrpcRouter = tInstance.router({
     .input(RegisterLocalSchema)
     .mutation(async (opts) => {
       try {
-        await MemoryState.getRepos().LocalData.create({ name: opts.input.name })
+        await MemoryState.getState()
+          .getRepos()
+          .LocalData.create({ name: opts.input.name })
       } catch (error) {
         ErrorNotificationService.getInstance().showError(
           'db.localdata.create',

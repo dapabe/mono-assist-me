@@ -15,7 +15,7 @@ export default function SettingsScreen() {
 
   const form = useForm<IRegisterLocalSchema>({
     defaultValues: { name: currentName.data ?? '' },
-    resolver: zodResolver(RegisterLocalSchema),
+    // resolver: zodResolver(RegisterLocalSchema),
   });
 
   const onSubmit = async (data: IRegisterLocalSchema) => {

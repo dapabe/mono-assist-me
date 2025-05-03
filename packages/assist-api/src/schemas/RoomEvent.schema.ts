@@ -14,7 +14,7 @@ export const ConnMethod = {
   LANSocket: 1,
 } as const;
 export type IConnMethod = (typeof ConnMethod)[keyof typeof ConnMethod];
-export type IConnAdapter = InstanceType<typeof UdpSocketClient> | null;
+export type IConnAdapter = UdpSocketClient | null;
 
 export const RoomServiceStatus = {
   Down: 0,

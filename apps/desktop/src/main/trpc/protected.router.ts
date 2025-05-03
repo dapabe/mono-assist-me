@@ -5,30 +5,31 @@ import {
   IWSRoomListener,
   RegisterLocalSchema,
   UdpSocketClient,
-  vanillaRoomStore,
   z18n
 } from '@mono/assist-api'
 import { ErrorNotificationService } from '../src/services/ErrorNotif.service'
 import { NodeSocketAdapter } from '../src/udp-client.adapter'
 import { tInstance } from './trpc'
+import { MemoryState } from '../memory-state'
+import { getInternalIPv4 } from '../src/utils/getInternalIPv4'
+import { TRPCError } from '@trpc/server'
 // import { EventEmitter } from 'node:stream'
 
-const MemoryState = vanillaRoomStore.getState()
 // const EEListeningTo = new EventEmitter()
 
 export const ProtectedTrpcRouter = tInstance.router({
   // App actions
   getLocalData: tInstance.procedure.query<ILocalDataDTO['Create']>(async () => {
-    return await MemoryState.getRepos().LocalData.get()
+    return await MemoryState.getState().getRepos().LocalData.get()
   }),
   updateLocalName: tInstance.procedure
     .input(RegisterLocalSchema)
     .mutation(async (req) => {
       try {
-        await MemoryState.getRepos().LocalData.patch({
+        await MemoryState.getState().getRepos().LocalData.patch({
           currentName: req.input.name
         })
-        MemoryState.updateMemoryState('currentName', req.input.name)
+        MemoryState.getState().updateMemoryState('currentName', req.input.name)
       } catch (error) {
         ErrorNotificationService.getInstance().showError(
           'db.patchLocalName',
@@ -39,16 +40,17 @@ export const ProtectedTrpcRouter = tInstance.router({
 
   // Room actions
   initialize: tInstance.procedure.mutation<null>(async () => {
-    const { currentName, currentAppId } =
-      await MemoryState.getRepos().LocalData.get()
-    MemoryState.updateMemoryState('currentName', currentName)
-    MemoryState.updateMemoryState('currentAppId', currentAppId)
-
-    const client = UdpSocketClient.getInstance({
+    const { currentName, currentAppId } = await MemoryState.getState()
+      .getRepos()
+      .LocalData.get()
+    MemoryState.getState().updateMemoryState('currentName', currentName)
+    MemoryState.getState().updateMemoryState('currentAppId', currentAppId)
+    const netInfo = getInternalIPv4()
+    if (!netInfo) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR' })
+    const client = new UdpSocketClient({
       adapter: new NodeSocketAdapter(),
-      store: MemoryState,
-      address: '0.0.0.0',
-      port: UdpSocketClient.DISCOVERY_PORT
+      store: MemoryState.getState(),
+      address: netInfo.address
     })
     client.init()
 
@@ -56,7 +58,7 @@ export const ProtectedTrpcRouter = tInstance.router({
   }),
   sendDiscovery: tInstance.procedure.mutation(() => {
     try {
-      MemoryState.sendDiscovery()
+      MemoryState.getState().sendDiscovery()
     } catch (error) {
       ErrorNotificationService.getInstance().showError(
         'socket.sendDiscovery',
@@ -65,22 +67,22 @@ export const ProtectedTrpcRouter = tInstance.router({
     }
   }),
   getRoomsToDiscover: tInstance.procedure.query<IWSRoom[]>(
-    () => MemoryState.roomsToDiscover
+    () => MemoryState.getState().roomsToDiscover
   ),
   getRoomsListeningTo: tInstance.procedure.query<IWSRoomListener[]>(
-    () => MemoryState.roomsListeningTo
+    () => MemoryState.getState().roomsListeningTo
   ),
   getCurrentListeners: tInstance.procedure.query<IRoomListener[]>(
-    () => MemoryState.currentListeners
+    () => MemoryState.getState().currentListeners
   ),
   getStoredListeners: tInstance.procedure.query(() => {
-    return MemoryState.storedListeners
+    return MemoryState.getState().storedListeners
   }),
   addToListeningTo: tInstance.procedure
     .input(z18n.object({ appId: z18n.string().cuid2() }))
     .mutation((req) => {
       try {
-        MemoryState.addToListeningTo(req.input.appId)
+        MemoryState.getState().addToListeningTo(req.input.appId)
       } catch (error) {
         ErrorNotificationService.getInstance().showError(
           'socket.addToListeningTo',
@@ -92,7 +94,7 @@ export const ProtectedTrpcRouter = tInstance.router({
     .input(z18n.object({ appId: z18n.string().cuid2() }))
     .mutation((req) => {
       try {
-        MemoryState.deleteListeningTo(req.input.appId)
+        MemoryState.getState().deleteListeningTo(req.input.appId)
       } catch (error) {
         ErrorNotificationService.getInstance().showError(
           'socket.deleteListeningTo',
@@ -102,7 +104,7 @@ export const ProtectedTrpcRouter = tInstance.router({
     }),
   requestHelp: tInstance.procedure.mutation(async () => {
     try {
-      MemoryState.requestHelp()
+      MemoryState.getState().requestHelp()
     } catch (error) {
       ErrorNotificationService.getInstance().showError(
         'socket.requestHelp',
@@ -114,7 +116,7 @@ export const ProtectedTrpcRouter = tInstance.router({
     .input(z18n.object({ appId: z18n.string().cuid2() }))
     .mutation((req) => {
       try {
-        MemoryState.respondToHelp(req.input.appId)
+        MemoryState.getState().respondToHelp(req.input.appId)
       } catch (error) {
         ErrorNotificationService.getInstance().showError(
           'socket.respondToHelp',

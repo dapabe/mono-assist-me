@@ -1,7 +1,6 @@
 import { UITheme } from '#src/common/ui-theme';
 import { useImplicitToggle } from '#src/hooks/useImplicitToggle.hook';
-import { useRoomStore } from '#src/hooks/useRoomStore';
-import { IWSRoomListener } from '@mono/assist-api';
+import { IWSRoomListener, useRoomStore } from '@mono/assist-api';
 import { Button, ListItem } from '@rneui/themed';
 import { FlashList } from '@shopify/flash-list';
 import React from 'react';
@@ -19,8 +18,9 @@ export function ReceiverSelectedDevices() {
 
   const handleDelete = (appId: string) => {
     toggleRefresh();
+    const emitter = ctx.roomsListeningTo.find((x) => x.appId === appId);
     Alert.alert(
-      `¿Seguro desea eliminar a '${ctx.roomsListeningTo.get(appId)!.callerName}'?`,
+      `¿Seguro desea eliminar a '${emitter?.callerName}'?`,
       'Tendras que volver a añadir esta persona',
       [
         {

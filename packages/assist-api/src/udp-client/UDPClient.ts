@@ -14,7 +14,6 @@ import { RemoteUDPInfo } from '../types/room.context';
 import { ISocketClient } from '../types/socket-adapter';
 
 type ISocketClientOptions = {
-  port: number;
   address: string;
   adapter: SocketAdapter;
   store: IRoomState;
@@ -25,32 +24,40 @@ export class UdpSocketClient implements ISocketClient {
   private config: ISocketClientOptions;
 
   private HEARTBEAT_INTERVAL!: NodeJS.Timeout;
-  private readonly HEARTBEAT_EXPIRATION = 30_000 as const;
+  private HEARTBEAT_EXPIRATION = 30_000 as const;
 
   private HELP_INTERVAL!: NodeJS.Timeout;
-  private readonly HELP_EXPIRATION = 5000 as const;
+  private HELP_EXPIRATION = 5000 as const;
 
-  static readonly DISCOVERY_PORT = 42069 as const;
-  static readonly BROADCAST_ADDRESS = '255.255.255.255' as const;
+  /** Fun port */
+  static DISCOVERY_PORT = 42069 as const;
+  static BROADCAST_ADDRESS = '255.255.255.255' as const;
 
   constructor(config: ISocketClientOptions) {
+    // if (UdpSocketClient.instance) return UdpSocketClient.instance;
     this.config = config;
     this.runHeartbeatChecks = this.runHeartbeatChecks.bind(this);
+    this.parseMessage = this.parseMessage.bind(this);
   }
 
-  public static getInstance(config: ISocketClientOptions): UdpSocketClient {
-    if (!UdpSocketClient.instance) {
-      UdpSocketClient.instance = new UdpSocketClient(config);
-    }
-    return UdpSocketClient.instance;
-  }
+  // public static getInstance(config: ISocketClientOptions): UdpSocketClient {
+  //   if (!UdpSocketClient.instance) {
+  //     UdpSocketClient.instance = new UdpSocketClient(config);
+  //   }
+  //   return UdpSocketClient.instance;
+  // }
 
   init(): void {
     try {
-      if (this.config.adapter.isRunning()) return;
+      // if (UdpSocketClient.instance) return;
       this.config.adapter.addAfterListening(this.runHeartbeatChecks);
-      this.config.adapter.init(this.config.port, this.config.address, this.parseMessage);
+      this.config.adapter.init(
+        UdpSocketClient.DISCOVERY_PORT,
+        this.config.address,
+        this.parseMessage
+      );
       this.config.store.updateConnectionMethod(ConnMethod.LANSocket, this);
+      // UdpSocketClient.instance = this;
       console.log('[UDP] Initialized');
     } catch (error) {
       console.log(`[UDP] Error ${error}`);

@@ -1,10 +1,10 @@
 import { UITheme } from '#src/common/ui-theme';
 import { useImplicitToggle } from '#src/hooks/useImplicitToggle.hook';
+import { useRoomStore } from '@mono/assist-api';
 import { Button, Icon, ListItem } from '@rneui/themed';
 import { FlashList } from '@shopify/flash-list';
 import { useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { useRoomStore } from '#src/hooks/useRoomStore';
 
 type Props = {
   currentTab: number;
@@ -21,7 +21,7 @@ export function ReceiverSearchDevices({ currentTab }: Props) {
   };
 
   // Search for devices on the initial screen render
-  useEffect(handleSearchDevices, [currentTab]);
+  // useEffect(handleSearchDevices, [currentTab]);
 
   return (
     <View style={styles.root}>

@@ -7,15 +7,21 @@ export class NodeSocketAdapter extends SocketAdapter<dgram.Socket> {
     address: string,
     parser: ISocketIncomingMessage
   ): void => {
+    this.currentPort = port
     const sk = dgram.createSocket({ type: 'udp4' })
-    sk.once('error', (err) => {
-      console.log(`[NodeSocket] ${err}`)
-      this.close()
+    sk.on('error', (err) => {
+      if (err.message.includes('EADDRINUSE')) {
+        this.rebindPort(sk, address)
+      } else {
+        console.log(`[NodeSocket] ${err}`)
+        this.close()
+      }
     })
     sk.addListener('message', parser)
     sk.bind(port, address, () => {
       this.sk = sk
       this.afterListeningRef()
+      console.log(`[NodeSocket] Binded to ${address}:${this.currentPort}`)
     })
   }
 

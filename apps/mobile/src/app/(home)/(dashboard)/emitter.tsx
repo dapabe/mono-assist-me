@@ -1,7 +1,6 @@
 import { UITheme } from '#src/common/ui-theme';
 import { useImplicitToggle } from '#src/hooks/useImplicitToggle.hook';
-import { useRoomStore } from '#src/hooks/useRoomStore';
-import { RoomServiceStatus } from '@mono/assist-api';
+import { RoomServiceStatus, useRoomStore } from '@mono/assist-api';
 import { Icon, Switch, Text } from '@rneui/themed';
 import { useMemo } from 'react';
 import { Dimensions, StyleSheet, TouchableHighlight, View } from 'react-native';
@@ -12,7 +11,7 @@ export default function EmitterScreen() {
   const [tooltipVisible, toggleTooltip] = useImplicitToggle();
 
   const isHelpDisabled = useMemo(() => {
-    return ctx.status !== RoomServiceStatus.Up || !ctx.currentListeners?.size;
+    return ctx.status !== RoomServiceStatus.Up || !ctx.currentListeners.length;
   }, [ctx.status, ctx.currentListeners]);
 
   const btnColor = useMemo(() => {
@@ -44,12 +43,13 @@ export default function EmitterScreen() {
         </View>
         <View style={styles.rowGroup}>
           <Icon type="feather" name="users" />
-          <Text style={{ color: UITheme.lightColors?.primary }}>{ctx.currentListeners.size}</Text>
+          <Text style={{ color: UITheme.lightColors?.primary }}>{ctx.currentListeners.length}</Text>
         </View>
         <View style={styles.rowGroup}>
-          <Text>¿Responder a busquedas?</Text>
+          <Text>Permitir busquedas</Text>
           <Switch
             value={true}
+            disabled
             // onValueChange={ctx.toggleWillRespondToSearch}
           ></Switch>
         </View>
