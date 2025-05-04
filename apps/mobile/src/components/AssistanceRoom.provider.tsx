@@ -65,7 +65,7 @@ export function AssistanceRoomProvider({ children }: PropsWithChildren) {
       const client = new UdpSocketClient({
         adapter: new ReactNativeSocketAdapter(),
         store: room,
-        address: Internal_IPv4,
+        address: '192.168.0.3',
       });
       client.init();
       adapterRef.current = client;

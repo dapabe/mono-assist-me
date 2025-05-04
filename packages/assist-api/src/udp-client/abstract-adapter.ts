@@ -17,6 +17,7 @@ export abstract class SocketAdapter<T = UdpSocket | Socket> implements ISocketAd
     MAX: 42100,
   };
   protected currentPort!: number;
+  protected currentAddress!: string;
 
   private getNextPort(): number {
     const nextPort = this.currentPort + 1;
@@ -25,16 +26,23 @@ export abstract class SocketAdapter<T = UdpSocket | Socket> implements ISocketAd
     }
     return nextPort;
   }
-  protected rebindPort(sk: T, address: string): void {
+  private rebindPort(): void {
     console.log(`[SocketAdapter] Port ${this.currentPort} in use, re-trying`);
     //@ts-ignore
-    sk.close(() => {
+    this.sk.close(() => {
       this.currentPort = this.getNextPort();
       setTimeout(() => {
         //@ts-ignore
-        sk.bind(this.currentPort, address);
+        this.sk.bind(this.currentPort, this.currentAddress);
       }, 1000);
     });
+  }
+
+  protected handleErrors(err: Error): void {
+    if (err.message.includes('EADDRINUSE')) return this.rebindPort();
+
+    console.log(`[SocketAdapter] Unhandled Error: ${err}`);
+    this.close();
   }
 
   protected afterListeningRef!: () => void;
@@ -46,6 +54,12 @@ export abstract class SocketAdapter<T = UdpSocket | Socket> implements ISocketAd
   addAfterListening(cb: () => void): void {
     this.afterListeningRef = cb;
   }
+
+  protected triggerOnListening(): void {
+    this.afterListeningRef();
+    console.log(`[SocketAdapter] Binded to ${this.currentAddress}:${this.currentPort}`);
+  }
+
   abstract init: (port: number, address: string, parser: ISocketIncomingMessage) => void;
 
   sendTo(port: number, address: string, data: Buffer<ArrayBuffer>): void {
@@ -59,6 +73,8 @@ export abstract class SocketAdapter<T = UdpSocket | Socket> implements ISocketAd
     if (!this.isRunning()) throw new Error('adapter.notInitialized');
     //@ts-ignore
     this.sk.close(() => {
+      //@ts-ignore
+      this.sk.removeAllListeners();
       this.sk = undefined!;
     });
   }

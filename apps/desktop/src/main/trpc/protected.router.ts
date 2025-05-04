@@ -40,6 +40,8 @@ export const ProtectedTrpcRouter = tInstance.router({
 
   // Room actions
   initialize: tInstance.procedure.mutation<null>(async () => {
+    if (MemoryState.getState().connAdapter) return null
+
     const { currentName, currentAppId } = await MemoryState.getState()
       .getRepos()
       .LocalData.get()
