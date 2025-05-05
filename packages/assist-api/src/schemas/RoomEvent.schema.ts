@@ -1,9 +1,9 @@
 import { z } from 'zod';
-import { UdpSocketClient } from '../udp-client/UDPClient';
 
 import { RegisterLocalSchema } from './RegisterLocal.schema';
 import { NonEmptyStringSchema } from './utils.schema';
 import { z18n } from './zod-i18n';
+import { UdpSocketClient } from '../udp-client/UDPClient';
 
 /**
  * @description
@@ -24,18 +24,18 @@ export const RoomServiceStatus = {
 export type IRoomServiceStatus = (typeof RoomServiceStatus)[keyof typeof RoomServiceStatus];
 
 export const RoomEventLiteral = {
-  LookingForDevices: 'searching_devices',
-  RespondToAdvertise: 'respond_to_ad',
-  BroadcastStop: 'broadcast_stop',
-  Listening: 'remote_listening',
-  NotListening: 'remote_not_listening',
-  RequestHelp: 'request_help',
-  RequestStop: 'request_stop',
-  RespondToHelp: 'respond_to_help',
-  Invalid: 'invalid',
+  LookingForDevices: 0,
+  RespondToAdvertise: 1,
+  BroadcastStop: 2,
+  Listening: 3,
+  NotListening: 4,
+  RequestHelp: 5,
+  RequestStop: 6,
+  RespondToHelp: 7,
+  Invalid: 8,
 
-  AnnieAreYouOkay: 'ping',
-  ImOkay: 'pong',
+  AnnieAreYouOkay: 9,
+  ImOkay: 10,
 } as const;
 export type IRoomEventLiteral = (typeof RoomEventLiteral)[keyof typeof RoomEventLiteral];
 

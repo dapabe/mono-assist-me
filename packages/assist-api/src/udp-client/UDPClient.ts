@@ -2,6 +2,7 @@ import { Buffer } from 'buffer';
 import { ZodError } from 'zod';
 
 import { SocketAdapter } from './abstract-adapter';
+import { UDP_CONSTANTS } from './udp-constants';
 import {
   ConnMethod,
   IRoomEvent,
@@ -20,7 +21,7 @@ type ISocketClientOptions = {
 };
 
 export class UdpSocketClient implements ISocketClient {
-  private static instance: UdpSocketClient;
+  // private static instance: UdpSocketClient;
   private config: ISocketClientOptions;
 
   private HEARTBEAT_INTERVAL!: NodeJS.Timeout;
@@ -29,10 +30,6 @@ export class UdpSocketClient implements ISocketClient {
   private HELP_INTERVAL!: NodeJS.Timeout;
   private HELP_EXPIRATION = 5000 as const;
 
-  /** Fun port */
-  static DISCOVERY_PORT = 42069 as const;
-  static BROADCAST_ADDRESS = '255.255.255.255' as const;
-
   constructor(config: ISocketClientOptions) {
     // if (UdpSocketClient.instance) return UdpSocketClient.instance;
     this.config = config;
@@ -40,19 +37,12 @@ export class UdpSocketClient implements ISocketClient {
     this.parseMessage = this.parseMessage.bind(this);
   }
 
-  // public static getInstance(config: ISocketClientOptions): UdpSocketClient {
-  //   if (!UdpSocketClient.instance) {
-  //     UdpSocketClient.instance = new UdpSocketClient(config);
-  //   }
-  //   return UdpSocketClient.instance;
-  // }
-
   init(): void {
     try {
       // if (UdpSocketClient.instance) return;
       this.config.adapter.addAfterListening(this.runHeartbeatChecks);
       this.config.adapter.init(
-        UdpSocketClient.DISCOVERY_PORT,
+        UDP_CONSTANTS.DISCOVERY_PORT,
         this.config.address,
         this.parseMessage
       );
@@ -80,6 +70,13 @@ export class UdpSocketClient implements ISocketClient {
     this.config.adapter.sendTo(port, address, buf);
   }
 
+  sendDiscovery() {
+    console.log('[UDP] Sending discovery');
+    this.sendTo(UDP_CONSTANTS.DISCOVERY_PORT, UDP_CONSTANTS.MULTICAST_ADDRESS, {
+      event: RoomEventLiteral.LookingForDevices,
+    });
+  }
+
   private parseMessage(data: unknown, rinfo: RemoteUDPInfo): void {
     try {
       if (!Buffer.isBuffer(data)) {
@@ -89,22 +86,22 @@ export class UdpSocketClient implements ISocketClient {
       if (rinfo.address === this.config.address) return;
       // Validate transmited data
       const msg = data.toString();
-      const val = stringToJSONSchema.safeParse(msg);
-      if (val.error) throw val.error;
+      const parsed = stringToJSONSchema.parse(msg);
+      const room = RoomEventSchema.parse(parsed);
 
-      const event = RoomEventSchema.safeParse(val);
-      if (event.error) throw event.error;
-
-      console.log(`[UDP] Event '${event.data.event}'`);
-      this.handleMessage(event.data, rinfo);
+      console.log(
+        `[UDP] Event '${Object.keys(RoomEventLiteral)[room.event]}' from ${rinfo.address}:${rinfo.port}`
+      );
+      this.handleMessage(room, rinfo);
     } catch (error) {
+      console.log(rinfo);
       if (error instanceof ZodError) {
-        this.sendTo(rinfo.port, rinfo.address, {
-          event: RoomEventLiteral.Invalid,
-          message: error.toString(),
-        });
-      } else {
-        console.log(`[UDP] Unhandled error: ${error}`);
+        if (Buffer.isBuffer(data)) console.log(`[UDP] Buffer error: ${data.toString()}`);
+        else console.log(`[UDP] Parse error: ${data}`);
+        // this.sendTo(rinfo.port, rinfo.address, {
+        //   event: RoomEventLiteral.Invalid,
+        //   message: error.toString(),
+        // });
       }
     }
   }
@@ -208,13 +205,6 @@ export class UdpSocketClient implements ISocketClient {
     }, this.HEARTBEAT_EXPIRATION);
     console.log('[Device] Heartbeat attached');
   };
-
-  sendDiscovery() {
-    console.log('[UDP] Sending discovery');
-    this.sendTo(UdpSocketClient.DISCOVERY_PORT, UdpSocketClient.BROADCAST_ADDRESS, {
-      event: RoomEventLiteral.LookingForDevices,
-    });
-  }
 
   requestHelp() {
     if (!this.config.store.currentListeners.length) {

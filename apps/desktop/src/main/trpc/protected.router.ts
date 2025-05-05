@@ -13,6 +13,7 @@ import { tInstance } from './trpc'
 import { MemoryState } from '../memory-state'
 import { getInternalIPv4 } from '../src/utils/getInternalIPv4'
 import { TRPCError } from '@trpc/server'
+import { getDeviceName } from '../src/utils/getDeviceName'
 // import { EventEmitter } from 'node:stream'
 
 // const EEListeningTo = new EventEmitter()
@@ -47,6 +48,7 @@ export const ProtectedTrpcRouter = tInstance.router({
       .LocalData.get()
     MemoryState.getState().updateMemoryState('currentName', currentName)
     MemoryState.getState().updateMemoryState('currentAppId', currentAppId)
+    MemoryState.getState().updateMemoryState('currentDevice', getDeviceName())
     const netInfo = getInternalIPv4()
     if (!netInfo) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR' })
     const client = new UdpSocketClient({

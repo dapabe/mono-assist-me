@@ -65,6 +65,7 @@ const createRoomStore = (): StateCreator<IRoomState, [], [], IRoomState> => (set
   syncDatabase: async (dbRepos) => {
     set({ dbRepos });
     const storedListeners = await get().getRepos().ListeningTo.get();
+    if (!storedListeners.length) return;
     for (const listener of storedListeners) {
       set((state) => ({
         storedListeners: [...state.storedListeners, listener],
@@ -76,16 +77,18 @@ const createRoomStore = (): StateCreator<IRoomState, [], [], IRoomState> => (set
   onRemoteRespondToAdvertise: (payload, rinfo) => {
     //	If it hasn't been discovered nor is listening to it, add it to the discover list
     const isListening = get().roomsListeningTo.find((x) => x.appId === payload.appId);
+    if (isListening) return;
     const hasDiscovered = get().roomsToDiscover.findIndex((x) => x.appId === payload.appId);
-    if (isListening || hasDiscovered !== -1) return;
-    set((state) => {
-      state.roomsToDiscover.splice(hasDiscovered, 1, {
-        ...payload,
-        port: rinfo.port,
-        address: rinfo.address,
+    if (hasDiscovered === -1) {
+      set((state) => {
+        state.roomsToDiscover.splice(hasDiscovered, 1, {
+          ...payload,
+          port: rinfo.port,
+          address: rinfo.address,
+        });
+        return state;
       });
-      return state;
-    });
+    }
   },
   onRemoteBroadcastStop: (payload) => {
     set((state) => {
@@ -277,15 +280,11 @@ const createRoomStore = (): StateCreator<IRoomState, [], [], IRoomState> => (set
   },
   respondToHelp: (appId) => {
     const emitter = get().roomsListeningTo.find((x) => x.appId === appId);
-
-    if (!emitter || emitter.disconnected) {
-      console.log('No emitter');
-    } else {
-      get().connAdapter?.sendTo(emitter.port, emitter.address, {
-        event: RoomEventLiteral.RespondToHelp,
-        responderName: get().getCurrentName(),
-      });
-    }
+    if (!emitter || emitter.disconnected) return;
+    get().connAdapter?.sendTo(emitter.port, emitter.address, {
+      event: RoomEventLiteral.RespondToHelp,
+      responderName: get().getCurrentName(),
+    });
   },
   deleteListeningTo: (appId) => {
     const listeningTo = get().roomsListeningTo.find((x) => x.appId === appId);

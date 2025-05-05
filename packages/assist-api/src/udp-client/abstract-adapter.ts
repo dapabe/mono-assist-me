@@ -1,6 +1,7 @@
 import type { Socket } from 'node:dgram';
 import type UdpSocket from 'react-native-udp/lib/types/UdpSocket';
 
+import { UDP_CONSTANTS } from './udp-constants';
 import type { ISocketAdapter, ISocketIncomingMessage } from '../types/socket-adapter';
 
 export abstract class SocketAdapter<T = UdpSocket | Socket> implements ISocketAdapter {
@@ -16,7 +17,7 @@ export abstract class SocketAdapter<T = UdpSocket | Socket> implements ISocketAd
     MIN: 42000,
     MAX: 42100,
   };
-  protected currentPort!: number;
+  currentPort!: number;
   protected currentAddress!: string;
 
   private getNextPort(): number {
@@ -56,7 +57,8 @@ export abstract class SocketAdapter<T = UdpSocket | Socket> implements ISocketAd
   }
 
   protected triggerOnListening(): void {
-    this.afterListeningRef();
+    //@ts-ignore
+    // this.afterListeningRef();
     console.log(`[SocketAdapter] Binded to ${this.currentAddress}:${this.currentPort}`);
   }
 

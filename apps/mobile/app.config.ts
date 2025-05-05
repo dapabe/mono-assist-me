@@ -16,6 +16,11 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     supportsTablet: true,
   },
   android: {
+    permissions: [
+      'android.permission.INTERNET',
+      'android.permission.ACCESS_NETWORK_STATE',
+      'android.permission.CHANGE_WIFI_MULTICAST_STATE',
+    ],
     adaptiveIcon: {
       foregroundImage: './assets/images/adaptive-icon.png',
       backgroundColor: '#ffffff',

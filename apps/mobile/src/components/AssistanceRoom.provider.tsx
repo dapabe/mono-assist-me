@@ -18,22 +18,6 @@ export function AssistanceRoomProvider({ children }: PropsWithChildren) {
   const room = useRoomStore();
   const adapterRef = useRef<IConnAdapter>(null);
 
-  //	Room state handled here
-  // const [state, roomMethods] = useRoomReducer();
-
-  // const udpRoom = useLimitedBroadcast({
-  // 	roomMethods,
-  // 	state,
-  // 	currentAppId: currentAppId.data!,
-  // 	currentName: currentName.data!,
-  // });
-
-  // const toggleRespondToSearches = () => {
-  // 	roomMethods.dispatchEvent({
-  // 		event: RoomEventLiteralSideEffect.respo,
-  // 	});
-  // };
-
   // useEffect(() => {
   // 	const handleAppStateChange = (nextAppState: AppStateStatus) => {
   // 		if (
@@ -74,6 +58,7 @@ export function AssistanceRoomProvider({ children }: PropsWithChildren) {
     return () => {
       if (room.connAdapter) {
         room.connAdapter.close();
+        adapterRef.current = null;
       }
     };
   }, [room.connMethod]);

@@ -1,11 +1,11 @@
 import { trpcReact } from '@renderer/services/trpc'
-import { Spinner } from '@renderer/ui/Spinner'
+import { useRouter } from '@tanstack/react-router'
 import { ReactNode } from 'react'
 
 export function ReceiverSearchDevices(): ReactNode {
   const addToListeningTo = trpcReact.PROTECTED.addToListeningTo.useMutation()
   const roomsToDiscover = trpcReact.PROTECTED.getRoomsToDiscover.useQuery()
-
+  console.log(roomsToDiscover.data)
   if (roomsToDiscover.isLoading) {
     return (
       <div className="grow flex flex-col">
@@ -64,7 +64,14 @@ export function ReceiverSearchDevices(): ReactNode {
 }
 
 function DiscoveryButton({ disabled }: { disabled?: boolean }): ReactNode {
+  const router = useRouter()
   const sendDiscovery = trpcReact.PROTECTED.sendDiscovery.useMutation()
+
+  const handleDiscovery = (): void => {
+    sendDiscovery.mutate()
+    router.invalidate()
+  }
+
   return (
     <button
       // buttonStyle={styles.searchButton}
@@ -74,7 +81,7 @@ function DiscoveryButton({ disabled }: { disabled?: boolean }): ReactNode {
       // iconPosition="top"
       disabled={disabled}
       className="btn btn-accent btn-outline grow mt-2"
-      onClick={() => sendDiscovery.mutate()}
+      onClick={handleDiscovery}
     >
       Detectar otros dispositivos
     </button>

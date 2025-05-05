@@ -9,7 +9,7 @@ import { DatabaseAdapter, DatabaseRepository } from '../DatabaseRepository';
 export class RepositoryLocalData extends DatabaseRepository<DatabaseAdapter> {
   async get(): Promise<ILocalDataDTO['Create']> {
     const result = await this.db.query.Table_LocalData.findFirst({
-      with: { currentAppId: true },
+      with: { RelCurrentAppId: true },
     });
 
     if (!result) throw new ExpectedError('db.missingLocalData');

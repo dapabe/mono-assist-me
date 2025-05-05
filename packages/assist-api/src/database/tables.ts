@@ -25,7 +25,7 @@ export const Table_LocalData = sqliteTable(
 );
 
 export const TableRelation_LocalData = relations(Table_LocalData, ({ one }) => ({
-  currentAppId: one(Table_PreviousAppIds, {
+  RelCurrentAppId: one(Table_PreviousAppIds, {
     fields: [Table_LocalData.currentAppId],
     references: [Table_PreviousAppIds.id],
   }),
