@@ -1,14 +1,20 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { ReactNode, useState } from 'react'
+import { ReactNode, useEffect, useState } from 'react'
 import { ReceiverSearchDevices } from './-components/dashboard/receiver/Receiver.SearchDevices'
 import { ReceiverSelectedDevices } from './-components/dashboard/receiver/Receiver.SelectedDevices'
+import { useRoomStore } from '@mono/assist-api'
 
 export const Route = createFileRoute('/dashboard/receiver')({
   component: Component
 })
 
 function Component(): ReactNode {
+  const room = useRoomStore()
   const [cTab, setTab] = useState('tab2')
+
+  useEffect(() => {
+    if (room.roomsListeningTo.length) setTab('tab1')
+  }, [room.roomsListeningTo.length])
 
   return (
     <section className="grow [*]:px-4 flex flex-col">

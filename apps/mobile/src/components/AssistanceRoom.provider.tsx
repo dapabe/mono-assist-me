@@ -44,12 +44,12 @@ export function AssistanceRoomProvider({ children }: PropsWithChildren) {
   useEffect(() => {
     if (room.connMethod === ConnMethod.None) {
       if (adapterRef.current) return;
-      room.updateMemoryState('currentName', 'mobile');
+      room.updateMemoryState('currentName', currentName.data);
       room.updateMemoryState('currentAppId', 'currentAppId');
       const client = new UdpSocketClient({
         adapter: new ReactNativeSocketAdapter(),
         store: room,
-        address: '192.168.0.3',
+        address: '0.0.0.0',
       });
       client.init();
       adapterRef.current = client;

@@ -1,6 +1,7 @@
 import { trpcReact } from '@renderer/services/trpc'
 import { useRouter } from '@tanstack/react-router'
 import { ReactNode } from 'react'
+import * as Icon from 'lucide-react'
 
 export function ReceiverSearchDevices(): ReactNode {
   const addToListeningTo = trpcReact.PROTECTED.addToListeningTo.useMutation()
@@ -51,10 +52,15 @@ export function ReceiverSearchDevices(): ReactNode {
           <li key={x.appId} className="list-row">
             <button
               // icon={UserPlus}
+              className="btn btn-ghost col-span-2"
               onClick={() => addToListeningTo.mutate({ appId: x.appId })}
             >
-              <span>{x.callerName}</span>
-              <span>{x.device}</span>
+              <Icon.UserPlus className="text-neutral size-6 mr-2" />
+              <div className="flex flex-col items-start">
+                <span>{x.callerName}</span>
+                <span>{x.device}</span>
+              </div>
+              <span className="ml-auto"></span>
             </button>
           </li>
         ))}

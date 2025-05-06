@@ -94,7 +94,6 @@ export class UdpSocketClient implements ISocketClient {
       );
       this.handleMessage(room, rinfo);
     } catch (error) {
-      console.log(rinfo);
       if (error instanceof ZodError) {
         if (Buffer.isBuffer(data)) console.log(`[UDP] Buffer error: ${data.toString()}`);
         else console.log(`[UDP] Parse error: ${data}`);
