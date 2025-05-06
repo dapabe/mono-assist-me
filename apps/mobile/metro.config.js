@@ -23,4 +23,6 @@ config.cacheStores = [
   new FileStore({ root: path.join(__dirname, 'node_modules', '.cache', 'metro') }),
 ];
 
+config.resolver.sourceExts.push('sql');
+
 module.exports = config;

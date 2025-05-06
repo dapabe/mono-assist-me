@@ -13,9 +13,11 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   userInterfaceStyle: 'automatic',
   newArchEnabled: true,
   ios: {
+    ...config.ios,
     supportsTablet: true,
   },
   android: {
+    ...config.android,
     permissions: [
       'android.permission.INTERNET',
       'android.permission.ACCESS_NETWORK_STATE',
@@ -34,6 +36,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   // },
   plugins: [
     'expo-router',
+    'expo-sqlite',
+    'expo-font',
+    'expo-secure-store',
     [
       'expo-splash-screen',
       {
