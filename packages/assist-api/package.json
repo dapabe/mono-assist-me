@@ -54,12 +54,13 @@
     "drizzle-kit": "0.31.0",
     "react-native-udp": "4.1.7",
     "tsup": "^8.3.5",
+    "typesafe-i18n": "5.26.2",
     "typescript": "5.8.2"
   },
   "peerDependencies": {
+    "drizzle-orm": "catalog:drizzle",
     "zod": "catalog:utils",
-    "zustand": "catalog:utils",
-    "drizzle-orm": "catalog:drizzle"
+    "zustand": "catalog:utils"
   },
   "tsup": {
     "entry": [

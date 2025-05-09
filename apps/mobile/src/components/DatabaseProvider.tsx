@@ -1,6 +1,5 @@
-import { schemaBarrel, Table_LocalData } from '@mono/assist-api';
+import { DatabaseService, schemaBarrel } from '@mono/assist-api';
 import migrations from '@mono/assist-api/migrations';
-import { sql } from 'drizzle-orm';
 import { drizzle, ExpoSQLiteDatabase } from 'drizzle-orm/expo-sqlite';
 import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
 import { openDatabaseSync } from 'expo-sqlite';
@@ -8,16 +7,16 @@ import { createContext, PropsWithChildren, ReactNode, useEffect, useRef } from '
 import { Text, View } from 'react-native';
 
 const DatabaseContext = createContext<null | ExpoSQLiteDatabase<typeof schemaBarrel>>(null);
-const expo = openDatabaseSync('assist.db');
-const db = drizzle(expo, { schema: schemaBarrel });
 
 export function DatabaseProvider(props: PropsWithChildren): ReactNode {
-  const { error, success } = useMigrations(db, migrations);
+  const dbRef = useRef(() => {
+    const expo = openDatabaseSync('assist.db');
+    const db = drizzle(expo, { schema: schemaBarrel });
+    DatabaseService.getInstance().setAdapter(db);
+    return db;
+  }).current();
 
-  useEffect(() => {
-    const d = db.run(sql`SELECT * FROM sqlite_master;`);
-    console.log(d);
-  }, []);
+  const { error, success } = useMigrations(dbRef, migrations);
 
   if (error) {
     return (
@@ -35,5 +34,5 @@ export function DatabaseProvider(props: PropsWithChildren): ReactNode {
     );
   }
 
-  return <DatabaseContext value={db}>{props.children}</DatabaseContext>;
+  return <DatabaseContext value={dbRef}>{props.children}</DatabaseContext>;
 }

@@ -69,7 +69,8 @@ export class RepositoryLocalData extends DatabaseRepository<DatabaseAdapter> {
   }
 
   /**
-   *  Destructive action, only used in dev mode
+   *  Destructive action, only used in dev mode.
+   *  Not neccesary if cache is cleared manually
    */
   async delete(): Promise<void> {
     await this.db.delete(this.schema.Table_LocalData);
