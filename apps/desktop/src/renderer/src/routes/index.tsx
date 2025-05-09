@@ -5,6 +5,7 @@ import { ReactNode } from 'react'
 import { useForm } from 'react-hook-form'
 import { Spinner } from '@renderer/ui/Spinner'
 import { useLocalAuth } from './-components/providers/LocalAuth.provider'
+import { useI18nContext } from '@mono/assist-api/i18n/react'
 
 export const Route = createFileRoute('/')({
   beforeLoad: (opts) => {
@@ -16,6 +17,8 @@ export const Route = createFileRoute('/')({
 })
 
 function Component(): ReactNode {
+  const { LL } = useI18nContext()
+
   const { register } = useLocalAuth()
   const form = useForm<IRegisterLocalSchema>({
     defaultValues: { name: '' }
@@ -42,16 +45,16 @@ function Component(): ReactNode {
     >
       <fieldset className="fieldset bg-base-200 p-4 rounded-box">
         <label htmlFor="name" className="label text-lg">
-          Nombre con el que otros te veran
+          {LL.FormLocalRegister.Label()}
         </label>
         <input
           id="name"
           {...form.register('name')}
           className="input input-lg input-neutral"
-          placeholder="ej: Daniel P. Becerra"
+          placeholder={LL.FormLocalRegister.Placeholder()}
         />
         <label role="definition" htmlFor="name" className="label text-sm">
-          Podras cambiarlo despues
+          {LL.FormLocalRegister.Hint()}
         </label>
         <button
           type="submit"
@@ -59,7 +62,7 @@ function Component(): ReactNode {
           disabled={form.formState.isLoading}
         >
           {form.formState.isLoading ? <Spinner /> : undefined}
-          {!form.formState.isLoading && 'Continuar'}
+          {!form.formState.isLoading && LL.CommonWords.Continue()}
         </button>
       </fieldset>
     </form>

@@ -8,23 +8,60 @@
     "src",
     "migrations"
   ],
+  "types": "./build/index.d.ts",
   "main": "./build/index.cjs",
-  "types": "./src/index.ts",
+  "module": "./build/index.js",
   "exports": {
     ".": {
-      "types": "./src/index.ts",
+      "types": "./build/index.d.ts",
       "import": "./build/index.js",
       "require": "./build/index.cjs"
     },
-    "./migrations": {
-      "import": "./migrations/migrations.js",
-      "require": "./migrations/migrations.js",
-      "default": "./migrations/migrations.js"
+    "./i18n/react": {
+      "types": "./build/i18n/i18n-react.d.ts",
+      "import": "./build/i18n/i18n-react.js",
+      "require": "./build/i18n/i18n-react.cjs"
+    },
+    "./i18n/utils": {
+      "types": "./build/i18n/i18n-util.d.ts",
+      "import": "./build/i18n/i18n-util.js",
+      "require": "./build/i18n/i18n-util.cjs"
+    },
+    "./i18n/utils/sync": {
+      "types": "./build/i18n/i18n-util.sync.d.ts",
+      "import": "./build/i18n/i18n-util.sync.js",
+      "require": "./build/i18n/i18n-util.sync.cjs"
+    },
+    "./i18n/utils/async": {
+      "types": "./build/i18n/i18n-util.async.d.ts",
+      "import": "./build/i18n/i18n-util.async.js",
+      "require": "./build/i18n/i18n-util.async.cjs"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "i18n": [
+        "./build/i18n/index.d.ts"
+      ],
+      "i18n/react": [
+        "./build/i18n/i18n-react.d.ts"
+      ],
+      "i18n/utils": [
+        "./build/i18n/i18n-util.d.ts"
+      ],
+      "i18n/utils/sync": [
+        "./build/i18n/i18n-util.sync.d.ts"
+      ],
+      "i18n/utils/async": [
+        "./build/i18n/i18n-util.async.d.ts"
+      ]
     }
   },
   "scripts": {
     "clean": "git clean -xdf .turbo build node_modules",
-    "dev": "tsup --watch --silent",
+    "dev": "pnpm run --parallel /^dev:/",
+    "dev:i18n-gen": "typesafe-i18n",
+    "dev:tsup-gen": "tsup --watch --silent",
     "lint": "eslint --ext js,ts",
     "test": "jest",
     "build": "tsup --clean",
@@ -61,23 +98,5 @@
     "drizzle-orm": "catalog:drizzle",
     "zod": "catalog:utils",
     "zustand": "catalog:utils"
-  },
-  "tsup": {
-    "entry": [
-      "src/index.ts"
-    ],
-    "format": [
-      "cjs",
-      "esm"
-    ],
-    "target": "ES2020",
-    "moduleResolution": "Bundler",
-    "module": "ESNext",
-    "outDir": "build",
-    "sourcemap": true,
-    "dts": true,
-    "external": [
-      "react-native-udp"
-    ]
   }
 }

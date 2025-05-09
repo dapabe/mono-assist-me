@@ -5,13 +5,15 @@ import {
   RouterProvider
 } from '@tanstack/react-router'
 import { ipcLink } from 'electron-trpc/renderer'
-import { ReactNode, useState } from 'react'
+import { ReactNode, useEffect, useState } from 'react'
 import { routeTree } from './routeTree.gen'
 import {
   LocalAuthProvider,
   useLocalAuth
 } from './routes/-components/providers/LocalAuth.provider'
 import { trpcReact } from './services/trpc'
+import { loadLocale } from '@mono/assist-api/i18n/utils/sync'
+import TypesafeI18n from '@mono/assist-api/i18n/react'
 
 //  Needed for Electron since all the router is shipped with the app, doesnt really need lazy load
 const hashHistory = createHashHistory()
@@ -41,14 +43,24 @@ export function Root(): React.ReactNode {
       links: [ipcLink()]
     })
   )
+  const [localeLoaded, setLoaded] = useState(false)
+
+  useEffect(() => {
+    loadLocale('en')
+    setLoaded(true)
+  }, [])
+
+  if (!localeLoaded) return null
 
   return (
-    <trpcReact.Provider client={trpcClient} queryClient={qc}>
-      <QueryClientProvider client={qc}>
-        <LocalAuthProvider>
-          <ContextRouter />
-        </LocalAuthProvider>
-      </QueryClientProvider>
-    </trpcReact.Provider>
+    <TypesafeI18n locale="en">
+      <trpcReact.Provider client={trpcClient} queryClient={qc}>
+        <QueryClientProvider client={qc}>
+          <LocalAuthProvider>
+            <ContextRouter />
+          </LocalAuthProvider>
+        </QueryClientProvider>
+      </trpcReact.Provider>
+    </TypesafeI18n>
   )
 }

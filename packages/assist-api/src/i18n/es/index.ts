@@ -7,28 +7,34 @@ const es = {
   },
   FormLocalRegister: {
     Label: 'Nombre público',
-    Desc: 'Como te veran otras personas',
+    Hint: 'Como te veran otras personas',
     Placeholder: 'ej: Daniel P. Becerra',
   },
   Dashboard: {
     PageEmitter: {
       Title: 'Llamar',
       MainButton: 'Pedir Ayuda',
-      EnableDetectionCheckbox: 'Permitir detectar este dispositivo',
+      ListenersLabel: 'Personas pendientes a ti:',
+      EnableDetectionCheckbox: 'Permitir ser descubierto',
     },
     PageReceiver: {
       Title: 'Listas',
       SelectedDevicesTab: {
         Title: 'Conocidos',
+        EmptyPlaceholder: 'Sin dispositivos guardados',
       },
       SearchDevicesTab: {
-        DetectButton: 'Detectar dispositivos',
-        Title: 'Buscar',
+        Title: 'Descubrir',
+        DetectButton: 'Detectar otros dispositivos',
+        EmptyPlaceholder: 'No hay dispositivos en la cercania',
       },
     },
     PageSettings: {
       Title: 'Configuración',
-      FormLocalName: 'Nombre actual',
+      FormLocalName: {
+        Label: 'Nombre actual',
+        Hint: 'Los cambios se veran reflejados en otros dispositivos.',
+      },
     },
   },
 } satisfies BaseTranslation;

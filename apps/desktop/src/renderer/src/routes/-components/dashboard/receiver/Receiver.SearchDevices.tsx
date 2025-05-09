@@ -2,11 +2,14 @@ import { trpcReact } from '@renderer/services/trpc'
 import { useRouter } from '@tanstack/react-router'
 import { ReactNode } from 'react'
 import * as Icon from 'lucide-react'
+import { useI18nContext } from '@mono/assist-api/i18n/react'
 
 export function ReceiverSearchDevices(): ReactNode {
+  const { LL } = useI18nContext()
+
   const addToListeningTo = trpcReact.PROTECTED.addToListeningTo.useMutation()
   const roomsToDiscover = trpcReact.PROTECTED.getRoomsToDiscover.useQuery()
-  console.log(roomsToDiscover.data)
+
   if (roomsToDiscover.isLoading) {
     return (
       <div className="grow flex flex-col">
@@ -35,7 +38,7 @@ export function ReceiverSearchDevices(): ReactNode {
         </div>
         <div className="grow flex items-center justify-center">
           <span className="label text-2xl">
-            No hay dispositivos en la cercania
+            {LL.Dashboard.PageReceiver.SearchDevicesTab.EmptyPlaceholder()}
           </span>
         </div>
       </div>
@@ -70,6 +73,8 @@ export function ReceiverSearchDevices(): ReactNode {
 }
 
 function DiscoveryButton({ disabled }: { disabled?: boolean }): ReactNode {
+  const { LL } = useI18nContext()
+
   const router = useRouter()
   const sendDiscovery = trpcReact.PROTECTED.sendDiscovery.useMutation()
 
@@ -89,7 +94,7 @@ function DiscoveryButton({ disabled }: { disabled?: boolean }): ReactNode {
       className="btn btn-accent btn-outline grow mt-2"
       onClick={handleDiscovery}
     >
-      Detectar otros dispositivos
+      {LL.Dashboard.PageReceiver.SearchDevicesTab.DetectButton()}
     </button>
   )
 }

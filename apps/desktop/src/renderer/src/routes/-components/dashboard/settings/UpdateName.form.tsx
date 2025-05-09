@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { IRegisterLocalSchema, RegisterLocalSchema } from '@mono/assist-api'
+import { useI18nContext } from '@mono/assist-api/i18n/react'
 import { trpcReact } from '@renderer/services/trpc'
 import { IFormProps } from '@renderer/types/forms'
 import { Spinner } from '@renderer/ui/Spinner'
@@ -12,6 +13,8 @@ export function UpdateNameForm({
   isLoading,
   loadErrors
 }: IFormProps<IRegisterLocalSchema>): ReactNode {
+  const { LL } = useI18nContext()
+
   const ApiUpdateName = trpcReact.PROTECTED.updateLocalName.useMutation()
 
   const form = useForm<IRegisterLocalSchema>({
@@ -30,7 +33,9 @@ export function UpdateNameForm({
     <form onSubmit={handleSubmit}>
       <div className="join flex">
         <label className="input join-item grow">
-          <span className="label">Nombre actual</span>
+          <span className="label">
+            {LL.Dashboard.PageSettings.FormLocalName.Label()}
+          </span>
           <input
             id="name"
             {...form.register('name')}
@@ -44,11 +49,11 @@ export function UpdateNameForm({
           className="btn btn-secondary join-item"
         >
           {ApiUpdateName.isLoading ? <Spinner /> : null}
-          {!ApiUpdateName.isLoading && 'Actualizar'}
+          {!ApiUpdateName.isLoading && LL.CommonWords.Update()}
         </button>
       </div>
       <label htmlFor="name" className="label text-xs text-center">
-        Los cambios se veran reflejados en otros dispositivos.
+        {LL.Dashboard.PageSettings.FormLocalName.Hint()}
       </label>
     </form>
   )

@@ -22,6 +22,9 @@ apps/*/dist
 apps/*/out
 apps/*/electron-cache
 
+# Vite
+*.vite.config.*
+
 # macOS
 .DS_Store
 

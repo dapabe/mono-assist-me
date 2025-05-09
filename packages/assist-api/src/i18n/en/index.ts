@@ -7,28 +7,34 @@ const en = {
   },
   FormLocalRegister: {
     Label: 'Public name',
-    Desc: 'How others will see you',
+    Hint: 'How others will see you',
     Placeholder: 'ex: Daniel P. Becerra',
   },
   Dashboard: {
     PageEmitter: {
       Title: 'Call',
       MainButton: 'Help!',
+      ListenersLabel: 'People waiting you:',
       EnableDetectionCheckbox: 'Allow others to detect this device',
     },
     PageReceiver: {
       Title: 'Lists',
       SelectedDevicesTab: {
         Title: 'Known devices',
+        EmptyPlaceholder: 'No known devices',
       },
       SearchDevicesTab: {
+        Title: 'Discover',
         DetectButton: 'Detect devices',
-        Title: 'Search devices',
+        EmptyPlaceholder: 'No devices nearby',
       },
     },
     PageSettings: {
       Title: 'Settings',
-      FormLocalName: 'Current name',
+      FormLocalName: {
+        Label: 'Current name',
+        Hint: "Changes will be reflected on other people's devices.",
+      },
     },
   },
 } satisfies BaseTranslation;

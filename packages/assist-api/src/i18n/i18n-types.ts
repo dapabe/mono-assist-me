@@ -6,7 +6,6 @@ export type BaseTranslation = BaseTranslationType
 export type BaseLocale = 'en'
 
 export type Locales =
-	| 'de'
 	| 'en'
 	| 'es'
 
@@ -33,7 +32,7 @@ type RootTranslation = {
 		/**
 		 * H​o​w​ ​o​t​h​e​r​s​ ​w​i​l​l​ ​s​e​e​ ​y​o​u
 		 */
-		Desc: string
+		Hint: string
 		/**
 		 * e​x​:​ ​D​a​n​i​e​l​ ​P​.​ ​B​e​c​e​r​r​a
 		 */
@@ -50,6 +49,10 @@ type RootTranslation = {
 			 */
 			MainButton: string
 			/**
+			 * P​e​o​p​l​e​ ​w​a​i​t​i​n​g​ ​y​o​u​:
+			 */
+			ListenersLabel: string
+			/**
 			 * A​l​l​o​w​ ​o​t​h​e​r​s​ ​t​o​ ​d​e​t​e​c​t​ ​t​h​i​s​ ​d​e​v​i​c​e
 			 */
 			EnableDetectionCheckbox: string
@@ -64,16 +67,24 @@ type RootTranslation = {
 				 * K​n​o​w​n​ ​d​e​v​i​c​e​s
 				 */
 				Title: string
+				/**
+				 * N​o​ ​k​n​o​w​n​ ​d​e​v​i​c​e​s
+				 */
+				EmptyPlaceholder: string
 			}
 			SearchDevicesTab: {
+				/**
+				 * D​i​s​c​o​v​e​r
+				 */
+				Title: string
 				/**
 				 * D​e​t​e​c​t​ ​d​e​v​i​c​e​s
 				 */
 				DetectButton: string
 				/**
-				 * S​e​a​r​c​h​ ​d​e​v​i​c​e​s
+				 * N​o​ ​d​e​v​i​c​e​s​ ​n​e​a​r​b​y
 				 */
-				Title: string
+				EmptyPlaceholder: string
 			}
 		}
 		PageSettings: {
@@ -81,10 +92,16 @@ type RootTranslation = {
 			 * S​e​t​t​i​n​g​s
 			 */
 			Title: string
-			/**
-			 * C​u​r​r​e​n​t​ ​n​a​m​e
-			 */
-			FormLocalName: string
+			FormLocalName: {
+				/**
+				 * C​u​r​r​e​n​t​ ​n​a​m​e
+				 */
+				Label: string
+				/**
+				 * C​h​a​n​g​e​s​ ​w​i​l​l​ ​b​e​ ​r​e​f​l​e​c​t​e​d​ ​o​n​ ​o​t​h​e​r​ ​p​e​o​p​l​e​'​s​ ​d​e​v​i​c​e​s​.
+				 */
+				Hint: string
+			}
 		}
 	}
 }
@@ -108,7 +125,7 @@ export type TranslationFunctions = {
 		/**
 		 * How others will see you
 		 */
-		Desc: () => LocalizedString
+		Hint: () => LocalizedString
 		/**
 		 * ex: Daniel P. Becerra
 		 */
@@ -125,6 +142,10 @@ export type TranslationFunctions = {
 			 */
 			MainButton: () => LocalizedString
 			/**
+			 * People waiting you:
+			 */
+			ListenersLabel: () => LocalizedString
+			/**
 			 * Allow others to detect this device
 			 */
 			EnableDetectionCheckbox: () => LocalizedString
@@ -139,16 +160,24 @@ export type TranslationFunctions = {
 				 * Known devices
 				 */
 				Title: () => LocalizedString
+				/**
+				 * No known devices
+				 */
+				EmptyPlaceholder: () => LocalizedString
 			}
 			SearchDevicesTab: {
+				/**
+				 * Discover
+				 */
+				Title: () => LocalizedString
 				/**
 				 * Detect devices
 				 */
 				DetectButton: () => LocalizedString
 				/**
-				 * Search devices
+				 * No devices nearby
 				 */
-				Title: () => LocalizedString
+				EmptyPlaceholder: () => LocalizedString
 			}
 		}
 		PageSettings: {
@@ -156,10 +185,16 @@ export type TranslationFunctions = {
 			 * Settings
 			 */
 			Title: () => LocalizedString
-			/**
-			 * Current name
-			 */
-			FormLocalName: () => LocalizedString
+			FormLocalName: {
+				/**
+				 * Current name
+				 */
+				Label: () => LocalizedString
+				/**
+				 * Changes will be reflected on other people's devices.
+				 */
+				Hint: () => LocalizedString
+			}
 		}
 	}
 }

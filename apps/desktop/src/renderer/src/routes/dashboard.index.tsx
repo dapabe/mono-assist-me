@@ -1,3 +1,4 @@
+import { useI18nContext } from '@mono/assist-api/i18n/react'
 import { trpcReact } from '@renderer/services/trpc'
 import { createFileRoute } from '@tanstack/react-router'
 import { ReactNode } from 'react'
@@ -7,6 +8,8 @@ export const Route = createFileRoute('/dashboard/')({
 })
 
 function Component(): ReactNode {
+  const { LL } = useI18nContext()
+
   const currentListeners = trpcReact.PROTECTED.getCurrentListeners.useQuery()
   const requestHelp = trpcReact.PROTECTED.requestHelp.useMutation()
   if (currentListeners.isLoading || currentListeners.isError) return null
@@ -19,13 +22,15 @@ function Component(): ReactNode {
           disabled={!currentListeners.data.length}
           onClick={() => requestHelp.mutate()}
         >
-          Pedir ayuda
+          {LL.Dashboard.PageEmitter.MainButton()}
         </button>
       </div>
       <div className="divider m-0"></div>
       <div className="stats">
         <div className="stat">
-          <div className="stat-title">Personas pendientes a ti:</div>
+          <div className="stat-title">
+            {LL.Dashboard.PageEmitter.ListenersLabel()}
+          </div>
           <div className="stat-value font-mono">
             {currentListeners.data.length}
           </div>
@@ -38,7 +43,7 @@ function Component(): ReactNode {
               disabled
               className="checkbox checkbox-sm rounded-sm"
             />
-            Permitir ser descubierto
+            {LL.Dashboard.PageEmitter.EnableDetectionCheckbox()}
           </label>
         </div>
       </div>
