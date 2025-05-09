@@ -18,10 +18,12 @@
     },
     "./migrations": {
       "import": "./migrations/migrations.js",
-      "require": "./migrations/migrations.js"
+      "require": "./migrations/migrations.js",
+      "default": "./migrations/migrations.js"
     }
   },
   "scripts": {
+    "clean": "git clean -xdf .turbo build node_modules",
     "dev": "tsup --watch --silent",
     "lint": "eslint --ext js,ts",
     "test": "jest",

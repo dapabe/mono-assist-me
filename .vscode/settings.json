@@ -7,9 +7,12 @@
   },
   "[json]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
-  }
+  },
   // "editor.formatOnSave": true,
   // "editor.codeActionsOnSave": {
   //   "source.organizeImports": "explicit"
   // }
+  "files.associations": {
+    "*.mdx": "markdown"
+  }
 }

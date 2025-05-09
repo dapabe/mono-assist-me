@@ -7,6 +7,7 @@ import { onlineManager, QueryClientProvider } from '@tanstack/react-query';
 import * as network from 'expo-network';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { useEffect } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 export default function RootLayout() {

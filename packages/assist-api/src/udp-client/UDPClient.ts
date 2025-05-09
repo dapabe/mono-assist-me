@@ -24,10 +24,10 @@ export class UdpSocketClient implements ISocketClient {
   // private static instance: UdpSocketClient;
   private config: ISocketClientOptions;
 
-  private HEARTBEAT_INTERVAL!: NodeJS.Timeout;
+  private HEARTBEAT_INTERVAL!: number;
   private HEARTBEAT_EXPIRATION = 30_000 as const;
 
-  private HELP_INTERVAL!: NodeJS.Timeout;
+  private HELP_INTERVAL!: number;
   private HELP_EXPIRATION = 5000 as const;
 
   constructor(config: ISocketClientOptions) {

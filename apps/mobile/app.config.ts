@@ -4,13 +4,14 @@ const bundleIdentifier = 'com.denz.assist.me';
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
-  name: 'assist-me',
-  slug: 'assist-me',
+
+  name: 'assist-me-btn',
+  slug: 'assist-me-btn',
   version: '1.0.0',
   orientation: 'portrait',
   icon: './assets/images/icon.png',
-  scheme: 'assist-me',
-  userInterfaceStyle: 'automatic',
+  scheme: 'assistmebtn',
+  userInterfaceStyle: 'light',
   newArchEnabled: true,
   ios: {
     ...config.ios,
@@ -38,7 +39,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     'expo-router',
     'expo-sqlite',
     'expo-font',
-    'expo-secure-store',
     [
       'expo-splash-screen',
       {

@@ -8,25 +8,24 @@ import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { InputControl } from '#src/components/form/InputControl';
-import { useLocalNameQuery } from '#src/hooks/useLocalName.query';
 
 export default function SettingsScreen() {
-  const { currentName, updateCurrentNameMutation } = useLocalNameQuery();
-
   const form = useForm<IRegisterLocalSchema>({
-    defaultValues: { name: currentName.data ?? '' },
+    defaultValues: { name: '' },
     // resolver: zodResolver(RegisterLocalSchema),
   });
 
   const onSubmit = async (data: IRegisterLocalSchema) => {
-    await updateCurrentNameMutation(data);
+    // await updateCurrentNameMutation(data);
   };
 
   const fieldName = form.watch('name');
-  const hasUnsavedChanges = useMemo(
-    () => fieldName !== currentName.data,
-    [fieldName, currentName.data]
-  );
+  // const hasUnsavedChanges = useMemo(
+  //   () => fieldName !== currentName.data,
+  //   [fieldName, currentName.data]
+  // );
+  const hasUnsavedChanges = false;
+
   // //	No other way of doing this
   const nav = useNavigationContainerRef();
   useEffect(() => {

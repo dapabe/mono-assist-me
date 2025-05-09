@@ -5,15 +5,9 @@ import { AppState } from 'react-native';
 import { useNetworkAppState } from './Network.provider';
 import { ReactNativeSocketAdapter } from '../common/udp-client.adapter';
 
-import { useAppIdQuery } from '#src/hooks/useAppId.query';
-import { useLocalNameQuery } from '#src/hooks/useLocalName.query';
-
 export function AssistanceRoomProvider({ children }: PropsWithChildren) {
   const appState = useRef(AppState.currentState);
   const { Internal_IPv4 } = useNetworkAppState();
-
-  const { currentName } = useLocalNameQuery();
-  const { currentAppId } = useAppIdQuery();
 
   const room = useRoomStore();
   const adapterRef = useRef<IConnAdapter>(null);
@@ -44,7 +38,7 @@ export function AssistanceRoomProvider({ children }: PropsWithChildren) {
   useEffect(() => {
     if (room.connMethod === ConnMethod.None) {
       if (adapterRef.current) return;
-      room.updateMemoryState('currentName', currentName.data);
+      room.updateMemoryState('currentName', 'test');
       room.updateMemoryState('currentAppId', 'currentAppId');
       const client = new UdpSocketClient({
         adapter: new ReactNativeSocketAdapter(),

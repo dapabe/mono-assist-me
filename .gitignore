@@ -4,8 +4,8 @@ apps/*/build
 packages/*/build
 
 # Generated
-.tamagui
 .temp
+.astro
 
 # Turborepo
 .turbo

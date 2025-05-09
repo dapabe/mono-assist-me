@@ -7,7 +7,6 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { BackHandler, StyleSheet, View } from 'react-native';
 
 import { InputControl } from '#src/components/form/InputControl';
-import { useLocalNameQuery } from '#src/hooks/useLocalName.query';
 
 export default function RegisterScreen() {
   const router = useRouter();
@@ -17,10 +16,8 @@ export default function RegisterScreen() {
     },
     // resolver: zodResolver(RegisterLocalSchema),
   });
-  const { updateCurrentNameMutation } = useLocalNameQuery();
 
   const onSubmit = async (data: IRegisterLocalSchema) => {
-    await updateCurrentNameMutation(data);
     router.replace('/(dashboard)/emitter');
   };
 
