@@ -91,3 +91,9 @@ export const RoomEventSchema = z18n.union([
   }),
 ]);
 export type IRoomEvent = z.infer<typeof RoomEventSchema>;
+
+export const RoomPacketSchema = z18n.object({
+  id: z18n.string().cuid2(),
+  data: RoomEventSchema,
+});
+export type IRoomPacket = z.infer<typeof RoomPacketSchema>;

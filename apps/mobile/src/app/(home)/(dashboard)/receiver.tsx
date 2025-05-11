@@ -1,12 +1,15 @@
 import { ReceiverSearchDevices } from '#src/components/receiver-lists/Receiver.SearchDevices';
 import { ReceiverSelectedDevices } from '#src/components/receiver-lists/Receiver.SelectedDevices';
 import { useRoomStore } from '@mono/assist-api';
+import { useTranslation } from 'react-i18next';
 import { Tab, TabView } from '@rneui/themed';
 import { useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function ReceiverScreen() {
+  const { t } = useTranslation();
+
   const [currentTab, setTab] = useState(0);
 
   const ctx = useRoomStore();
@@ -26,9 +29,15 @@ export default function ReceiverScreen() {
         </TabView.Item>
       </TabView>
       <Tab value={currentTab} onChange={setTab}>
-        <Tab.Item title={'Mis elegidos'} icon={{ type: 'feather', name: 'activity' }} />
+        <Tab.Item
+          title={t('Dashboard.PageReceiver.SelectedDevicesTab.Title')}
+          icon={{ type: 'feather', name: 'activity' }}
+        />
 
-        <Tab.Item title={'Buscar'} icon={{ type: 'feather', name: 'search' }} />
+        <Tab.Item
+          title={t('Dashboard.PageReceiver.SearchDevicesTab.Title')}
+          icon={{ type: 'feather', name: 'search' }}
+        />
       </Tab>
     </SafeAreaView>
   );

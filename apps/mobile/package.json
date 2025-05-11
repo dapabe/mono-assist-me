@@ -51,6 +51,7 @@
     "react-native-safe-area-context": "5.4.0",
     "react-native-screens": "~4.10.0",
     "react-native-udp": "4.1.7",
+    "typesafe-i18n": "5.26.2",
     "zod": "catalog:utils",
     "zustand": "catalog:utils"
   },

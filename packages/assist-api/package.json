@@ -9,64 +9,34 @@
     "migrations"
   ],
   "types": "./build/index.d.ts",
-  "main": "./build/index.cjs",
+  "main": "./build/index.js",
   "module": "./build/index.js",
   "exports": {
     ".": {
       "types": "./build/index.d.ts",
       "import": "./build/index.js",
-      "require": "./build/index.cjs"
+      "require": "./build/index.js"
     },
-    "./i18n/indexed-locale": {
-      "types": "./build/i18n/indexed-locale.d.ts",
-      "import": "./build/i18n/indexed-locale.js",
-      "require": "./build/i18n/indexed-locale.cjs"
-    },
-    "./i18n/react": {
-      "types": "./build/i18n/i18n-react.d.ts",
-      "import": "./build/i18n/i18n-react.js",
-      "require": "./build/i18n/i18n-react.cjs"
-    },
-    "./i18n/utils": {
-      "types": "./build/i18n/i18n-util.d.ts",
-      "import": "./build/i18n/i18n-util.js",
-      "require": "./build/i18n/i18n-util.cjs"
-    },
-    "./i18n/utils/sync": {
-      "types": "./build/i18n/i18n-util.sync.d.ts",
-      "import": "./build/i18n/i18n-util.sync.js",
-      "require": "./build/i18n/i18n-util.sync.cjs"
-    },
-    "./i18n/utils/async": {
-      "types": "./build/i18n/i18n-util.async.d.ts",
-      "import": "./build/i18n/i18n-util.async.js",
-      "require": "./build/i18n/i18n-util.async.cjs"
+    "./migrations": "./migrations/migrations.js",
+    "./i18n/next": {
+      "types": "./build/i18n/next-init.d.ts",
+      "import": "./build/i18n/next-init.js",
+      "require": "./build/i18n/next-init.js"
     }
   },
   "typesVersions": {
     "*": {
-      "i18n/indexed-locale": [
-        "./build/i18n/indexed-locale.d.ts"
+      "migrations": [
+        "./migrations/migrations.js"
       ],
-      "i18n/react": [
-        "./build/i18n/i18n-react.d.ts"
-      ],
-      "i18n/utils": [
-        "./build/i18n/i18n-util.d.ts"
-      ],
-      "i18n/utils/sync": [
-        "./build/i18n/i18n-util.sync.d.ts"
-      ],
-      "i18n/utils/async": [
-        "./build/i18n/i18n-util.async.d.ts"
+      "i18n/next": [
+        "./build/i18n/next-init.d.ts"
       ]
     }
   },
   "scripts": {
     "clean": "git clean -xdf .turbo build node_modules",
-    "dev": "pnpm run --parallel /^dev:/",
-    "dev:i18n-gen": "typesafe-i18n",
-    "dev:tsup-gen": "tsup --watch --silent",
+    "dev": "tsup --watch --silent",
     "lint": "eslint --ext js,ts",
     "test": "jest",
     "build": "tsup --clean",
@@ -86,9 +56,9 @@
     "@paralleldrive/cuid2": "2.2.2",
     "drizzle-orm": "catalog:drizzle",
     "i18next": "catalog:utils",
+    "react-i18next": "15.5.1",
     "zod": "catalog:utils",
-    "zod-i18n-map": "catalog:utils",
-    "typesafe-i18n": "5.26.2"
+    "zod-i18n-map": "catalog:utils"
   },
   "devDependencies": {
     "@mono/eslint-config": "workspace:*",
@@ -103,6 +73,7 @@
     "drizzle-orm": "catalog:drizzle",
     "zod": "catalog:utils",
     "zustand": "catalog:utils",
-    "typesafe-i18n": "5.26.2"
+    "i18next": "catalog:utils",
+    "react-i18next": "15.5.1"
   }
 }

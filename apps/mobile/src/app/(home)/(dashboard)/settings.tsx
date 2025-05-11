@@ -8,8 +8,11 @@ import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { InputControl } from '#src/components/form/InputControl';
+import { useTranslation } from 'react-i18next';
 
 export default function SettingsScreen() {
+  const { t } = useTranslation();
+
   const form = useForm<IRegisterLocalSchema>({
     defaultValues: { name: '' },
     // resolver: zodResolver(RegisterLocalSchema),
@@ -48,8 +51,8 @@ export default function SettingsScreen() {
         <View style={styles.formRoot}>
           <InputControl
             name="name"
-            label="Tu nombre actual"
-            description="Asi te veras para otros"
+            label={t('Dashboard.PageSettings.FormLocalName.Label')}
+            description={t('Dashboard.PageSettings.FormLocalName.Hint')}
           />
           <View style={styles.updateName}>
             <Button
@@ -59,7 +62,7 @@ export default function SettingsScreen() {
               }
               onPress={form.handleSubmit(onSubmit)}
             >
-              Actualizar
+              {t('CommonWords.Update')}
             </Button>
           </View>
         </View>

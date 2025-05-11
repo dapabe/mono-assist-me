@@ -1,7 +1,6 @@
 import type { Socket } from 'node:dgram';
 import type UdpSocket from 'react-native-udp/lib/types/UdpSocket';
 
-import { UDP_CONSTANTS } from './udp-constants';
 import type { ISocketAdapter, ISocketIncomingMessage } from '../types/socket-adapter';
 
 export abstract class SocketAdapter<T = UdpSocket | Socket> implements ISocketAdapter {

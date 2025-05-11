@@ -1,17 +1,14 @@
-import { Locales } from '@mono/assist-api/build/i18n/i18n-types'
-import { useI18nContext } from '@mono/assist-api/i18n/react'
-import { locales } from '@mono/assist-api/i18n/utils'
-import { loadLocale } from '@mono/assist-api/i18n/utils/sync'
+import { useTranslation } from 'react-i18next'
 import * as Icon from 'lucide-react'
 import { ChangeEvent, ReactNode } from 'react'
-import { IndexedLocale } from '@mono/assist-api/i18n/indexed-locale'
+import { IndexedLocale } from '@mono/assist-api/i18n/next'
 
 export function LocalSwitcher(): ReactNode {
-  const { locale, setLocale } = useI18nContext()
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_, i18n] = useTranslation()
 
   const handleLocale = (x: ChangeEvent<HTMLSelectElement>): void => {
-    loadLocale(x.target.value as Locales)
-    setLocale(x.target.value as Locales)
+    i18n.changeLanguage(x.target.value)
   }
 
   return (
@@ -22,10 +19,10 @@ export function LocalSwitcher(): ReactNode {
       <select
         id="switch"
         className="join-item select w-auto"
-        value={locale}
+        value={i18n.language}
         onChange={handleLocale}
       >
-        {locales.map((x) => (
+        {i18n.languages.map((x) => (
           <option key={x} value={x}>
             {IndexedLocale[x]}
           </option>

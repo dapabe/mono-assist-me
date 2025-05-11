@@ -1,4 +1,4 @@
-import type { BaseTranslation } from '../i18n-types';
+import type { BaseTranslation } from '../i18n-base';
 
 const en = {
   CommonWords: {
@@ -7,8 +7,9 @@ const en = {
   },
   FormLocalRegister: {
     Label: 'Public name',
-    Hint: 'How others will see you',
     Placeholder: 'ex: Daniel P. Becerra',
+    Desc: 'How others will see you',
+    Hint: 'You can change it later',
   },
   Dashboard: {
     PageEmitter: {

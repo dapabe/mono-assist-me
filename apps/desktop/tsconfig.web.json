@@ -1,12 +1,17 @@
 {
   "extends": "@electron-toolkit/tsconfig/tsconfig.web.json",
-  "include": ["src/renderer/**/*", "src/preload/*.d.ts"],
+  "include": [
+    "src/renderer/**/*",
+    "src/preload/*.d.ts",
+    "@mono/assist-api/src/i18n/i18n-base.ts"
+  ],
   "exclude": ["src/main"],
   "compilerOptions": {
     "composite": true,
     "jsx": "react-jsx",
     "outDir": "out",
     "baseUrl": ".",
+    "resolveJsonModule": true,
     "paths": {
       "@renderer/*": ["src/renderer/src/*"]
     }

@@ -1,9 +1,9 @@
-import { useI18nContext } from '@mono/assist-api/i18n/react'
+import { useTranslation } from 'react-i18next'
 import { trpcReact } from '@renderer/services/trpc'
 import { ReactNode } from 'react'
 
 export function ReceiverSelectedDevices(): ReactNode {
-  const { LL } = useI18nContext()
+  const { t } = useTranslation()
 
   const roomsListeningTo = trpcReact.PROTECTED.getRoomsListeningTo.useQuery()
   const deleteListeningTo = trpcReact.PROTECTED.deleteListeningTo.useMutation()
@@ -28,7 +28,7 @@ export function ReceiverSelectedDevices(): ReactNode {
     return (
       <div className="grow flex items-center justify-center">
         <span className="label text-2xl">
-          {LL.Dashboard.PageReceiver.SelectedDevicesTab.EmptyPlaceholder()}
+          {t('Dashboard.PageReceiver.SelectedDevicesTab.EmptyPlaceholder')}
         </span>
       </div>
     )

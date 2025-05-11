@@ -1,10 +1,10 @@
-import { useI18nContext } from '@mono/assist-api/i18n/react'
+import { useTranslation } from 'react-i18next'
 import { Link, useLocation } from '@tanstack/react-router'
 import { PropsWithChildren, ReactNode } from 'react'
 import { twMerge } from 'tailwind-merge'
 
 export function DashboardLayout(props: PropsWithChildren): ReactNode {
-  const { LL } = useI18nContext()
+  const { t } = useTranslation()
 
   const pathname = useLocation({
     select: (location) => location.pathname
@@ -21,7 +21,7 @@ export function DashboardLayout(props: PropsWithChildren): ReactNode {
           )}
           to="/dashboard"
         >
-          {LL.Dashboard.PageEmitter.Title()}
+          {t('Dashboard.PageEmitter.Title')}
         </Link>
         <Link
           role="tab"
@@ -31,7 +31,7 @@ export function DashboardLayout(props: PropsWithChildren): ReactNode {
           )}
           to="/dashboard/receiver"
         >
-          {LL.Dashboard.PageReceiver.Title()}
+          {t('Dashboard.PageReceiver.Title')}
         </Link>
         <Link
           role="tab"
@@ -41,7 +41,7 @@ export function DashboardLayout(props: PropsWithChildren): ReactNode {
           )}
           to="/dashboard/settings"
         >
-          {LL.Dashboard.PageSettings.Title()}
+          {t('Dashboard.PageSettings.Title')}
         </Link>
       </div>
       {props.children}

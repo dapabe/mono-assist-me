@@ -17,10 +17,8 @@ export class NodeSocketAdapter extends SocketAdapter<dgram.Socket> {
     this.sk.addListener('listening', () => {
       this.sk.setMulticastLoopback(false)
       this.sk.setMulticastTTL(1)
-      this.sk.addMembership(
-        UDP_CONSTANTS.MULTICAST_ADDRESS,
-        this.currentAddress
-      )
+      this.sk.setBroadcast(false)
+      this.sk.addMembership(UDP_CONSTANTS.MULTICAST_ADDRESS)
       this.triggerOnListening()
     })
     this.sk.on('error', (err) => this.handleErrors(err))

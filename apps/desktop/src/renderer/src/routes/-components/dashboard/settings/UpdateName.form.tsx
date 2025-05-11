@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { IRegisterLocalSchema, RegisterLocalSchema } from '@mono/assist-api'
-import { useI18nContext } from '@mono/assist-api/i18n/react'
+import { useTranslation } from 'react-i18next'
 import { trpcReact } from '@renderer/services/trpc'
 import { IFormProps } from '@renderer/types/forms'
 import { Spinner } from '@renderer/ui/Spinner'
@@ -13,13 +13,12 @@ export function UpdateNameForm({
   isLoading,
   loadErrors
 }: IFormProps<IRegisterLocalSchema>): ReactNode {
-  const { LL } = useI18nContext()
+  const { t } = useTranslation()
 
   const ApiUpdateName = trpcReact.PROTECTED.updateLocalName.useMutation()
 
   const form = useForm<IRegisterLocalSchema>({
     defaultValues: { name: values.name }
-    //@ts-nocheck
     // resolver: zodResolver(RegisterLocalSchema)
   })
 
@@ -34,7 +33,7 @@ export function UpdateNameForm({
       <div className="join flex">
         <label className="input join-item grow">
           <span className="label">
-            {LL.Dashboard.PageSettings.FormLocalName.Label()}
+            {t('Dashboard.PageSettings.FormLocalName.Label')}
           </span>
           <input
             id="name"
@@ -49,11 +48,11 @@ export function UpdateNameForm({
           className="btn btn-secondary join-item"
         >
           {ApiUpdateName.isLoading ? <Spinner /> : null}
-          {!ApiUpdateName.isLoading && LL.CommonWords.Update()}
+          {!ApiUpdateName.isLoading && t('CommonWords.Update')}
         </button>
       </div>
       <label htmlFor="name" className="label text-xs text-center">
-        {LL.Dashboard.PageSettings.FormLocalName.Hint()}
+        {t('Dashboard.PageSettings.FormLocalName.Hint')}
       </label>
     </form>
   )

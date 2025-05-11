@@ -1,4 +1,4 @@
-import { useI18nContext } from '@mono/assist-api/i18n/react'
+import { useTranslation } from 'react-i18next'
 import { trpcReact } from '@renderer/services/trpc'
 import { createFileRoute } from '@tanstack/react-router'
 import { ReactNode } from 'react'
@@ -8,7 +8,7 @@ export const Route = createFileRoute('/dashboard/')({
 })
 
 function Component(): ReactNode {
-  const { LL } = useI18nContext()
+  const { t } = useTranslation()
 
   const currentListeners = trpcReact.PROTECTED.getCurrentListeners.useQuery()
   const requestHelp = trpcReact.PROTECTED.requestHelp.useMutation()
@@ -22,14 +22,14 @@ function Component(): ReactNode {
           disabled={!currentListeners.data.length}
           onClick={() => requestHelp.mutate()}
         >
-          {LL.Dashboard.PageEmitter.MainButton()}
+          {t('Dashboard.PageEmitter.MainButton')}
         </button>
       </div>
       <div className="divider m-0"></div>
       <div className="stats">
         <div className="stat">
           <div className="stat-title">
-            {LL.Dashboard.PageEmitter.ListenersLabel()}
+            {t('Dashboard.PageEmitter.ListenersLabel')}
           </div>
           <div className="stat-value font-mono">
             {currentListeners.data.length}
@@ -43,7 +43,7 @@ function Component(): ReactNode {
               disabled
               className="checkbox checkbox-sm rounded-sm"
             />
-            {LL.Dashboard.PageEmitter.EnableDetectionCheckbox()}
+            {t('Dashboard.PageEmitter.EnableDetectionCheckbox')}
           </label>
         </div>
       </div>

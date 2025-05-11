@@ -1,3 +1,4 @@
+import { createId } from '@paralleldrive/cuid2';
 import { Buffer } from 'buffer';
 import { ZodError } from 'zod';
 
@@ -6,8 +7,9 @@ import { UDP_CONSTANTS } from './udp-constants';
 import {
   ConnMethod,
   IRoomEvent,
+  IRoomPacket,
   RoomEventLiteral,
-  RoomEventSchema,
+  RoomPacketSchema,
 } from '../schemas/RoomEvent.schema';
 import { stringToJSONSchema } from '../schemas/utils.schema';
 import { IRoomState } from '../store/useRoomStore';
@@ -29,6 +31,8 @@ export class UdpSocketClient implements ISocketClient {
 
   private HELP_INTERVAL!: number;
   private HELP_EXPIRATION = 5000 as const;
+
+  private RepeatedIds = new Set<string>();
 
   constructor(config: ISocketClientOptions) {
     // if (UdpSocketClient.instance) return UdpSocketClient.instance;
@@ -66,7 +70,12 @@ export class UdpSocketClient implements ISocketClient {
   }
 
   sendTo(port: number, address: string, data: IRoomEvent): void {
-    const buf = Buffer.from(JSON.stringify(data));
+    const buf = Buffer.from(
+      JSON.stringify({
+        id: createId(),
+        data,
+      } satisfies IRoomPacket)
+    );
     this.config.adapter.sendTo(port, address, buf);
   }
 
@@ -87,12 +96,14 @@ export class UdpSocketClient implements ISocketClient {
       // Validate transmited data
       const msg = data.toString();
       const parsed = stringToJSONSchema.parse(msg);
-      const room = RoomEventSchema.parse(parsed);
-
+      const packet = RoomPacketSchema.parse(parsed);
       console.log(
-        `[UDP] Event '${Object.keys(RoomEventLiteral)[room.event]}' from ${rinfo.address}:${rinfo.port}`
+        `[UDP] Event '${Object.keys(RoomEventLiteral)[packet.data.event]}' from ${rinfo.address}:${rinfo.port}`
       );
-      this.handleMessage(room, rinfo);
+      if (this.RepeatedIds.has(packet.id)) return;
+      // console.log(`[UDP] Dupped msg from ${rinfo.address} - ${packet.id}`);
+      this.RepeatedIds.add(packet.id);
+      this.handleMessage(packet.data, rinfo);
     } catch (error) {
       if (error instanceof ZodError) {
         if (Buffer.isBuffer(data)) console.log(`[UDP] Buffer error: ${data.toString()}`);

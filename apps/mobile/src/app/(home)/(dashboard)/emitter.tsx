@@ -1,12 +1,15 @@
 import { UITheme } from '#src/common/ui-theme';
 import { useImplicitToggle } from '#src/hooks/useImplicitToggle.hook';
 import { RoomServiceStatus, useRoomStore } from '@mono/assist-api';
+import { useTranslation } from 'react-i18next';
 import { Icon, Switch, Text } from '@rneui/themed';
 import { useMemo } from 'react';
 import { Dimensions, StyleSheet, TouchableHighlight, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function EmitterScreen() {
+  const { t } = useTranslation();
+
   const ctx = useRoomStore();
   const [tooltipVisible, toggleTooltip] = useImplicitToggle();
 
@@ -33,7 +36,9 @@ export default function EmitterScreen() {
           disabled={isHelpDisabled}
           // onPress={ctx.actions.help}
         >
-          <Text disabled={ctx.status !== RoomServiceStatus.Up}>Llamar</Text>
+          <Text disabled={ctx.status !== RoomServiceStatus.Up}>
+            {t('Dashboard.PageEmitter.MainButton')}
+          </Text>
           {/* <MedicalCross /> */}
         </TouchableHighlight>
       </View>
@@ -46,7 +51,7 @@ export default function EmitterScreen() {
           <Text style={{ color: UITheme.lightColors?.primary }}>{ctx.currentListeners.length}</Text>
         </View>
         <View style={styles.rowGroup}>
-          <Text>Permitir busquedas</Text>
+          <Text>{t('Dashboard.PageEmitter.EnableDetectionCheckbox')}</Text>
           <Switch
             value={true}
             disabled

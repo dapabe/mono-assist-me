@@ -1,5 +1,3 @@
-import type { BaseTranslation } from '../i18n-types';
-
 const es = {
   CommonWords: {
     Continue: 'Continuar',
@@ -7,8 +5,9 @@ const es = {
   },
   FormLocalRegister: {
     Label: 'Nombre público',
-    Hint: 'Como te veran otras personas',
     Placeholder: 'ej: Daniel P. Becerra',
+    Desc: 'Como te veran otras personas',
+    Hint: 'Podras cambiarlo despues',
   },
   Dashboard: {
     PageEmitter: {
@@ -37,6 +36,6 @@ const es = {
       },
     },
   },
-} satisfies BaseTranslation;
+};
 
 export default es;

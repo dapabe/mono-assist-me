@@ -7,8 +7,11 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { BackHandler, StyleSheet, View } from 'react-native';
 
 import { InputControl } from '#src/components/form/InputControl';
+import { useTranslation } from 'react-i18next';
 
 export default function RegisterScreen() {
+  const { t } = useTranslation();
+
   const router = useRouter();
   const form = useForm<IRegisterLocalSchema>({
     defaultValues: {
@@ -33,15 +36,15 @@ export default function RegisterScreen() {
       <View style={styles.container}>
         <InputControl
           name="name"
-          label="Tu nombre público"
-          description="Asi te veran para otras personas"
-          placeholder="ej: John Anti-Cheat"
+          label={t('FormLocalRegister.Label')}
+          description={t('FormLocalRegister.Desc')}
+          placeholder={t('FormLocalRegister.Placeholder')}
         />
-        <Text>Podras cambiarlo luego</Text>
+        <Text>{t('FormLocalRegister.Hint')}</Text>
         <View>
           <Button
             disabled={form.formState.isSubmitting || !form.formState.isValid}
-            title="Continuar"
+            title={t('CommonWords.Continue')}
             onPress={form.handleSubmit(onSubmit)}
           />
         </View>

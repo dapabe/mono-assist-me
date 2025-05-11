@@ -1,25 +1,27 @@
 import { RoomServiceStatus, useRoomStore } from '@mono/assist-api';
+import { useTranslation } from 'react-i18next';
 import { Icon } from '@rneui/themed';
 import { Tabs } from 'expo-router';
 import { ReactNode } from 'react';
 import { Pressable, PressableProps } from 'react-native';
 
 export default function DashboardLayout() {
+  const { t } = useTranslation();
+
   const ctx = useRoomStore();
   return (
     <Tabs screenOptions={{ headerShown: false }}>
       <Tabs.Screen
         name="emitter"
         options={{
-          title: 'Llamar',
-
+          title: t('Dashboard.PageEmitter.Title'),
           tabBarIcon: (p) => <Icon {...p} type="feather" name="radio" />,
         }}
       />
       <Tabs.Screen
         name="receiver"
         options={{
-          title: `${ctx.roomsListeningTo.length}-${ctx.roomsToDiscover.length}`,
+          title: t('Dashboard.PageReceiver.Title'),
           tabBarIcon: (p) => <Icon {...p} type="feather" name="list" />,
           // tabBarButton: (p) => <ReceiverTabButton {...p} />,
         }}
@@ -28,7 +30,7 @@ export default function DashboardLayout() {
         name="settings"
         options={{
           headerShown: true,
-          title: 'Configuración',
+          title: t('Dashboard.PageSettings.Title'),
           tabBarIcon: (p) => <Icon {...p} type="feather" name="settings" />,
         }}
       />

@@ -339,6 +339,9 @@ importers:
       react-native-udp:
         specifier: 4.1.7
         version: 4.1.7
+      typesafe-i18n:
+        specifier: 5.26.2
+        version: 5.26.2(typescript@5.8.3)
       zod:
         specifier: catalog:utils
         version: 3.24.2
@@ -506,6 +509,9 @@ importers:
       i18next:
         specifier: catalog:utils
         version: 25.0.1(typescript@5.8.2)
+      react-i18next:
+        specifier: 15.5.1
+        version: 15.5.1(i18next@25.0.1(typescript@5.8.2))(react-native@0.79.2(@babel/core@7.27.1)(@types/react@19.1.3)(react@19.0.0))(react@19.0.0)(typescript@5.8.2)
       zod:
         specifier: catalog:utils
         version: 3.24.2
@@ -534,9 +540,6 @@ importers:
       tsup:
         specifier: ^8.3.5
         version: 8.4.0(jiti@2.4.2)(postcss@8.5.3)(tsx@4.19.4)(typescript@5.8.2)(yaml@2.7.1)
-      typesafe-i18n:
-        specifier: 5.26.2
-        version: 5.26.2(typescript@5.8.2)
       typescript:
         specifier: 5.8.2
         version: 5.8.2
@@ -4977,6 +4980,9 @@ packages:
   html-escaper@3.0.3:
     resolution: {integrity: sha512-RuMffC89BOWQoY0WKGpIhn5gX3iI54O6nRA0yC124NYVtzjmFWBIiFd8M0x+ZdX0P9R4lADg1mgP8C7PxGOWuQ==}
 
+  html-parse-stringify@3.0.1:
+    resolution: {integrity: sha512-KknJ50kTInJ7qIScF3jeaFRpMpE8/lfiTdzf/twXyPBLAGrLRTmkz3AdTnKeh40X8k9L2fdYwEp/42WGXIRGcg==}
+
   html-void-elements@3.0.0:
     resolution: {integrity: sha512-bEqo66MRXsUGxWHV5IP0PUiAWwoEjba4VCzg0LjFJBpchPaTfyfCKTG6bc5F8ucKec3q5y6qOdGyYTSBEvhCrg==}
 
@@ -6776,6 +6782,22 @@ packages:
     peerDependencies:
       react: ^16.8.0 || ^17 || ^18 || ^19
 
+  react-i18next@15.5.1:
+    resolution: {integrity: sha512-C8RZ7N7H0L+flitiX6ASjq9p5puVJU1Z8VyL3OgM/QOMRf40BMZX+5TkpxzZVcTmOLPX5zlti4InEX5pFyiVeA==}
+    peerDependencies:
+      i18next: '>= 23.2.3'
+      react: '>= 16.8.0'
+      react-dom: '*'
+      react-native: '*'
+      typescript: ^5
+    peerDependenciesMeta:
+      react-dom:
+        optional: true
+      react-native:
+        optional: true
+      typescript:
+        optional: true
+
   react-icons@5.5.0:
     resolution: {integrity: sha512-MEFcXdkP3dLo8uumGI5xN3lDFNsRtrjbOEKDLD7yv76v4wpnEq2Lt2qeHaQOr34I/wPN3s3+N08WkQ+CW37Xiw==}
     peerDependencies:
@@ -8170,6 +8192,10 @@ packages:
 
   vlq@1.0.1:
     resolution: {integrity: sha512-gQpnTgkubC6hQgdIcRdYGDSDc+SaujOdyesZQMv6JlfQee/9Mp0Qhnys6WxDWvQnL5WZdT7o2Ul187aSt0Rq+w==}
+
+  void-elements@3.1.0:
+    resolution: {integrity: sha512-Dhxzh5HZuiHQhbvTW9AMetFfBHDMYpo23Uo9btPXgdYP+3T5S+p+jgNy7spra+veYhBP2dCSgxR/i2Y02h5/6w==}
+    engines: {node: '>=0.10.0'}
 
   volar-service-css@0.0.62:
     resolution: {integrity: sha512-JwNyKsH3F8PuzZYuqPf+2e+4CTU8YoyUHEHVnoXNlrLe7wy9U3biomZ56llN69Ris7TTy/+DEX41yVxQpM4qvg==}
@@ -14351,6 +14377,10 @@ snapshots:
 
   html-escaper@3.0.3: {}
 
+  html-parse-stringify@3.0.1:
+    dependencies:
+      void-elements: 3.1.0
+
   html-void-elements@3.0.0: {}
 
   http-cache-semantics@4.1.1: {}
@@ -16612,6 +16642,16 @@ snapshots:
     dependencies:
       react: 19.0.0
 
+  react-i18next@15.5.1(i18next@25.0.1(typescript@5.8.2))(react-native@0.79.2(@babel/core@7.27.1)(@types/react@19.1.3)(react@19.0.0))(react@19.0.0)(typescript@5.8.2):
+    dependencies:
+      '@babel/runtime': 7.27.1
+      html-parse-stringify: 3.0.1
+      i18next: 25.0.1(typescript@5.8.2)
+      react: 19.0.0
+    optionalDependencies:
+      react-native: 0.79.2(@babel/core@7.27.1)(@types/react@19.1.3)(react@19.0.0)
+      typescript: 5.8.2
+
   react-icons@5.5.0(react@19.0.0):
     dependencies:
       react: 19.0.0
@@ -18054,9 +18094,9 @@ snapshots:
       possible-typed-array-names: 1.1.0
       reflect.getprototypeof: 1.0.10
 
-  typesafe-i18n@5.26.2(typescript@5.8.2):
+  typesafe-i18n@5.26.2(typescript@5.8.3):
     dependencies:
-      typescript: 5.8.2
+      typescript: 5.8.3
 
   typesafe-path@0.2.2: {}
 
@@ -18282,6 +18322,8 @@ snapshots:
       vite: 6.3.5(@types/node@22.15.17)(jiti@2.4.2)(lightningcss@1.29.2)(terser@5.39.0)(tsx@4.19.4)(yaml@2.7.1)
 
   vlq@1.0.1: {}
+
+  void-elements@3.1.0: {}
 
   volar-service-css@0.0.62(@volar/language-service@2.4.13):
     dependencies:
