@@ -17,7 +17,7 @@ export abstract class SocketAdapter<T = UdpSocket | Socket> implements ISocketAd
     MAX: 42100,
   };
   currentPort!: number;
-  protected currentAddress!: string;
+  currentAddress!: string;
 
   private getNextPort(): number {
     const nextPort = this.currentPort + 1;
@@ -57,7 +57,12 @@ export abstract class SocketAdapter<T = UdpSocket | Socket> implements ISocketAd
 
   protected triggerOnListening(): void {
     //@ts-ignore
-    // this.afterListeningRef();
+    this.currentAddress = this.sk.address().address;
+    //@ts-ignore
+    this.currentPort = this.sk.address().port;
+
+    //@ts-ignore
+    this.afterListeningRef();
     console.log(`[SocketAdapter] Binded to ${this.currentAddress}:${this.currentPort}`);
   }
 

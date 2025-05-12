@@ -31,8 +31,8 @@ export function ReceiverSearchDevices({ currentTab }: Props) {
         estimatedItemSize={10}
         refreshing={isRefreshing}
         renderItem={({ item }) => (
-          <ListItem onPress={() => ctx.addToListeningTo(item.appId)} bottomDivider>
-            <Icon type="feather" name="user-plus" />
+          <ListItem key={item.appId} onPress={() => ctx.addToListeningTo(item.appId)} bottomDivider>
+            <Icon type="lucide" name="user-plus" />
             <ListItem.Content>
               <ListItem.Title>{item.callerName}</ListItem.Title>
               <ListItem.Subtitle>{item.device}</ListItem.Subtitle>

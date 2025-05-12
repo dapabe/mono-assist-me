@@ -9,19 +9,19 @@
     "migrations"
   ],
   "types": "./build/index.d.ts",
-  "main": "./build/index.js",
   "module": "./build/index.js",
+  "main": "./build/index.cjs",
   "exports": {
     ".": {
       "types": "./build/index.d.ts",
       "import": "./build/index.js",
-      "require": "./build/index.js"
+      "require": "./build/index.cjs"
     },
     "./migrations": "./migrations/migrations.js",
     "./i18n/next": {
       "types": "./build/i18n/next-init.d.ts",
       "import": "./build/i18n/next-init.js",
-      "require": "./build/i18n/next-init.js"
+      "require": "./build/i18n/next-init.cjs"
     }
   },
   "typesVersions": {

@@ -1,51 +1,50 @@
-import * as network from "expo-network";
+import { useQuery } from '@tanstack/react-query';
+import { useNetworkState, getIpAddressAsync } from 'expo-network';
 import {
-	createContext,
-	PropsWithChildren,
-	useContext,
-	useEffect,
-	useMemo,
-	useState,
-} from "react";
-import { Alert, BackHandler } from "react-native";
+  createContext,
+  PropsWithChildren,
+  useContext,
+  useEffect,
+  useMemo,
+  Suspense,
+  use,
+} from 'react';
+import { Alert, BackHandler, Text } from 'react-native';
 
 type INetworkState = {
-	/**
-	 * 	Local network IP
-	 */
-	Internal_IPv4: string;
+  /**
+   * 	Local network IP
+   */
+  Internal_IPv4: string;
 };
 
 const NetworkCtx = createContext<INetworkState | null>(null);
 
 export function useNetworkAppState(): INetworkState {
-	const ctx = useContext(NetworkCtx);
-	if (!ctx) {
-		throw new Error("useNetworkAppState must be used inside NetworkProvider");
-	}
-	return ctx;
+  const ctx = useContext(NetworkCtx);
+  if (!ctx) {
+    throw new Error('useNetworkAppState must be used inside NetworkProvider');
+  }
+  return ctx;
 }
 
 export function NetworkProvider({ children }: PropsWithChildren) {
-	const [ip, setIp] = useState<string>("0.0.0.0");
-	const netState = network.useNetworkState();
+  // const [ip, setIp] = useState<string>('0.0.0.0');
 
-	useEffect(() => {
-		//	This should change when bluetooth is added
-		network.getIpAddressAsync().then((currentIp) => {
-			if (currentIp === "0.0.0.0" || netState.isConnected === false)
-				Alert.alert("Error", "No connection", [
-					{ text: "Exit", onPress: BackHandler.exitApp },
-				]);
-			else setIp(currentIp);
-		});
-		return () => setIp("0.0.0.0");
-	}, [netState.isConnected]);
+  const ip = useQuery({
+    queryKey: ['ip'],
+    queryFn: () => getIpAddressAsync(),
+  });
 
-	const value = useMemo<INetworkState>(
-		() => ({ Internal_IPv4: ip }),
-		[netState.isConnected]
-	);
+  useEffect(() => {
+    if (ip.data === '0.0.0.0' || ip.isError) {
+      Alert.alert('Error', ip.error?.message, [{ text: 'Exit', onPress: BackHandler.exitApp }]);
+    }
+  }, [ip.data, ip.isError]);
 
-	return <NetworkCtx.Provider value={value}>{children}</NetworkCtx.Provider>;
+  const value = useMemo<INetworkState>(() => ({ Internal_IPv4: ip.data! }), [ip.data]);
+
+  if (ip.isLoading) return <Text>Loading ip</Text>;
+
+  return <NetworkCtx.Provider value={value}>{children}</NetworkCtx.Provider>;
 }

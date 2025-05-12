@@ -1,16 +1,14 @@
 import { UITheme } from '#src/common/ui-theme';
 import { DatabaseProvider } from '#src/components/DatabaseProvider';
 import { NetworkProvider } from '#src/components/Network.provider';
+import { StartSequenceProvider } from '#src/components/StartSequence.provider';
 import { queryClient } from '#src/query-client';
 import { ThemeProvider } from '@rneui/themed';
 import { onlineManager, QueryClientProvider } from '@tanstack/react-query';
 import * as network from 'expo-network';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useRef } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { initI18nReact } from '@mono/assist-api/i18n/next';
-import { I18nextProvider } from 'react-i18next';
 
 export default function RootLayout() {
   onlineManager.setEventListener((setOnline) => {
@@ -19,27 +17,23 @@ export default function RootLayout() {
     });
     return eventSubscription.remove;
   });
-  // const [currentLocale, setLocale] = useState<Locales>('en');
-  // const [localeLoaded, setLoaded] = useState(false);
-  const conf = useRef(initI18nReact());
 
   return (
-    <I18nextProvider i18n={conf.current}>
-      <DatabaseProvider>
-        <QueryClientProvider client={queryClient}>
-          <SafeAreaProvider>
-            <StatusBar style="dark" />
-            <NetworkProvider>
-              <ThemeProvider theme={UITheme}>
-                <Stack screenOptions={{ headerShown: false }}>
-                  <Stack.Screen name="(home)" />
-                  <Stack.Screen name="+not-found" />
-                </Stack>
-              </ThemeProvider>
-            </NetworkProvider>
-          </SafeAreaProvider>
-        </QueryClientProvider>
-      </DatabaseProvider>
-    </I18nextProvider>
+    <StartSequenceProvider>
+      <QueryClientProvider client={queryClient}>
+        <SafeAreaProvider>
+          <StatusBar style="dark" />
+          <NetworkProvider>
+            <ThemeProvider theme={UITheme}>
+              <Stack screenOptions={{ headerShown: false }}>
+                <Stack.Screen name="(home)" />
+                <Stack.Screen name="register" />
+                <Stack.Screen name="+not-found" />
+              </Stack>
+            </ThemeProvider>
+          </NetworkProvider>
+        </SafeAreaProvider>
+      </QueryClientProvider>
+    </StartSequenceProvider>
   );
 }

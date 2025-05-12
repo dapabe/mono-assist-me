@@ -92,7 +92,7 @@ export class UdpSocketClient implements ISocketClient {
         throw ZodError.create([{ code: 'custom', message: 'Invalid Buffer', path: [] }]);
       }
       // Prevent self-broadcast from processing
-      if (rinfo.address === this.config.address) return;
+      if (rinfo.address === this.config.adapter.currentAddress) return;
       // Validate transmited data
       const msg = data.toString();
       const parsed = stringToJSONSchema.parse(msg);
@@ -105,14 +105,14 @@ export class UdpSocketClient implements ISocketClient {
       this.RepeatedIds.add(packet.id);
       this.handleMessage(packet.data, rinfo);
     } catch (error) {
+      if (!Buffer.isBuffer(data)) return console.log(`[UDP] Data is not buffer: ${data}`);
       if (error instanceof ZodError) {
-        if (Buffer.isBuffer(data)) console.log(`[UDP] Buffer error: ${data.toString()}`);
-        else console.log(`[UDP] Parse error: ${data}`);
+        console.log(`[UDP] Buffer error: ${data.toString()}`);
         // this.sendTo(rinfo.port, rinfo.address, {
         //   event: RoomEventLiteral.Invalid,
         //   message: error.toString(),
         // });
-      }
+      } else console.log(`[UDP] Parse error: ${data}`);
     }
   }
 
@@ -187,6 +187,8 @@ export class UdpSocketClient implements ISocketClient {
    */
   private runHeartbeatChecks = () => {
     this.HEARTBEAT_INTERVAL = setInterval(() => {
+      this.RepeatedIds.clear();
+
       // Get ports and addresses from current rooms
       const merged = this.config.store.getMergedRooms();
 
@@ -197,6 +199,9 @@ export class UdpSocketClient implements ISocketClient {
       // Wait for response from each device
       // if it responds it's added to "scheduledToCheck"
       merged.forEach((r) => {
+        console.log(
+          `[UDP] Send '${Object.keys(RoomEventLiteral)[RoomEventLiteral.AnnieAreYouOkay]}' to ${r.address}:${r.port}`
+        );
         this.sendTo(r.port, r.address, {
           event: RoomEventLiteral.AnnieAreYouOkay,
         });
@@ -209,16 +214,16 @@ export class UdpSocketClient implements ISocketClient {
         if (now - v.lastPing > this.HEARTBEAT_EXPIRATION) {
           // Disconnect it or remove it
           this.config.store.onDeviceCleanUp(appId);
-          console.log(`[Device] No signal from '${v.address}:${v.port}' removing`);
+          console.log(`[UDP] No signal from '${v.address}:${v.port}' removing`);
         }
       });
     }, this.HEARTBEAT_EXPIRATION);
-    console.log('[Device] Heartbeat attached');
+    console.log('[UDP] Heartbeat attached');
   };
 
   requestHelp() {
-    if (!this.config.store.currentListeners.length) {
-      console.log('[UDP] No current listeners');
+    if (this.config.store.incomingResponder || !this.config.store.currentListeners.length) {
+      console.log('[UDP] Incoming responder or no current listeners');
       return;
     }
     this.HELP_INTERVAL = setInterval(() => {

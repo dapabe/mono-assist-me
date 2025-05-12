@@ -8,8 +8,10 @@ export default defineConfig({
   dts: true,
   clean: true,
   splitting: true,
-  treeshake: true,
-  external: ['react-native-udp'],
+  // treeshake: true,
+  skipNodeModulesBundle: true,
+  tsconfig: './tsconfig.json',
+  external: ['react-native-udp', 'react'],
   ignoreWatch: ['node_modules/**/*', 'build/**/*'],
   watch: true,
 });

@@ -27,8 +27,8 @@ export class RepositoryLocalData extends DatabaseRepository<DatabaseAdapter> {
   }
 
   async create(data: IRegisterLocalSchema): Promise<void> {
-    const result = await this.db.select().from(this.schema.Table_LocalData).limit(1);
-    if (result.length === 1) throw new ExpectedError('db.onlyOneLocalData');
+    const exists = await this.entryExists();
+    if (exists) throw new ExpectedError('db.onlyOneLocalData');
 
     const appId = cuid2.createId();
 
@@ -42,9 +42,8 @@ export class RepositoryLocalData extends DatabaseRepository<DatabaseAdapter> {
 
   async patch(data: ILocalDataDTO['Update']): Promise<void> {
     const result = await this.db.select().from(this.schema.Table_LocalData).limit(1);
-    if (result.length === 0) {
-      throw new ExpectedError('db.missingLocalData');
-    }
+    if (result.length === 0) throw new ExpectedError('db.missingLocalData');
+    if (result.length > 1) throw new ExpectedError('db.onlyOneLocalData');
 
     if (data.currentAppId && data.currentAppId !== result[0].currentAppId) {
       // Save old ID to history

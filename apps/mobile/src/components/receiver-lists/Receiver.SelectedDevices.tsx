@@ -55,6 +55,7 @@ export function ReceiverSelectedDevices() {
         refreshing={isRefreshing}
         renderItem={({ item }) => (
           <ListItem
+            key={item.appId}
             bottomDivider
             onPress={() => {
               if (item.needsAssist) ctx.respondToHelp(item.appId);
@@ -74,7 +75,7 @@ export function ReceiverSelectedDevices() {
             </ListItem.Content>
             <Button
               type="clear"
-              icon={{ type: 'feather', name: 'delete' }}
+              icon={{ type: 'lucide', name: 'delete' }}
               onPress={() => handleDelete(item.appId)}
             />
           </ListItem>

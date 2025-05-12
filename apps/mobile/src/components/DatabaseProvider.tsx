@@ -8,7 +8,11 @@ import { Text, View } from 'react-native';
 
 const DatabaseContext = createContext<null | ExpoSQLiteDatabase<typeof schemaBarrel>>(null);
 
-export function DatabaseProvider(props: PropsWithChildren): ReactNode {
+type Props = PropsWithChildren<{
+  setStep: (step: string, value?: string) => void;
+}>;
+
+export function DatabaseProvider(props: Props): ReactNode {
   const dbRef = useRef(() => {
     const expo = openDatabaseSync('assist.db');
     const db = drizzle(expo, { schema: schemaBarrel });
@@ -18,21 +22,8 @@ export function DatabaseProvider(props: PropsWithChildren): ReactNode {
 
   const { error, success } = useMigrations(dbRef, migrations);
 
-  if (error) {
-    return (
-      <View>
-        <Text>Migration error: {error.message}</Text>
-      </View>
-    );
-  }
+  if (error) props.setStep('db.error', error.message);
 
-  if (!success) {
-    return (
-      <View>
-        <Text>Migration is in progress...</Text>
-      </View>
-    );
-  }
-
+  if (!success) props.setStep('db.migrate');
   return <DatabaseContext value={dbRef}>{props.children}</DatabaseContext>;
 }

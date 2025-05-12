@@ -4,7 +4,7 @@
   "description": "AssistMeButton Landing page",
   "type": "module",
   "scripts": {
-    "dev": "astro dev",
+    "dev-web": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
