@@ -9,17 +9,14 @@ import { ActivityIndicator, Alert, BackHandler } from 'react-native';
 
 export function LocalSessionGuard(props: PropsWithChildren): ReactNode {
   const router = useRouter();
-  const exists = useQuery({
-    queryKey: QueryKey.LocalData.exists(),
-    queryFn: async () => await DatabaseService.getInstance().Repo.LocalData.entryExists(),
-  });
+  const exists = useLocalDataRepository.entryExists();
 
   useFocusEffect(
     useCallback(() => {
       if (!exists?.data) router.replace('/register');
     }, [exists.data])
   );
-  console.log('first');
+
   if (exists.isLoading) return <ActivityIndicator size={'large'} color="#0000ff" />;
   return props.children;
 }

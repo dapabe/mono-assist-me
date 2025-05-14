@@ -18,6 +18,7 @@ export * from './store/Room.state';
 export * from './store/useRoomStore';
 export * from './types/IndexedClassDTO.zod';
 export * from './types/common';
+export * from './types/forms';
 export * from './types/room.context';
 export * from './types/socket-adapter';
 export * from './udp-client/UDPClient';

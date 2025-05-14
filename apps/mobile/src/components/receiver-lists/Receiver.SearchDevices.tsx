@@ -5,12 +5,15 @@ import { Button, Icon, ListItem } from '@rneui/themed';
 import { FlashList } from '@shopify/flash-list';
 import { useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   currentTab: number;
 };
 
 export function ReceiverSearchDevices({ currentTab }: Props) {
+  const { t } = useTranslation();
+
   const ctx = useRoomStore();
   const [isRefreshing, toggleRefresh] = useImplicitToggle();
 
@@ -26,13 +29,13 @@ export function ReceiverSearchDevices({ currentTab }: Props) {
   return (
     <View style={styles.root}>
       <FlashList
-        data={[...ctx.roomsToDiscover.values()]}
+        data={ctx.roomsToDiscover}
         keyExtractor={(x) => x.appId}
         estimatedItemSize={10}
         refreshing={isRefreshing}
         renderItem={({ item }) => (
           <ListItem key={item.appId} onPress={() => ctx.addToListeningTo(item.appId)} bottomDivider>
-            <Icon type="lucide" name="user-plus" />
+            <Icon type="feather" name="user-plus" />
             <ListItem.Content>
               <ListItem.Title>{item.callerName}</ListItem.Title>
               <ListItem.Subtitle>{item.device}</ListItem.Subtitle>
@@ -44,12 +47,11 @@ export function ReceiverSearchDevices({ currentTab }: Props) {
         buttonStyle={styles.searchButton}
         radius={UITheme.spacing?.xl}
         type="solid"
-        title={'Detectar otros dispositivos'}
         iconPosition="top"
         icon={{ type: 'feather', name: 'radio' }}
         onPress={handleSearchDevices}
       >
-        <Text>Detectar otros dispositivos</Text>
+        <Text>{t('Dashboard.PageReceiver.SearchDevicesTab.DetectButton')}</Text>
       </Button>
     </View>
   );

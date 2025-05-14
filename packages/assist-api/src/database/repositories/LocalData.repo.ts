@@ -1,5 +1,5 @@
 import cuid2 from '@paralleldrive/cuid2';
-import { eq } from 'drizzle-orm';
+import { eq, getTableColumns } from 'drizzle-orm';
 
 import { ExpectedError } from '../../errors/ExpectedError';
 import { ILocalDataDTO } from '../../schemas/LocalData.schema';
@@ -7,7 +7,7 @@ import { IRegisterLocalSchema } from '../../schemas/RegisterLocal.schema';
 import { DatabaseAdapter, DatabaseRepository } from '../DatabaseRepository';
 
 export class RepositoryLocalData extends DatabaseRepository<DatabaseAdapter> {
-  async get(): Promise<ILocalDataDTO['Create']> {
+  async get(): Promise<ILocalDataDTO['Read']> {
     const result = await this.db.query.Table_LocalData.findFirst({
       with: { RelCurrentAppId: true },
     });
@@ -41,7 +41,7 @@ export class RepositoryLocalData extends DatabaseRepository<DatabaseAdapter> {
   }
 
   async patch(data: ILocalDataDTO['Update']): Promise<void> {
-    const result = await this.db.select().from(this.schema.Table_LocalData).limit(1);
+    const result = await this.db.select().from(this.schema.Table_LocalData);
     if (result.length === 0) throw new ExpectedError('db.missingLocalData');
     if (result.length > 1) throw new ExpectedError('db.onlyOneLocalData');
 
@@ -63,8 +63,9 @@ export class RepositoryLocalData extends DatabaseRepository<DatabaseAdapter> {
   }
 
   async entryExists(): Promise<boolean> {
-    const amount = await this.db.$count(this.schema.Table_LocalData);
-    return amount === 1;
+    const result = await this.db.select().from(this.schema.Table_LocalData);
+    if (result.length > 1) throw new ExpectedError('db.onlyOneLocalData');
+    return !!result.length;
   }
 
   /**

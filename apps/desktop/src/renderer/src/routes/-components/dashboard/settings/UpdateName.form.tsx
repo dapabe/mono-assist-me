@@ -1,8 +1,11 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { IRegisterLocalSchema, RegisterLocalSchema } from '@mono/assist-api'
+import {
+  IRegisterLocalSchema,
+  RegisterLocalSchema,
+  IFormProps
+} from '@mono/assist-api'
 import { useTranslation } from 'react-i18next'
 import { trpcReact } from '@renderer/services/trpc'
-import { IFormProps } from '@renderer/types/forms'
 import { Spinner } from '@renderer/ui/Spinner'
 import { ReactNode } from 'react'
 import { useForm } from 'react-hook-form'
@@ -26,7 +29,7 @@ export function UpdateNameForm({
     await ApiUpdateName.mutateAsync(form.getValues())
   }
 
-  if (isLoading && !loadErrors?.name) return <Spinner />
+  if (isLoading) return <Spinner />
 
   return (
     <form onSubmit={handleSubmit}>
@@ -38,13 +41,13 @@ export function UpdateNameForm({
           <input
             id="name"
             {...form.register('name')}
-            disabled={loadErrors?.name || ApiUpdateName.isLoading}
+            disabled={!!loadErrors?.name || ApiUpdateName.isLoading}
             placeholder={loadErrors?.name ? 'name error on load test' : ''}
           />
         </label>
         <button
           type="submit"
-          disabled={loadErrors?.name || ApiUpdateName.isLoading}
+          disabled={!!loadErrors?.name || ApiUpdateName.isLoading}
           className="btn btn-secondary join-item"
         >
           {ApiUpdateName.isLoading ? <Spinner /> : null}

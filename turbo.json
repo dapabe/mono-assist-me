@@ -17,6 +17,7 @@
       "outputs": ["build/**", "node_modules/.cache/metro/**"]
     },
     "dev": {
+      "outputs": ["build", "out"],
       "passThroughEnv": ["*"],
       "interactive": true,
       "cache": false,

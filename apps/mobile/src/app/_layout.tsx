@@ -1,5 +1,6 @@
 import { UITheme } from '#src/common/ui-theme';
 import { DatabaseProvider } from '#src/components/DatabaseProvider';
+import { LocalSessionGuard } from '#src/components/LocalSession.guard';
 import { NetworkProvider } from '#src/components/Network.provider';
 import { StartSequenceProvider } from '#src/components/StartSequence.provider';
 import { queryClient } from '#src/query-client';
@@ -24,13 +25,15 @@ export default function RootLayout() {
         <SafeAreaProvider>
           <StatusBar style="dark" />
           <NetworkProvider>
-            <ThemeProvider theme={UITheme}>
-              <Stack screenOptions={{ headerShown: false }}>
-                <Stack.Screen name="(home)" />
-                <Stack.Screen name="register" />
-                <Stack.Screen name="+not-found" />
-              </Stack>
-            </ThemeProvider>
+            <LocalSessionGuard>
+              <ThemeProvider theme={UITheme}>
+                <Stack screenOptions={{ headerShown: false }}>
+                  <Stack.Screen name="(home)" />
+                  <Stack.Screen name="register" />
+                  <Stack.Screen name="+not-found" />
+                </Stack>
+              </ThemeProvider>
+            </LocalSessionGuard>
           </NetworkProvider>
         </SafeAreaProvider>
       </QueryClientProvider>

@@ -36,7 +36,7 @@
   },
   "scripts": {
     "clean": "git clean -xdf .turbo build node_modules",
-    "dev": "tsup --watch --silent",
+    "dev": "tsup --watch",
     "lint": "eslint --ext js,ts",
     "test": "jest",
     "build": "tsup --clean",

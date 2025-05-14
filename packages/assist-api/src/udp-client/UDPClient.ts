@@ -98,7 +98,7 @@ export class UdpSocketClient implements ISocketClient {
       const parsed = stringToJSONSchema.parse(msg);
       const packet = RoomPacketSchema.parse(parsed);
       console.log(
-        `[UDP] Event '${Object.keys(RoomEventLiteral)[packet.data.event]}' from ${rinfo.address}:${rinfo.port}`
+        `[UDP] Event '${Object.keys(RoomEventLiteral)[packet.data.event]}' from ${rinfo.address}:${rinfo.port} ${new Date().toLocaleTimeString(undefined, { hour12: true })}`
       );
       if (this.RepeatedIds.has(packet.id)) return;
       // console.log(`[UDP] Dupped msg from ${rinfo.address} - ${packet.id}`);

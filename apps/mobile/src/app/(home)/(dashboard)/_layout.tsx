@@ -12,7 +12,7 @@ export default function DashboardLayout() {
   return (
     <Tabs screenOptions={{ headerShown: false }}>
       <Tabs.Screen
-        name="emitter"
+        name="index"
         options={{
           title: t('Dashboard.PageEmitter.Title'),
           tabBarIcon: (p) => <Icon {...p} type="feather" name="radio" />,

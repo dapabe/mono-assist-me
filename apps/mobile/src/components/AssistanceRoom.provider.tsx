@@ -4,6 +4,8 @@ import { AppState } from 'react-native';
 
 import { useNetworkAppState } from './Network.provider';
 import { ReactNativeSocketAdapter } from '../common/udp-client.adapter';
+import { useLocalDataRepository } from '#src/hooks/useLocalData.repo';
+import * as Device from 'expo-device';
 
 export function AssistanceRoomProvider({ children }: PropsWithChildren) {
   const appState = useRef(AppState.currentState);
@@ -11,6 +13,8 @@ export function AssistanceRoomProvider({ children }: PropsWithChildren) {
 
   const room = useRoomStore();
   const adapterRef = useRef<IConnAdapter>(null);
+
+  const localData = useLocalDataRepository.getLocalData();
 
   // useEffect(() => {
   // 	const handleAppStateChange = (nextAppState: AppStateStatus) => {
@@ -38,11 +42,17 @@ export function AssistanceRoomProvider({ children }: PropsWithChildren) {
   useEffect(() => {
     if (room.connMethod === ConnMethod.None) {
       if (adapterRef.current) return;
-      room.updateMemoryState('currentName', 'test');
-      room.updateMemoryState('currentAppId', 'currentAppId');
+      room.updateMemoryState('currentName', localData.data?.currentName ?? 'Unknown');
+      room.updateMemoryState('currentAppId', localData.data?.currentAppId ?? 'Unknown');
+      room.updateMemoryState(
+        'currentDevice',
+        `${Device.modelName ?? 'Unknown Model'} ${Device.deviceName ?? 'Unknown Device'}`
+      );
       const client = new UdpSocketClient({
         adapter: new ReactNativeSocketAdapter(),
         store: room,
+        // For some reason using the native current ipv4 address wont allow it to receive packets, using
+        // 0.0.0.0 do allows it, only tested in Android, idk IOS
         address: '0.0.0.0',
       });
       client.init();

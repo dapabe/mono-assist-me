@@ -49,7 +49,7 @@ export function ReceiverSelectedDevices() {
   return (
     <View style={styles.root}>
       <FlashList
-        data={[...ctx.roomsListeningTo.values()]}
+        data={ctx.roomsListeningTo}
         estimatedItemSize={10}
         keyExtractor={(x) => x.appId}
         refreshing={isRefreshing}
@@ -75,7 +75,7 @@ export function ReceiverSelectedDevices() {
             </ListItem.Content>
             <Button
               type="clear"
-              icon={{ type: 'lucide', name: 'delete' }}
+              icon={{ type: 'feather', name: 'delete' }}
               onPress={() => handleDelete(item.appId)}
             />
           </ListItem>

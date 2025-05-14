@@ -6,7 +6,7 @@ import {
   IRegisterLocalSchema,
   useRoomStore,
 } from '@mono/assist-api';
-import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Alert } from 'react-native';
 
 export function useLocalDataRepository() {
@@ -44,8 +44,10 @@ export function useLocalDataRepository() {
     mutationFn: () => {
       return DatabaseService.getInstance().Repo.LocalData.delete();
     },
-    onSuccess: (_, args) => {
+    onSuccess: () => {
       qc.invalidateQueries({ queryKey: QueryKey.LocalData.all });
+      ctx.updateMemoryState('currentName', null);
+      ctx.updateMemoryState('currentDevice', null);
     },
     onError: (e: ExpectedError) => {
       Alert.alert(e.name, e?.key ?? e.message);
@@ -56,8 +58,15 @@ export function useLocalDataRepository() {
 }
 
 useLocalDataRepository.getLocalData = function () {
-  return useQuery({
+  return useQuery<ILocalDataDTO['Read'] | undefined, ExpectedError>({
     queryKey: QueryKey.LocalData.data(),
-    queryFn: () => DatabaseService.getInstance().Repo.LocalData.get(),
+    queryFn: async () => await DatabaseService.getInstance().Repo.LocalData.get(),
+  });
+};
+
+useLocalDataRepository.entryExists = function () {
+  return useQuery<boolean | undefined, ExpectedError>({
+    queryKey: QueryKey.LocalData.exists(),
+    queryFn: async () => await DatabaseService.getInstance().Repo.LocalData.entryExists(),
   });
 };

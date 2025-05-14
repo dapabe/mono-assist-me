@@ -1,7 +1,6 @@
 import { createId } from '@paralleldrive/cuid2';
 import { relations, sql } from 'drizzle-orm';
 import { check, index, int, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core';
-import { RegisterLocalSchema } from '../schemas/RegisterLocal.schema';
 
 export const Table_PreviousAppIds = sqliteTable('previousAppIds', {
   id: text('id')
@@ -19,8 +18,8 @@ export const Table_LocalData = sqliteTable(
     currentName: text('currentName').notNull(),
   },
   (table) => [
-    // check(table.currentName.name + '_trim', sql`trim(${table.currentName}) = ${table.currentName}`),
-    // check(table.currentName.name + '_length', sql`length(${table.currentName}) > 3`),
+    // check('currentName_trim', sql`trim(${table.currentName}) = ${table.currentName}`),
+    // check('currentName_length', sql`length(${table.currentName}) >= 3`),
   ]
 );
 

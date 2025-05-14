@@ -15,11 +15,11 @@ function RouteComponent(): ReactNode {
     <section className="grow pt-4 [*]:px-4 flex flex-col overflow-y-auto gap-y-4">
       <LocalSwitcher />
       <UpdateNameForm
-        isLoading={ApiLocalData.isLoading}
-        loadErrors={{ name: !!ApiLocalData.error }}
         values={{
           name: ApiLocalData.data?.currentName ?? ''
         }}
+        isLoading={ApiLocalData.isLoading}
+        loadErrors={{ name: ApiLocalData.error?.message }}
       />
       {import.meta.env.DEV && <DevSettings />}
     </section>

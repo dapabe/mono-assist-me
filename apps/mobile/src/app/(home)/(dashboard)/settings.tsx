@@ -9,79 +9,25 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { InputControl } from '#src/components/form/InputControl';
 import { useTranslation } from 'react-i18next';
+import { useLocalDataRepository } from '#src/hooks/useLocalData.repo';
+import { UpdateNameForm } from '#src/components/settings/UpdateName.form';
 
 export default function SettingsScreen() {
-  const { t } = useTranslation();
-
-  const form = useForm<IRegisterLocalSchema>({
-    defaultValues: { name: '' },
-    // resolver: zodResolver(RegisterLocalSchema),
-  });
-
-  const onSubmit = async (data: IRegisterLocalSchema) => {
-    // await updateCurrentNameMutation(data);
-  };
-
-  const fieldName = form.watch('name');
-  // const hasUnsavedChanges = useMemo(
-  //   () => fieldName !== currentName.data,
-  //   [fieldName, currentName.data]
-  // );
-  const hasUnsavedChanges = false;
-
-  // //	No other way of doing this
-  const nav = useNavigationContainerRef();
-  useEffect(() => {
-    const unsub = nav.addListener('__unsafe_action__', (evt) => {
-      if (evt.data.action.type === 'NAVIGATE') {
-        if (hasUnsavedChanges) {
-          // Activate form reset after navigation
-          setTimeout(() => {
-            form.reset();
-          }, 0);
-        }
-      }
-    });
-    return unsub;
-  }, [nav]);
+  const localData = useLocalDataRepository.getLocalData();
 
   return (
     <SafeAreaView style={styles.root}>
-      <FormProvider {...form}>
-        <View style={styles.formRoot}>
-          <InputControl
-            name="name"
-            label={t('Dashboard.PageSettings.FormLocalName.Label')}
-            description={t('Dashboard.PageSettings.FormLocalName.Hint')}
-          />
-          <View style={styles.updateName}>
-            <Button
-              size="sm"
-              disabled={
-                !hasUnsavedChanges || form.formState.isSubmitting || !form.formState.isValid
-              }
-              onPress={form.handleSubmit(onSubmit)}
-            >
-              {t('CommonWords.Update')}
-            </Button>
-          </View>
-        </View>
-      </FormProvider>
+      <UpdateNameForm
+        values={{ name: localData.data?.currentName ?? '' }}
+        isLoading={localData.isLoading}
+        loadErrors={{ name: localData.error?.key }}
+      />
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   root: {
-    // marginTop: 20,
-    // paddingInline: 20,
     paddingHorizontal: 40,
-    // flex: 1,
-  },
-  formRoot: {
-    rowGap: 4,
-  },
-  updateName: {
-    marginTop: 10,
   },
 });
