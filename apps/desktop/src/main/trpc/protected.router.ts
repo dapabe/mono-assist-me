@@ -8,7 +8,7 @@ import {
   z18n
 } from '@mono/assist-api'
 import { ErrorNotificationService } from '../src/services/ErrorNotif.service'
-import { NodeSocketAdapter } from '../src/udp-client.adapter'
+import { NodeSocketAdapter } from '../src/udp-node.adapter'
 import { tInstance } from './trpc'
 import { MemoryState } from '../memory-state'
 import { getInternalIPv4 } from '../src/utils/getInternalIPv4'

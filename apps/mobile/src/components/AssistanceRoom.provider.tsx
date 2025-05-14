@@ -3,7 +3,7 @@ import { PropsWithChildren, useEffect, useRef } from 'react';
 import { AppState } from 'react-native';
 
 import { useNetworkAppState } from './Network.provider';
-import { ReactNativeSocketAdapter } from '../common/udp-client.adapter';
+import { ReactNativeSocketAdapter } from '../common/udp-react-native.adapter';
 import { useLocalDataRepository } from '#src/hooks/useLocalData.repo';
 import * as Device from 'expo-device';
 

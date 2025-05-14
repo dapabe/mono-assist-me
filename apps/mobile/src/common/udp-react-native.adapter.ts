@@ -9,7 +9,7 @@ export class ReactNativeSocketAdapter extends SocketAdapter<UdpSocket> {
     this.currentAddress = address;
     this.sk = dgram.createSocket({ type: 'udp4', debug: Platform.isTesting });
     this.sk.addListener('listening', () => {
-      this.sk.addMembership(UDP_CONSTANTS.MULTICAST_ADDRESS, this.currentAddress);
+      this.sk.addMembership(UDP_CONSTANTS.MULTICAST_ADDRESS);
       this.triggerOnListening();
     });
     this.sk.on('error', (err: Error) => this.handleErrors(err));
