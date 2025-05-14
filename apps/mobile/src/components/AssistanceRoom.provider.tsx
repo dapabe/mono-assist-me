@@ -44,10 +44,7 @@ export function AssistanceRoomProvider({ children }: PropsWithChildren) {
       if (adapterRef.current) return;
       room.updateMemoryState('currentName', localData.data?.currentName ?? 'Unknown');
       room.updateMemoryState('currentAppId', localData.data?.currentAppId ?? 'Unknown');
-      room.updateMemoryState(
-        'currentDevice',
-        `${Device.modelName ?? 'Unknown Model'} ${Device.deviceName ?? 'Unknown Device'}`
-      );
+      room.updateMemoryState('currentDevice', Device.deviceName ?? 'Unknown Device');
       const client = new UdpSocketClient({
         adapter: new ReactNativeSocketAdapter(),
         store: room,

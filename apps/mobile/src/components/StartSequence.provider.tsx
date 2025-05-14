@@ -1,7 +1,6 @@
 import { initI18nReact } from '@mono/assist-api/i18n/next';
 import { useEffect, PropsWithChildren, ReactNode, useRef, useCallback } from 'react';
 import { I18nextProvider } from 'react-i18next';
-import { DatabaseProvider } from './DatabaseProvider';
 import { DatabaseService, schemaBarrel } from '@mono/assist-api';
 import migrations from '@mono/assist-api/migrations';
 import { drizzle, ExpoSQLiteDatabase } from 'drizzle-orm/expo-sqlite';

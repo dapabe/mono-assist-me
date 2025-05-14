@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { Button, Text } from '@rneui/themed';
 import { useLocalDataRepository } from '#src/hooks/useLocalData.repo';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { SubmitButton } from '../form/SubmitButton';
 
 export function UpdateNameForm({
   values,
@@ -57,18 +58,11 @@ export function UpdateNameForm({
           placeholder={loadErrors?.name ?? ''}
         />
         <View style={styles.updateName}>
-          <Button
-            size="sm"
-            disabled={
-              !!loadErrors?.name ||
-              !hasUnsavedChanges ||
-              form.formState.isSubmitting ||
-              !form.formState.isValid
-            }
+          <SubmitButton
+            title={t('CommonWords.Update')}
+            disabledConditions={[!!loadErrors?.name, !hasUnsavedChanges]}
             onPress={form.handleSubmit(onSubmit)}
-          >
-            {t('CommonWords.Update')}
-          </Button>
+          ></SubmitButton>
         </View>
       </View>
     </FormProvider>

@@ -1,5 +1,4 @@
 import { UITheme } from '#src/common/ui-theme';
-import { DatabaseProvider } from '#src/components/DatabaseProvider';
 import { LocalSessionGuard } from '#src/components/LocalSession.guard';
 import { NetworkProvider } from '#src/components/Network.provider';
 import { StartSequenceProvider } from '#src/components/StartSequence.provider';
