@@ -22,7 +22,7 @@ export function LocalSwitcher(): ReactNode {
         value={i18n.language}
         onChange={handleLocale}
       >
-        {i18n.languages.map((x) => (
+        {Object.keys(i18n.store.data).map((x) => (
           <option key={x} value={x}>
             {IndexedLocale[x]}
           </option>

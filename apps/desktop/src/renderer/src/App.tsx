@@ -5,7 +5,7 @@ import {
   RouterProvider
 } from '@tanstack/react-router'
 import { ipcLink } from 'electron-trpc/renderer'
-import { ReactNode, useRef, useState } from 'react'
+import { ReactNode, useEffect, useRef, useState } from 'react'
 import { routeTree } from './routeTree.gen'
 import {
   LocalAuthProvider,
@@ -37,16 +37,16 @@ function ContextRouter(): ReactNode {
 }
 
 export function Root(): React.ReactNode {
-  const [qc] = useState(() => new QueryClient())
+  const qc = useRef(new QueryClient()).current
   const [trpcClient] = useState(() =>
     trpcReact.createClient({
       links: [ipcLink()]
     })
   )
-  const conf = useRef(initI18nReact())
+  const conf = useRef(initI18nReact()).current
 
   return (
-    <I18nextProvider i18n={conf.current}>
+    <I18nextProvider i18n={conf}>
       <trpcReact.Provider client={trpcClient} queryClient={qc}>
         <QueryClientProvider client={qc}>
           <LocalAuthProvider>
