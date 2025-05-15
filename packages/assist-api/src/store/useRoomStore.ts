@@ -7,6 +7,7 @@ import { UUID } from '../types/common';
 import { IRoomData } from '../types/room.context';
 import { UdpSocketClient } from '../udp-client/UDPClient';
 import { create } from 'zustand';
+import { subscribeWithSelector } from 'zustand/middleware';
 
 export type IRoomState = IAssistanceRoomClientSlice & IRoomEmitterSlice & IRoomReceiverSlice;
 
@@ -41,7 +42,6 @@ const createRoomStore = (): StateCreator<IRoomState, [], [], IRoomState> => (set
   //  Room emitter values
   currentListeners: [],
   incomingResponder: null,
-  HELP_INTERVAL: null,
 
   updateConnectionMethod: (connMethod, connAdapter) => {
     set({ connMethod, connAdapter });
@@ -309,7 +309,7 @@ const createRoomStore = (): StateCreator<IRoomState, [], [], IRoomState> => (set
 
 /** To be used in Node/Js enviroment */
 export function createVanillaRoomStore() {
-  return createStore<IRoomState>(createRoomStore());
+  return createStore<IRoomState>()(subscribeWithSelector(createRoomStore()));
 }
 /** To be used in React Native enviroment */
-export const useRoomStore = create<IRoomState>(createRoomStore());
+export const useRoomStore = create<IRoomState>()(subscribeWithSelector(createRoomStore()));

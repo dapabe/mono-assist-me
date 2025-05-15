@@ -52,6 +52,9 @@ export type IAssistanceRoomClientSlice = InMemoryStateMap & {
   /**	Iterates over all existing devices */
   getMergedRooms: () => IRoomData[];
 
+  /** Event Emitter */
+  // RoomEE:
+
   onRemoteRespondToAdvertise: (
     payload: FromSocketUnion<typeof RoomEventLiteral.RespondToAdvertise>,
     rinfo: RemoteUDPInfo

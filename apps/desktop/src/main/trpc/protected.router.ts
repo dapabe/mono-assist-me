@@ -14,6 +14,7 @@ import { MemoryState } from '../memory-state'
 import { getInternalIPv4 } from '../src/utils/getInternalIPv4'
 import { TRPCError } from '@trpc/server'
 import { getDeviceName } from '../src/utils/getDeviceName'
+import { observable } from '@trpc/server/observable'
 // import { EventEmitter } from 'node:stream'
 
 // const EEListeningTo = new EventEmitter()
@@ -73,6 +74,40 @@ export const ProtectedTrpcRouter = tInstance.router({
   getRoomsToDiscover: tInstance.procedure.query<IWSRoom[]>(
     () => MemoryState.getState().roomsToDiscover
   ),
+  /** Wil yield data when "onRemoteRespondToAdvertise" triggers */
+  onRoomsToDiscover: tInstance.procedure.subscription(() => {
+    return observable<IWSRoom & { _evt: 'add' | 'del' | 'init' }>((emit) => {
+      let prevRooms = MemoryState.getState().roomsToDiscover
+
+      if (prevRooms.length > 0) {
+        emit.next({ ...prevRooms[prevRooms.length - 1], _evt: 'init' })
+      }
+      const unsub = MemoryState.subscribe(
+        (store) => store.roomsToDiscover,
+        (currState, prevState) => {
+          if (currState.length > prevState.length) {
+            const addedRoom = currState.find(
+              (room) => !prevState.some((r) => r.appId === room.appId)
+            )
+            if (addedRoom) emit.next({ ...addedRoom, _evt: 'add' })
+          }
+
+          if (currState.length < prevState.length) {
+            const removedRoom = prevState.find(
+              (room) => !currState.some((r) => r.appId === room.appId)
+            )
+            if (removedRoom) emit.next({ ...removedRoom, _evt: 'del' })
+          }
+          prevRooms = currState
+        },
+        {
+          fireImmediately: true,
+          equalityFn: (a, b) => a.length > b.length
+        }
+      )
+      return unsub
+    })
+  }),
   getRoomsListeningTo: tInstance.procedure.query<IWSRoomListener[]>(
     () => MemoryState.getState().roomsListeningTo
   ),

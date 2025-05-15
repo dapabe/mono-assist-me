@@ -36,7 +36,7 @@
   },
   "scripts": {
     "clean": "git clean -xdf .turbo build node_modules",
-    "dev": "tsup --watch",
+    "dev": "tsup --watch --silent",
     "lint": "eslint --ext js,ts",
     "test": "jest",
     "build": "tsup --clean",
@@ -55,6 +55,7 @@
   "dependencies": {
     "@paralleldrive/cuid2": "2.2.2",
     "drizzle-orm": "catalog:drizzle",
+    "eventemitter3": "5.0.1",
     "i18next": "catalog:utils",
     "react-i18next": "15.5.1",
     "zod": "catalog:utils",
@@ -71,9 +72,9 @@
   },
   "peerDependencies": {
     "drizzle-orm": "catalog:drizzle",
-    "zod": "catalog:utils",
-    "zustand": "catalog:utils",
     "i18next": "catalog:utils",
-    "react-i18next": "15.5.1"
+    "react-i18next": "15.5.1",
+    "zod": "catalog:utils",
+    "zustand": "catalog:utils"
   }
 }

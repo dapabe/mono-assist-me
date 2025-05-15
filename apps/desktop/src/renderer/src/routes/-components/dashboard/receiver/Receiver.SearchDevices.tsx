@@ -1,15 +1,25 @@
 import { trpcReact } from '@renderer/services/trpc'
 import { useRouter } from '@tanstack/react-router'
-import { ReactNode } from 'react'
+import { ReactNode, useState } from 'react'
 import * as Icon from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { IWSRoom } from '@mono/assist-api'
 
 export function ReceiverSearchDevices(): ReactNode {
   const { t } = useTranslation()
-
+  const [list, setList] = useState<IWSRoom[]>([])
   const addToListeningTo = trpcReact.PROTECTED.addToListeningTo.useMutation()
   const roomsToDiscover = trpcReact.PROTECTED.getRoomsToDiscover.useQuery()
 
+  trpcReact.PROTECTED.onRoomsToDiscover.useSubscription(undefined, {
+    onData({ _evt, ...wsroom }) {
+      if (_evt === 'init' || _evt === 'add') setList((x) => [...x, wsroom])
+      else setList((x) => x.filter((z) => z.appId !== wsroom.appId))
+    },
+    onError(err) {
+      console.log(err)
+    }
+  })
   if (roomsToDiscover.isLoading) {
     return (
       <div className="grow flex flex-col">
@@ -30,7 +40,7 @@ export function ReceiverSearchDevices(): ReactNode {
 
   if (roomsToDiscover.isError) return null
 
-  if (!roomsToDiscover.data.length) {
+  if (!list.length) {
     return (
       <div className="grow flex flex-col">
         <div className="w-full flex">
@@ -51,7 +61,7 @@ export function ReceiverSearchDevices(): ReactNode {
         <DiscoveryButton />
       </div>
       <ul className="list overflow-y-scroll h-[calc(100vh-10rem)]">
-        {roomsToDiscover.data.map((x) => (
+        {list.map((x) => (
           <li key={x.appId} className="list-row">
             <button
               // icon={UserPlus}
@@ -75,12 +85,12 @@ export function ReceiverSearchDevices(): ReactNode {
 function DiscoveryButton({ disabled }: { disabled?: boolean }): ReactNode {
   const { t } = useTranslation()
 
-  const router = useRouter()
+  // const router = useRouter()
   const sendDiscovery = trpcReact.PROTECTED.sendDiscovery.useMutation()
 
   const handleDiscovery = (): void => {
     sendDiscovery.mutate()
-    router.invalidate()
+    // router.invalidate()
   }
 
   return (
