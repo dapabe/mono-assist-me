@@ -15,27 +15,27 @@ jobs:
   example:
     runs-on: ubuntu-latest
     steps:
-      - name: 🏗 Setup repository
+      - name: Setup repository
         uses: actions/checkout@v4
 
-      - name: 🏗 Setup monorepo
+      - name: Setup monorepo
         uses: ./.github/actions/setup-monorepo
         with:
           expo-token: ${{ secrets.EXPO_TOKEN }}
 
-      - name: 👷 Build packages
+      - name: Build packages
         run: pnpm run -w build:example
 
       # Remove this step and configure the app to contain your own project and bundle identifiers.
       # This is intentionally omitted in the template repository to guide users through the setup when cloning.
-      - name: 👷 Configure project
+      - name: Configure project
         if: ${{ github.repository == 'byCedric/expo-monorepo-example' }}
         working-directory: apps/example
         run: |
           eas init --id d202a56f-0162-450d-af3b-a2d2e0678594 --force --non-interactive
           echo $(jq '.expo.runtimeVersion.policy = "sdkVersion"' app.json) > app.json
 
-      - name: 🚀 Create preview
+      - name: Create preview
         uses: expo/expo-github-action/preview@v8
         with:
           working-directory: apps/example

@@ -27,34 +27,34 @@ jobs:
   example:
     runs-on: ubuntu-latest
     steps:
-      - name: 🏗 Setup repository
+      - name: Setup repository
         uses: actions/checkout@v4
 
-      - name: 🏗 Setup monorepo
+      - name: Setup monorepo
         uses: ./.github/actions/setup-monorepo
         with:
           expo-token: ${{ secrets.EXPO_TOKEN }}
 
-      - name: ✅ Build apps/example
+      - name: Build apps/example
         run: pnpm run -w build:example
 
-      - name: 🌐 Export apps/example for web
+      - name: Export apps/example for web
         working-directory: apps/example
         run: pnpm expo export --platform web --output-dir ./build
 
       # Remove this step and configure the app to contain your own project and bundle identifiers.
       # This is intentionally omitted in the template repository to guide users through the setup when cloning.
-      - name: 👷 Configure project
+      - name: Configure project
         if: ${{ github.repository == 'byCedric/expo-monorepo-example' }}
         working-directory: apps/example
         run: eas init --id d202a56f-0162-450d-af3b-a2d2e0678594 --force --non-interactive
 
-      - name: 🚀 Deploy apps/example preview
+      - name: Deploy apps/example preview
         if: ${{ github.event_name == 'pull_request' || github.event.inputs.target == 'preview' }}
         working-directory: apps/example
         run: eas deploy --export-dir ./build
 
-      - name: 🚀 Deploy apps/example production
+      - name: Deploy apps/example production
         if: ${{ (github.event_name == 'push' && github.ref_name == 'main') || github.event.inputs.target == 'production' }}
         working-directory: apps/example
         run: eas deploy --export-dir ./build --production

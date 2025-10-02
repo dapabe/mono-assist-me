@@ -5,10 +5,9 @@ import {
   IWSRoomListener,
   RegisterLocalSchema,
   UdpSocketClient,
-  z18n
+  z18n,
 } from '@mono/assist-api'
 import { ErrorNotificationService } from '../src/services/ErrorNotif.service'
-import { NodeSocketAdapter } from '../src/udp-node.adapter'
 import { tInstance } from './trpc'
 import { MemoryState } from '../memory-state'
 import { getInternalIPv4 } from '../src/utils/getInternalIPv4'
@@ -115,7 +114,7 @@ export const ProtectedTrpcRouter = tInstance.router({
     () => MemoryState.getState().currentListeners
   ),
   getStoredListeners: tInstance.procedure.query(() => {
-    return MemoryState.getState().storedListeners
+    return MemoryState.getState().
   }),
   addToListeningTo: tInstance.procedure
     .input(z18n.object({ appId: z18n.string().cuid2() }))

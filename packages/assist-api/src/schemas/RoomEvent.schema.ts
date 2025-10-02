@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { RegisterLocalSchema } from './RegisterLocal.schema';
 import { NonEmptyStringSchema } from './utils.schema';
 import { z18n } from './zod-i18n';
-import { UdpSocketClient } from '../udp-client/UDPClient';
+import { UdpSocketClient } from '../udp-client/UDPSocketClient';
 
 /**
  * @description

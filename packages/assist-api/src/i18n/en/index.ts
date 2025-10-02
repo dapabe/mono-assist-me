@@ -19,7 +19,7 @@ const en = {
       EnableDetectionCheckbox: 'Allow others to detect this device',
     },
     PageReceiver: {
-      Title: 'Lists',
+      Title: 'Search',
       SelectedDevicesTab: {
         Title: 'Known devices',
         EmptyPlaceholder: 'No known devices',

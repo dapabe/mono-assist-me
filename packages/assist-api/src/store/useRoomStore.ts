@@ -2,12 +2,19 @@ import { createStore, StateCreator } from 'zustand/vanilla';
 
 import { IAssistanceRoomClientSlice, IRoomEmitterSlice, IRoomReceiverSlice } from './Room.state';
 import { IListeningToDTO } from '../schemas/ListeningTo.schema';
-import { ConnMethod, RoomEventLiteral, RoomServiceStatus } from '../schemas/RoomEvent.schema';
+import {
+  ConnMethod,
+  IConnMethod,
+  IRoomServiceStatus,
+  RoomEventLiteral,
+  RoomServiceStatus,
+} from '../schemas/RoomEvent.schema';
 import { UUID } from '../types/common';
 import { IRoomData } from '../types/room.context';
-import { UdpSocketClient } from '../udp-client/UDPClient';
+import { UdpSocketClient } from '../udp-client/UDPSocketClient';
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
+import { DatabaseService } from 'src/database/DatabaseService';
 
 export type IRoomState = IAssistanceRoomClientSlice & IRoomEmitterSlice & IRoomReceiverSlice;
 
@@ -313,3 +320,45 @@ export function createVanillaRoomStore() {
 }
 /** To be used in React Native enviroment */
 export const useRoomStore = create<IRoomState>()(subscribeWithSelector(createRoomStore()));
+
+// export class RoomState implements IRoomState {
+//   connMethod: IConnMethod = ConnMethod.None;
+//   connAdapter: UdpSocketClient = null;
+//   status: IRoomServiceStatus = RoomServiceStatus.Down;
+//   currentAppId: UUID = null;
+//   currentName: string = null;
+//   currentDevice: string | null = null;
+//   scheduledToCheck = new Map<UUID, { lastPing: number; port: number; address: string }>();
+//   dbRepos: DatabaseService['Repo'] = null;
+
+//   //  Room receiver values
+//   roomsListeningTo: [];
+//   roomsToDiscover: [];
+//   storedListeners: [];
+
+//   //  Room emitter values
+//   currentListeners: [];
+//   incomingResponder: null;
+//   constructor(connAdapter: UdpSocketClient) {
+//     this.connAdapter = connAdapter;
+//     this;
+//   }
+
+//   public getAppId() {
+//     return this.currentAppId;
+//   }
+
+//   public updateMemoryState<K extends 'status' | 'currentAppId' | 'currentName' | 'currentDevice'>(
+//     k: K,
+//     v: {
+//       status: IRoomServiceStatus;
+//       currentAppId: UUID;
+//       currentName: string;
+//       currentDevice: null | string;
+//     }[K]
+//   ) {
+//     if (!(k in this)) throw new Error();
+//     // @ts-ignore
+//     this[k] = v;
+//   }
+// }

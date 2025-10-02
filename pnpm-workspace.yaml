@@ -8,6 +8,9 @@ onlyBuiltDependencies:
   - 'better-sqlite3'
 
 catalogs:
+  typescript:
+    'typescript': '5.8.3'
+
   node:
     '@types/node': '^22.13.13'
 

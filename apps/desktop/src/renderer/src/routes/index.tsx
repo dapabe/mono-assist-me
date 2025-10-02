@@ -21,7 +21,8 @@ function Component(): ReactNode {
 
   const { register } = useLocalAuth()
   const form = useForm<IRegisterLocalSchema>({
-    defaultValues: { name: '' }
+    defaultValues: { name: '' },
+    resolver: zodResolver(RegisterLocalSchema)
   })
   const nav = Route.useNavigate()
 
@@ -38,8 +39,6 @@ function Component(): ReactNode {
 
   return (
     <form
-      //@ts-ignore recursive type depth
-      // resolver={zodResolver(RegisterLocalSchema)}
       onSubmit={handleSubmit}
       className="min-h-svh flex flex-col justify-center items-center"
     >

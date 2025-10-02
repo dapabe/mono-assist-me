@@ -18,17 +18,17 @@ jobs:
   packages:
     runs-on: ubuntu-latest
     steps:
-      - name: 🏗 Setup repository
+      - name: Setup repository
         uses: actions/checkout@v4
 
-      - name: 🏗 Setup monorepo
+      - name: Setup monorepo
         uses: ./.github/actions/setup-monorepo
 
-      - name: ✅ Lint packages
+      - name: Lint packages
         run: pnpm run -w lint
 
-      - name: 👷 Build packages
+      - name: Build packages
         run: pnpm run -w build
 
-      - name: 🧪 Test packages
+      - name: Test packages
         run: pnpm run -w test

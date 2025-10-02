@@ -25,6 +25,9 @@ type ISocketClientOptions = {
 export class UdpSocketClient implements ISocketClient {
   // private static instance: UdpSocketClient;
   private config: ISocketClientOptions;
+  private getStore(): IRoomState {
+    return this.config.store;
+  }
 
   private HEARTBEAT_INTERVAL!: number;
   private HEARTBEAT_EXPIRATION = 30_000 as const;
@@ -50,7 +53,7 @@ export class UdpSocketClient implements ISocketClient {
         this.config.address,
         this.parseMessage
       );
-      this.config.store.updateConnectionMethod(ConnMethod.LANSocket, this);
+      this.getStore().updateConnectionMethod(ConnMethod.LANSocket, this);
       // UdpSocketClient.instance = this;
       console.log('[UDP] Initialized');
     } catch (error) {
@@ -64,7 +67,7 @@ export class UdpSocketClient implements ISocketClient {
       clearInterval(this.HEARTBEAT_INTERVAL);
       this.HEARTBEAT_INTERVAL = undefined!;
       this.config.adapter.close();
-      this.config.store.updateConnectionMethod(ConnMethod.None, null);
+      this.getStore().updateConnectionMethod(ConnMethod.None, null);
       console.log('[UDP] Closed');
     }
   }
@@ -117,51 +120,45 @@ export class UdpSocketClient implements ISocketClient {
   }
 
   private handleMessage(data: IRoomEvent, rinfo: RemoteUDPInfo) {
-    switch (data.event) {
+    const { event, ...payload } = data;
+    switch (event) {
       case RoomEventLiteral.LookingForDevices: {
         this.sendTo(rinfo.port, rinfo.address, {
           event: RoomEventLiteral.RespondToAdvertise,
-          appId: this.config.store.getAppId(),
-          callerName: this.config.store.getCurrentName(),
-          device: this.config.store.currentDevice ?? 'Unknown',
+          appId: this.getStore().getAppId(),
+          callerName: this.getStore().getCurrentName(),
+          device: this.getStore().currentDevice ?? 'Unknown',
         });
         break;
       }
       case RoomEventLiteral.RespondToAdvertise: {
-        const { event, ...payload } = data;
-        this.config.store.onRemoteRespondToAdvertise(payload, rinfo);
+        this.getStore().onRemoteRespondToAdvertise(payload as any, rinfo);
         break;
       }
       case RoomEventLiteral.BroadcastStop: {
-        const { event, ...payload } = data;
-        this.config.store.onRemoteBroadcastStop(payload);
+        this.getStore().onRemoteBroadcastStop(payload as any);
         break;
       }
       case RoomEventLiteral.Listening: {
-        const { event, ...payload } = data;
-        this.config.store.onReceiverListening(payload, rinfo);
+        this.getStore().onReceiverListening(payload as any, rinfo);
         break;
       }
       case RoomEventLiteral.NotListening: {
-        const { event, ...payload } = data;
-        this.config.store.onRemoteNotListening(payload);
+        this.getStore().onRemoteNotListening(payload as any);
         break;
       }
       case RoomEventLiteral.RequestHelp: {
-        const { event, ...payload } = data;
-        this.config.store.onEmitterRequestHelp(payload);
+        this.getStore().onEmitterRequestHelp(payload as any);
         break;
       }
       case RoomEventLiteral.RequestStop: {
-        const { event, ...payload } = data;
-        this.config.store.onEmitterStopsHelpRequest(payload);
+        this.getStore().onEmitterStopsHelpRequest(payload as any);
         break;
       }
       case RoomEventLiteral.RespondToHelp: {
-        const { event, ...payload } = data;
-        this.config.store.updateIncomingResponder(payload);
+        this.getStore().updateIncomingResponder(payload as any);
         setTimeout(
-          () => this.config.store.updateIncomingResponder({ responderName: null }),
+          () => this.getStore().updateIncomingResponder({ responderName: null } as any),
           10_000
         );
         break;
@@ -169,13 +166,12 @@ export class UdpSocketClient implements ISocketClient {
       case RoomEventLiteral.AnnieAreYouOkay: {
         this.sendTo(rinfo.port, rinfo.address, {
           event: RoomEventLiteral.ImOkay,
-          appId: this.config.store.getAppId(),
+          appId: this.getStore().getAppId(),
         });
         break;
       }
       case RoomEventLiteral.ImOkay: {
-        const { event, ...payload } = data;
-        this.config.store.onRemoteStatusResponse(payload, rinfo);
+        this.getStore().onRemoteStatusResponse(payload as any, rinfo);
         break;
       }
     }
@@ -190,7 +186,7 @@ export class UdpSocketClient implements ISocketClient {
       this.RepeatedIds.clear();
 
       // Get ports and addresses from current rooms
-      const merged = this.config.store.getMergedRooms();
+      const merged = this.getStore().getMergedRooms();
 
       if (!merged.length) {
         return;
@@ -209,11 +205,11 @@ export class UdpSocketClient implements ISocketClient {
 
       // Check for unresponsive devices
       const now = Date.now();
-      [...this.config.store.scheduledToCheck.entries()].forEach(([appId, v]) => {
+      [...this.getStore().scheduledToCheck.entries()].forEach(([appId, v]) => {
         // If the device hasnt responded in the last HEARTBEAT
         if (now - v.lastPing > this.HEARTBEAT_EXPIRATION) {
           // Disconnect it or remove it
-          this.config.store.onDeviceCleanUp(appId);
+          this.getStore().onDeviceCleanUp(appId);
           console.log(`[UDP] No signal from '${v.address}:${v.port}' removing`);
         }
       });
@@ -222,7 +218,7 @@ export class UdpSocketClient implements ISocketClient {
   };
 
   requestHelp() {
-    if (this.config.store.incomingResponder || !this.config.store.currentListeners.length) {
+    if (this.getStore().incomingResponder || !this.getStore().currentListeners.length) {
       console.log('[UDP] Incoming responder or no current listeners');
       return;
     }
@@ -230,16 +226,16 @@ export class UdpSocketClient implements ISocketClient {
       /**
        *  By the time someone responds the interval will clear itself
        */
-      if (!this.config.store.currentListeners.length || this.config.store.incomingResponder) {
+      if (!this.getStore().currentListeners.length || this.getStore().incomingResponder) {
         clearInterval(this.HELP_INTERVAL);
         this.HELP_INTERVAL = undefined!;
         return;
       }
-      this.config.store.currentListeners.forEach((x) => {
+      this.getStore().currentListeners.forEach((x) => {
         this.sendTo(x.port, x.address, {
           event: RoomEventLiteral.RequestHelp,
-          callerName: this.config.store.getCurrentName(),
-          appId: this.config.store.getAppId(),
+          callerName: this.getStore().getCurrentName(),
+          appId: this.getStore().getAppId(),
         });
       });
     }, this.HELP_EXPIRATION);

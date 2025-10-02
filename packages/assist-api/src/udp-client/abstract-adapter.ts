@@ -3,6 +3,9 @@ import type UdpSocket from 'react-native-udp/lib/types/UdpSocket';
 
 import type { ISocketAdapter, ISocketIncomingMessage } from '../types/socket-adapter';
 
+/**
+ * @description Intended to be used in **UdpSocketClient**
+ */
 export abstract class SocketAdapter<T = UdpSocket | Socket> implements ISocketAdapter {
   protected sk!: T;
   /**

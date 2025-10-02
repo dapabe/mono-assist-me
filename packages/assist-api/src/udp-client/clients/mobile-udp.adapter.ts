@@ -1,9 +1,12 @@
-import { ISocketIncomingMessage, SocketAdapter, UDP_CONSTANTS } from '@mono/assist-api';
 import { Platform } from 'react-native';
 import dgram from 'react-native-udp';
 import type UdpSocket from 'react-native-udp/lib/types/UdpSocket';
+import { ISocketIncomingMessage } from 'src/types/socket-adapter';
 
-export class ReactNativeSocketAdapter extends SocketAdapter<UdpSocket> {
+import { SocketAdapter } from '../abstract-adapter';
+import { UDP_CONSTANTS } from '../udp-constants';
+
+export class MobileSocketAdapter extends SocketAdapter<UdpSocket> {
   init = (port: number, address: string, parser: ISocketIncomingMessage): void => {
     this.currentPort = port;
     this.currentAddress = address;

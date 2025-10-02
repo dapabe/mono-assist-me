@@ -7,21 +7,26 @@
   },
   "scripts": {
     "clear": "turbo clean",
-    "clean": "git clean -xdf .turbo node_modules",
-    "dev-assist": "turbo dev",
+    "clean": "rimraf **/.turbo **/node_modules",
+    "dev:both": "turbo dev",
     "dev:mobile": "turbo dev --filter=\"{./apps/mobile}...\"",
     "dev:mobile:fix": "cd apps/mobile & expo install --fix",
     "dev:mobile:pre-android": "pnpm -F @mono/mobile android",
     "dev:mobile:pre-ios": "pnpm -F @mono/mobile ios",
     "dev:desktop": "turbo dev --filter=\"{./apps/desktop}...\"",
+    "dev:www": "turbo dev --filter=\"{./apps/www}...\"",
     "lint": "turbo lint",
     "test": "turbo test",
     "build": "turbo build",
-    "build:mobile": "turbo build --filter=\"...{./apps/mobile}\""
+    "build:mobile": "turbo build --filter=\"...{./apps/mobile}\"",
+    "build:desktop": "turbo build --filter=\"...{./apps/desktop}\"",
+    "build:www": "turbo build --filter=\"...{./apps/www}\""
   },
   "devDependencies": {
+    "@turbo/gen": "2.5.8",
+    "rimraf": "6.0.1",
     "turbo": "^1.13.4",
-    "typescript": "5.8.2"
+    "typescript": "catalog:typescript"
   },
   "prettier": {
     "printWidth": 100,

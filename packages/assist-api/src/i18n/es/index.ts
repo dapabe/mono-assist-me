@@ -17,7 +17,7 @@ const es = {
       EnableDetectionCheckbox: 'Permitir ser descubierto',
     },
     PageReceiver: {
-      Title: 'Listas',
+      Title: 'Buscar',
       SelectedDevicesTab: {
         Title: 'Conocidos',
         EmptyPlaceholder: 'Sin dispositivos guardados',
