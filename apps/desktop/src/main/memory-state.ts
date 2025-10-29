@@ -1,3 +1,7 @@
-import { createVanillaRoomStore } from '@mono/assist-api'
+import { createRoomStore, IRoomState } from '@mono/assist-api'
+import { createStore } from 'zustand/vanilla'
+import { subscribeWithSelector } from 'zustand/middleware'
 
-export const MemoryState = createVanillaRoomStore()
+export const NodeMemoryState = createStore<IRoomState>()(
+  subscribeWithSelector(createRoomStore())
+)

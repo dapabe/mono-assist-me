@@ -6,6 +6,7 @@ packages/*/build
 # Generated
 .temp
 .astro
+.tanstack
 
 # Turborepo
 .turbo

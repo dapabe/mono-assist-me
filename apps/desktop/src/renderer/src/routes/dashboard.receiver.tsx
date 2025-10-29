@@ -1,9 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { ReactNode, useEffect, useState } from 'react'
+import { ReactNode, useState } from 'react'
 import { ReceiverSearchDevices } from './-components/dashboard/receiver/Receiver.SearchDevices'
 import { ReceiverSelectedDevices } from './-components/dashboard/receiver/Receiver.SelectedDevices'
-import { useRoomStore } from '@mono/assist-api'
 import { useTranslation } from 'react-i18next'
+import { trpcReact } from '@renderer/services/trpc'
 
 export const Route = createFileRoute('/dashboard/receiver')({
   component: Component
@@ -12,12 +12,18 @@ export const Route = createFileRoute('/dashboard/receiver')({
 function Component(): ReactNode {
   const { t } = useTranslation()
 
-  const room = useRoomStore()
+  const room = trpcReact.PROTECTED.getRoomsListeningTo.useQuery()
   const [cTab, setTab] = useState('tab2')
 
-  useEffect(() => {
-    if (room.roomsListeningTo.length) setTab('tab1')
-  }, [room.roomsListeningTo.length])
+  if (room.isLoading) return <span>loading</span>
+
+  if (room.error) return <span>error</span>
+
+  if (room.data.length) setTab('tab1')
+
+  // useEffect(() => {
+  //   if (room.roomsListeningTo.length) setTab('tab1')
+  // }, [room.roomsListeningTo.length])
 
   return (
     <section className="grow [*]:px-4 flex flex-col">

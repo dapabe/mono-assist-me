@@ -3,7 +3,7 @@ import { trpcReact } from '@renderer/services/trpc'
 import { ReactNode } from 'react'
 
 export function DevSettings(): ReactNode {
-  const deleteAccount = trpcReact.UTILS.LocalLogout.useMutation()
+  const deleteAccount = trpcReact.UTILS.localLogout.useMutation()
 
   const handleDelete = async (): Promise<void> => {
     await deleteAccount.mutateAsync()

@@ -1,13 +1,9 @@
-import { createStore, StateCreator } from 'zustand/vanilla';
+import { StateCreator } from 'zustand/vanilla';
 
 import { IAssistanceRoomClientSlice, IRoomEmitterSlice, IRoomReceiverSlice } from './Room.state';
-import { IListeningToDTO } from '../schemas/ListeningTo.schema';
 import { ConnMethod, RoomEventLiteral, RoomServiceStatus } from '../schemas/RoomEvent.schema';
-import { UUID } from '../types/common';
 import { IRoomData } from '../types/room.context';
 import { UdpSocketClient } from '../udp-client/UDPClient';
-import { create } from 'zustand';
-import { subscribeWithSelector } from 'zustand/middleware';
 
 export type IRoomState = IAssistanceRoomClientSlice & IRoomEmitterSlice & IRoomReceiverSlice;
 
@@ -21,10 +17,10 @@ export type IRoomState = IAssistanceRoomClientSlice & IRoomEmitterSlice & IRoomR
  */
 
 /**
- *  Must be a function so it can be instantiated per enviroment
- *  or else it will share state.
+ *  @summary Must be used with subscribeWithSelector per enviroment \
+ *  or else it will share a state during development, thats a nono.
  */
-const createRoomStore = (): StateCreator<IRoomState, [], [], IRoomState> => (set, get) => ({
+export const createRoomStore = (): StateCreator<IRoomState, [], [], IRoomState> => (set, get) => ({
   connMethod: ConnMethod.None,
   connAdapter: null,
   status: RoomServiceStatus.Down,
@@ -56,13 +52,16 @@ const createRoomStore = (): StateCreator<IRoomState, [], [], IRoomState> => (set
     if (name) return name;
     throw new Error('NoName');
   },
-  updateMemoryState: (k, v) => set({ [k]: v }),
-  getRepos: () => {
-    const repos = get().dbRepos;
-    if (repos) return repos;
-    throw new Error('dbRepos not set');
+  getAdapter: () => {
+    const adapter = get().connAdapter;
+    if (!adapter) {
+      console.log('[RoomStore] No adapter');
+      throw new Error('NoAdapter');
+    }
+    return adapter;
   },
-  syncDatabase: async (dbRepos) => {
+  updateMemoryState: (k, v) => set({ [k]: v }),
+  __syncDatabase: async (dbRepos) => {
     set({ dbRepos });
     const storedListeners = await get().getRepos().ListeningTo.get();
     if (!storedListeners.length) return;
@@ -71,6 +70,11 @@ const createRoomStore = (): StateCreator<IRoomState, [], [], IRoomState> => (set
         storedListeners: [...state.storedListeners, listener],
       }));
     }
+  },
+  getRepos: () => {
+    const repos = get().dbRepos;
+    if (repos) return repos;
+    throw new Error('dbRepos not set');
   },
   getStoredListeners: async () => {},
 
@@ -255,15 +259,7 @@ const createRoomStore = (): StateCreator<IRoomState, [], [], IRoomState> => (set
     ];
   },
 
-  sendDiscovery: () => {
-    const adapter = get().connAdapter;
-    if (!adapter) {
-      console.log('[RoomStore] No adapter');
-      return;
-    }
-    adapter.sendDiscovery();
-  },
-
+  sendDiscovery: () => get().getAdapter().sendDiscovery(),
   //  Room receiver methods
 
   addToListeningTo: (appId) => {
@@ -281,7 +277,7 @@ const createRoomStore = (): StateCreator<IRoomState, [], [], IRoomState> => (set
   respondToHelp: (appId) => {
     const emitter = get().roomsListeningTo.find((x) => x.appId === appId);
     if (!emitter || emitter.disconnected) return;
-    get().connAdapter?.sendTo(emitter.port, emitter.address, {
+    get().getAdapter().sendTo(emitter.port, emitter.address, {
       event: RoomEventLiteral.RespondToHelp,
       responderName: get().getCurrentName(),
     });
@@ -290,7 +286,7 @@ const createRoomStore = (): StateCreator<IRoomState, [], [], IRoomState> => (set
     const listeningTo = get().roomsListeningTo.find((x) => x.appId === appId);
     if (listeningTo) {
       get().onRemoteNotListening({ appId });
-      get().connAdapter?.sendTo(listeningTo.port, listeningTo.address, {
+      get().getAdapter().sendTo(listeningTo.port, listeningTo.address, {
         event: RoomEventLiteral.NotListening,
         appId: get().getAppId(),
       });
@@ -298,18 +294,5 @@ const createRoomStore = (): StateCreator<IRoomState, [], [], IRoomState> => (set
   },
 
   //  Room emitter methods
-  requestHelp: () => {
-    const adapter = get().connAdapter;
-    if (!adapter) return;
-    if (adapter instanceof UdpSocketClient) {
-      adapter.requestHelp();
-    }
-  },
+  requestHelp: () => get().getAdapter().requestHelp,
 });
-
-/** To be used in Node/Js enviroment */
-export function createVanillaRoomStore() {
-  return createStore<IRoomState>()(subscribeWithSelector(createRoomStore()));
-}
-/** To be used in React Native enviroment */
-export const useRoomStore = create<IRoomState>()(subscribeWithSelector(createRoomStore()));

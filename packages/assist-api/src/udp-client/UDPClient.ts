@@ -79,17 +79,21 @@ export class UdpSocketClient implements ISocketClient {
     this.config.adapter.sendTo(port, address, buf);
   }
 
-  sendDiscovery() {
-    console.log('[UDP] Sending discovery');
-    this.sendTo(UDP_CONSTANTS.DISCOVERY_PORT, UDP_CONSTANTS.MULTICAST_ADDRESS, {
-      event: RoomEventLiteral.LookingForDevices,
-    });
+  async *sendDiscovery(): AsyncGenerator<{ counter: number; done: boolean }> {
+    console.log('[UDP] Sending discovery for 30s');
+    const duration = process.env.NODE_ENV === 'development' ? 10 : 30;
+    for (let index = duration; index > 0; index--) {
+      console.log(`[UDP] Sending discovery ${index}`);
+      yield { counter: index, done: false };
+      await new Promise((r) => setTimeout(r, 1000));
+    }
+    yield { counter: 0, done: true };
   }
 
   private parseMessage(data: unknown, rinfo: RemoteUDPInfo): void {
     try {
       if (!Buffer.isBuffer(data)) {
-        throw ZodError.create([{ code: 'custom', message: 'Invalid Buffer', path: [] }]);
+        throw new ZodError([{ code: 'custom', message: 'Invalid Buffer', path: [] }]);
       }
       // Prevent self-broadcast from processing
       if (rinfo.address === this.config.adapter.currentAddress) return;

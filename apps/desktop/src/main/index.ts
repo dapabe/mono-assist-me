@@ -1,13 +1,19 @@
 import { electronApp, optimizer } from '@electron-toolkit/utils'
 import { app, BrowserWindow, dialog } from 'electron'
 
-import { initializeDatabase } from './src/initializeDatabase'
-import { ExpectedError } from '@mono/assist-api'
 import { createMainWindow } from './main-window'
+import { AppEventBus } from './services/EventBus'
 
 process.on('uncaughtException', (listener) => {
   app.quit()
+  console.log('Exception: ', JSON.stringify(listener, null, 2))
   dialog.showErrorBox(listener.name, listener.message)
+  process.exit(1)
+})
+process.once('unhandledRejection', (listener) => {
+  app.quit()
+  console.log('Rejected: ', JSON.stringify(listener, null, 2))
+  process.exit(1)
 })
 
 // This method will be called when Electron has finished
@@ -24,8 +30,6 @@ app.whenReady().then(async () => {
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)
   })
-
-  await initializeDatabase()
 
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
@@ -47,3 +51,7 @@ app.on('window-all-closed', () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
+
+app.on('will-quit', () => {
+  AppEventBus.cleanupAll()
+})

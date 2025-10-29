@@ -1,9 +1,9 @@
 import { trpcReact } from '@renderer/services/trpc'
-import { useRouter } from '@tanstack/react-router'
-import { ReactNode, useState } from 'react'
+import { ReactNode, useMemo, useState } from 'react'
 import * as Icon from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { IWSRoom } from '@mono/assist-api'
+import { useMutation, useQuery } from '@tanstack/react-query'
 
 export function ReceiverSearchDevices(): ReactNode {
   const { t } = useTranslation()
@@ -84,27 +84,28 @@ export function ReceiverSearchDevices(): ReactNode {
 
 function DiscoveryButton({ disabled }: { disabled?: boolean }): ReactNode {
   const { t } = useTranslation()
+  const [discovery, setDiscovery] = useState({ counter: 0, done: true })
 
-  // const router = useRouter()
-  const sendDiscovery = trpcReact.PROTECTED.sendDiscovery.useMutation()
+  const startDiscovery = trpcReact.PROTECTED.startDiscovery.useMutation()
 
-  const handleDiscovery = (): void => {
-    sendDiscovery.mutate()
-    // router.invalidate()
-  }
+  trpcReact.PROTECTED.sendDiscovery.useSubscription(undefined, {
+    onData: (x) => setDiscovery(x)
+  })
+
+  const onCooldown = useMemo(
+    () => discovery.counter !== 0 && !discovery.done,
+    [discovery]
+  )
 
   return (
     <button
-      // buttonStyle={styles.searchButton}
-      // radius={UITheme.spacing?.xl}
-      // type="solid"
-      // title={'Detectar otros dispositivos'}
-      // iconPosition="top"
-      disabled={disabled}
+      disabled={disabled || onCooldown}
       className="btn btn-accent btn-outline grow mt-2"
-      onClick={handleDiscovery}
+      onClick={() => startDiscovery.mutateAsync()}
     >
-      {t('Dashboard.PageReceiver.SearchDevicesTab.DetectButton')}
+      {onCooldown
+        ? `${discovery.counter}s`
+        : t('Dashboard.PageReceiver.SearchDevicesTab.DetectButton')}
     </button>
   )
 }

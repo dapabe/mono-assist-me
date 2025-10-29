@@ -1,6 +1,6 @@
 import { BrowserWindow, shell } from 'electron'
 import path from 'node:path'
-import { attachTRPCHandlers } from './trpc/router'
+import { attachTRPCHandlers } from './trpc/root.router'
 import icon from '../../resources/icon.png?asset'
 import { is } from '@electron-toolkit/utils'
 

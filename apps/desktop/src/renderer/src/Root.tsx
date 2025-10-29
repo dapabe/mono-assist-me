@@ -1,19 +1,17 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import {
   createHashHistory,
   createRouter,
   RouterProvider
 } from '@tanstack/react-router'
-import { ipcLink } from 'electron-trpc/renderer'
-import { ReactNode, useEffect, useRef, useState } from 'react'
+import { ReactNode, useRef } from 'react'
 import { routeTree } from './routeTree.gen'
 import {
   LocalAuthProvider,
   useLocalAuth
 } from './routes/-components/providers/LocalAuth.provider'
-import { trpcReact } from './services/trpc'
 import { initI18nReact } from '@mono/assist-api/i18n/next'
 import { I18nextProvider } from 'react-i18next'
+import { TRPCProvider } from './TRPC.provider'
 
 //  Needed for Electron since all the router is shipped with the app, doesnt really need lazy load
 const hashHistory = createHashHistory()
@@ -37,23 +35,16 @@ function ContextRouter(): ReactNode {
 }
 
 export function Root(): React.ReactNode {
-  const qc = useRef(new QueryClient()).current
-  const [trpcClient] = useState(() =>
-    trpcReact.createClient({
-      links: [ipcLink()]
-    })
-  )
   const conf = useRef(initI18nReact()).current
 
   return (
+    /**@ts-ignore This error is nonsense */
     <I18nextProvider i18n={conf}>
-      <trpcReact.Provider client={trpcClient} queryClient={qc}>
-        <QueryClientProvider client={qc}>
-          <LocalAuthProvider>
-            <ContextRouter />
-          </LocalAuthProvider>
-        </QueryClientProvider>
-      </trpcReact.Provider>
+      <TRPCProvider>
+        <LocalAuthProvider>
+          <ContextRouter />
+        </LocalAuthProvider>
+      </TRPCProvider>
     </I18nextProvider>
   )
 }

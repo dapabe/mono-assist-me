@@ -5,22 +5,23 @@
     "pnpm": ">=9.5.0",
     "node": ">=22.0.0"
   },
+  "packageManager": "pnpm@10.19.0",
   "scripts": {
     "clear": "turbo clean",
     "clean": "git clean -xdf .turbo node_modules",
-    "dev-assist": "turbo dev",
-    "dev:mobile": "turbo dev --filter=\"{./apps/mobile}...\"",
+    "dev-assist": "turbo dev --no-daemon",
+    "dev:mobile": "turbo dev --no-daemon --filter=\"{./apps/mobile}...\"",
     "dev:mobile:fix": "cd apps/mobile & expo install --fix",
     "dev:mobile:pre-android": "pnpm -F @mono/mobile android",
     "dev:mobile:pre-ios": "pnpm -F @mono/mobile ios",
-    "dev:desktop": "turbo dev --filter=\"{./apps/desktop}...\"",
-    "lint": "turbo lint",
-    "test": "turbo test",
-    "build": "turbo build",
-    "build:mobile": "turbo build --filter=\"...{./apps/mobile}\""
+    "dev:desktop": "turbo dev --no-daemon --filter=\"{./apps/desktop}...\"",
+    "lint": "turbo lint --no-daemon",
+    "test": "turbo test --no-daemon",
+    "build": "turbo build --no-daemon",
+    "build:mobile": "turbo build --no-daemon --filter=\"...{./apps/mobile}\""
   },
   "devDependencies": {
-    "turbo": "^1.13.4",
+    "turbo": "^2.5.8",
     "typescript": "5.8.2"
   },
   "prettier": {

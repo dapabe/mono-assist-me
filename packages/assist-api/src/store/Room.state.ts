@@ -32,6 +32,7 @@ export type IAssistanceRoomClientSlice = InMemoryStateMap & {
   updateConnectionMethod: (c: IConnMethod, a: IConnAdapter) => void;
   getAppId: () => UUID;
   getCurrentName: () => string;
+  getAdapter: () => NonNullable<IConnAdapter>;
 
   /**
    * Check if they are ok, if not delete them or set to disconnect
@@ -46,7 +47,7 @@ export type IAssistanceRoomClientSlice = InMemoryStateMap & {
     }
   >;
   dbRepos: DatabaseService['Repo'] | null;
-  syncDatabase: (repos: DatabaseService['Repo']) => Promise<void>;
+  __syncDatabase: (repos: DatabaseService['Repo']) => Promise<void>;
   getRepos: () => DatabaseService['Repo'];
 
   /**	Iterates over all existing devices */
@@ -79,8 +80,7 @@ export type IAssistanceRoomClientSlice = InMemoryStateMap & {
     rinfo: RemoteUDPInfo
   ) => void;
   onDeviceCleanUp: (appId: UUID) => void;
-
-  sendDiscovery: () => void;
+  sendDiscovery(): AsyncGenerator<{ counter: number; done: boolean }>;
 };
 
 export type IRoomEmitterSlice = {

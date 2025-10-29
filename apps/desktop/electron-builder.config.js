@@ -1,9 +1,9 @@
 import builder, { Platform } from 'electron-builder'
 import { platform } from 'process'
-
 const appName = 'AssistMeButton'
 const applicationId = `com.denzere.${appName}`
 
+const defaultIcon = 'resources/icon.png'
 /**
  * @type {import("electron-builder").Configuration}
  * @see https://www.electron.build/configuration
@@ -13,7 +13,7 @@ const options = {
   executableName: appName,
   productName: appName,
   // nodeGypRebuild: true,
-  icon: 'resources/icon.png',
+  icon: defaultIcon,
   directories: {
     buildResources: 'build'
   },
@@ -25,6 +25,12 @@ const options = {
     '!{.env,.env.*,.npmrc,pnpm-lock.yaml}',
     '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
   ],
+  extraResources: [
+    {
+      from: '../../packages/assist-api/migrations',
+      to: 'migrations'
+    }
+  ],
   asarUnpack: 'resources/**',
   win: {
     executableName: appName,
@@ -34,7 +40,9 @@ const options = {
     artifactName: '${name}-${version}-setup.${ext}',
     shortcutName: '${productName}',
     uninstallDisplayName: '${productName}',
-    createDesktopShortcut: 'always'
+    createDesktopShortcut: 'always',
+    oneClick: true,
+    allowToChangeInstallationDirectory: true
   },
   mac: {
     entitlementsInherit: 'build/entitlements.mac.plist',
@@ -55,8 +63,9 @@ const options = {
   },
   linux: {
     target: ['AppImage', 'snap', 'deb'],
-    // maintainer: ""
-    category: 'Utility'
+    icon: defaultIcon,
+    category: 'Utility',
+    executableArgs: ['--executable']
   },
   appImage: {
     artifactName: '${name}-${version}.${ext}'

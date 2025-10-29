@@ -2,8 +2,7 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { defineConfig, externalizeDepsPlugin } from 'electron-vite'
 import * as path from 'node:path'
-//@ts-ignore The source is on the root node_modules
-import { TanStackRouterVite } from '@tanstack/router-plugin/vite'
+import tanstackRouter from '@tanstack/router-plugin/vite'
 
 // --entry ../../node_modules/electron
 export default defineConfig(() => {
@@ -22,7 +21,7 @@ export default defineConfig(() => {
       },
       plugins: [
         tailwindcss(),
-        TanStackRouterVite({
+        tanstackRouter({
           target: 'react',
           autoCodeSplitting: true,
           quoteStyle: 'single',
